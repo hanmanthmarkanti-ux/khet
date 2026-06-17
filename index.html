@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<title>Khet Diary</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+:root{
+  --soil:#2C1A0E;--soil2:#3B2A1A;--wheat:#D4941A;--leaf:#3A6B30;
+  --leaf2:#4A7C3F;--cream:#FAF6EE;--muted:#7A6A57;--border:#E0D4C0;
+  --red:#B03020;--blue:#1A5F8A;--orange:#D4700A;--purple:#7B3FA0;
+  --white:#FFFFFF;--sh:0 2px 14px rgba(44,26,14,0.10);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{background:var(--cream);font-family:'Inter',sans-serif;color:var(--soil);min-height:100vh;}
+.screen{display:none;min-height:100vh;}
+.screen.show{display:flex;}
+
+/* AUTH */
+#auth-screen{flex-direction:column;align-items:center;justify-content:center;padding:24px 16px;background:var(--soil);}
+.auth-logo{font-size:3.2rem;margin-bottom:8px;}
+.auth-title{color:var(--cream);font-size:1.9rem;font-weight:800;letter-spacing:-0.02em;}
+.auth-sub{color:#B8A890;font-size:0.82rem;margin-bottom:28px;}
+.auth-box{background:var(--white);border-radius:20px;padding:24px 20px;width:100%;max-width:370px;box-shadow:0 12px 40px rgba(0,0,0,0.35);}
+.auth-tabs{display:flex;margin-bottom:20px;background:var(--cream);border-radius:10px;padding:3px;}
+.auth-tab{flex:1;text-align:center;padding:9px;border-radius:8px;font-size:0.88rem;font-weight:600;cursor:pointer;color:var(--muted);transition:all 0.2s;}
+.auth-tab.active{background:var(--soil);color:var(--cream);}
+.afield{margin-bottom:13px;}
+.afield label{display:block;font-size:0.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px;}
+.afield input{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;font-size:0.98rem;font-family:'Inter',sans-serif;color:var(--soil);background:var(--cream);outline:none;}
+.afield input:focus{border-color:var(--wheat);background:#fff;}
+.auth-btn{width:100%;padding:13px;border-radius:10px;font-size:1rem;font-weight:700;border:none;cursor:pointer;background:var(--leaf);color:#fff;margin-top:4px;}
+.auth-btn:active{opacity:0.8;}
+.auth-err{color:var(--red);font-size:0.8rem;text-align:center;margin-top:8px;min-height:16px;}
+.auth-hint{color:var(--muted);font-size:0.73rem;text-align:center;margin-top:10px;}
+
+/* APP */
+#app-screen{flex-direction:column;}
+#app-body{flex:1;padding-bottom:80px;}
+header{background:var(--soil);color:var(--cream);padding:11px 14px;display:flex;align-items:center;gap:9px;position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(0,0,0,0.35);}
+.hlogo{font-size:1.5rem;line-height:1;}
+header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
+.uchip{background:rgba(255,255,255,0.10);border-radius:16px;padding:4px 10px;font-size:0.72rem;font-weight:600;color:#C8B89A;white-space:nowrap;}
+.lbtn{background:rgba(220,80,60,0.18);border:1px solid rgba(220,80,60,0.35);border-radius:16px;padding:5px 11px;font-size:0.72rem;font-weight:700;color:#ffb0a0;cursor:pointer;}
+.lbtn:active{background:rgba(220,80,60,0.35);}
+
+/* BOTTOM TABS */
+.tabs{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--soil);z-index:200;box-shadow:0 -2px 14px rgba(0,0,0,0.25);}
+.tab{flex:1;padding:9px 2px 12px;text-align:center;cursor:pointer;color:#9A8A77;font-size:0.58rem;font-weight:600;letter-spacing:0.01em;border-top:3px solid transparent;display:flex;flex-direction:column;align-items:center;gap:2px;transition:all 0.2s;}
+.tab .ti{font-size:1.1rem;line-height:1;}
+.tab.active{color:var(--wheat);border-top-color:var(--wheat);}
+
+.page{display:none;}.page.active{display:block;}
+
+/* SUMMARY CARDS */
+.sscroll{overflow-x:auto;padding:14px 14px 0;scrollbar-width:none;}
+.sscroll::-webkit-scrollbar{display:none;}
+.scards{display:flex;gap:10px;width:max-content;}
+.scard{background:var(--white);border-radius:12px;padding:12px 14px;box-shadow:var(--sh);border-top:3px solid var(--wheat);min-width:110px;}
+.scard.g{border-top-color:var(--leaf2);}.scard.r{border-top-color:var(--red);}
+.scard.b{border-top-color:var(--blue);}.scard.o{border-top-color:var(--orange);}
+.scard.p{border-top-color:var(--purple);}
+.scard label{font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);display:block;}
+.scard .sv{font-size:1.15rem;font-weight:800;margin-top:3px;}
+.scard.g .sv{color:var(--leaf);}.scard.r .sv{color:var(--red);}
+.scard.b .sv{color:var(--blue);}.scard.o .sv{color:var(--orange);}.scard.p .sv{color:var(--purple);}
+
+/* BOX */
+.box{margin:12px 14px 0;background:var(--white);border-radius:14px;box-shadow:var(--sh);overflow:hidden;}
+.boxhdr{background:var(--soil2);color:var(--cream);padding:11px 14px;font-size:0.88rem;font-weight:700;display:flex;align-items:center;gap:7px;cursor:pointer;user-select:none;}
+.boxhdr .arr{margin-left:auto;font-size:0.8rem;transition:transform 0.3s;}
+.boxhdr.open .arr{transform:rotate(180deg);}
+.boxbody{padding:14px;display:none;}
+.boxbody.open{display:block;}
+
+/* FORM */
+.field{margin-bottom:12px;}
+.field label{display:block;font-size:0.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:4px;}
+.field input,.field select,.field textarea{width:100%;border:1.5px solid var(--border);border-radius:9px;padding:11px 12px;font-size:0.95rem;font-family:'Inter',sans-serif;color:var(--soil);background:var(--cream);outline:none;appearance:none;-webkit-appearance:none;}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--wheat);background:#fff;}
+.field textarea{resize:none;height:65px;}
+.gr2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.gr3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+.btn{width:100%;padding:13px;border-radius:9px;font-size:0.97rem;font-weight:700;border:none;cursor:pointer;margin-top:3px;}
+.btn:active{opacity:0.8;}
+.bg{background:var(--leaf);color:#fff;}.bb{background:var(--blue);color:#fff;}
+.bo{background:var(--orange);color:#fff;}.bp{background:var(--purple);color:#fff;}
+.bgr{background:var(--border);color:var(--soil);margin-top:8px;}
+
+/* LIVE PREVIEW */
+.live-box{display:none;background:#F0F7F0;border:1.5px solid var(--leaf);border-radius:10px;padding:12px 14px;margin-bottom:12px;}
+.live-box h4{font-size:0.68rem;font-weight:700;color:var(--leaf);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;}
+.live-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;}
+.live-label{font-size:0.78rem;color:var(--muted);}
+.live-val{font-size:0.78rem;font-weight:700;}
+.live-profit-label{font-size:0.82rem;font-weight:700;border-top:1px solid var(--border);padding-top:6px;margin-top:2px;}
+.live-profit-val{font-size:1rem;font-weight:800;border-top:1px solid var(--border);padding-top:6px;margin-top:2px;}
+
+/* VEHICLE TABS inside diesel */
+.vtabs{display:flex;gap:6px;flex-wrap:wrap;padding:14px 14px 0;}
+.vtab{padding:8px 14px;border-radius:20px;font-size:0.78rem;font-weight:700;cursor:pointer;background:var(--border);color:var(--muted);border:2px solid transparent;transition:all 0.2s;white-space:nowrap;}
+.vtab.active{background:var(--orange);color:#fff;border-color:var(--orange);}
+.vtab-all{background:var(--soil2);color:var(--cream);}
+.vtab-all.active{background:var(--soil);border-color:var(--soil);}
+
+/* FILTER */
+.filbox{margin:10px 14px 0;background:var(--white);border-radius:12px;box-shadow:var(--sh);padding:12px 14px;}
+.filbox h3{font-size:0.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:9px;}
+.filrow{display:flex;gap:7px;flex-wrap:wrap;}
+.filrow input,.filrow select{flex:1;min-width:100px;border:1.5px solid var(--border);border-radius:8px;padding:9px 10px;font-size:0.85rem;font-family:'Inter',sans-serif;color:var(--soil);background:var(--cream);outline:none;appearance:none;-webkit-appearance:none;}
+.filclear{padding:9px 12px;background:var(--border);border:none;border-radius:8px;font-size:0.82rem;font-weight:700;color:var(--soil);cursor:pointer;}
+
+/* RECORDS */
+.recsec{margin:10px 14px 0;background:var(--white);border-radius:14px;box-shadow:var(--sh);overflow:hidden;}
+.rechdr{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.rechdr h2{font-size:0.88rem;font-weight:700;}
+.expbtn{padding:6px 11px;background:var(--border);border:none;border-radius:7px;font-size:0.72rem;font-weight:700;color:var(--soil);cursor:pointer;}
+.rc{padding:12px 14px;border-bottom:1px solid #F0E8DA;position:relative;}
+.rc:last-child{border-bottom:none;}
+.rtop{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:7px;}
+.rwrk{font-weight:700;font-size:0.9rem;flex:1;padding-right:26px;line-height:1.3;}
+.ramt{font-weight:800;font-size:0.95rem;white-space:nowrap;}
+.ag{color:var(--leaf);}.ar{color:var(--red);}.ao{color:var(--orange);}.ap{color:var(--purple);}
+.rmeta{display:flex;flex-wrap:wrap;gap:4px;}
+.chip{display:inline-flex;align-items:center;padding:3px 7px;border-radius:14px;font-size:0.65rem;font-weight:700;}
+.cd{background:#F5EFE4;color:var(--muted);}
+.cv{background:#E8F0F8;color:var(--blue);}
+.ce{background:#E5F2E5;color:var(--leaf);}
+.cs{background:#FDECEA;color:var(--red);}
+.cf{background:#FEF3E2;color:var(--orange);}
+.ca{background:#EDF5ED;color:var(--leaf2);}
+.rprofit{margin-top:6px;font-size:0.78rem;font-weight:700;padding:5px 10px;border-radius:8px;display:inline-block;}
+.rprofit.pos{background:#E5F2E5;color:var(--leaf);}
+.rprofit.neg{background:#FDECEA;color:var(--red);}
+.rnotes{margin-top:5px;font-size:0.75rem;color:var(--muted);}
+.delbtn{position:absolute;top:12px;right:12px;background:none;border:none;cursor:pointer;color:#ccc;font-size:0.95rem;padding:4px;border-radius:6px;}
+.delbtn:active{color:var(--red);background:#FDECEA;}
+
+/* VEHICLE LIST */
+.v-list{display:flex;flex-direction:column;gap:8px;}
+.v-item{display:flex;align-items:center;justify-content:space-between;background:var(--cream);border-radius:9px;padding:10px 12px;border:1px solid var(--border);}
+.v-info{display:flex;align-items:center;gap:8px;}
+.v-icon{font-size:1.4rem;}
+.v-name{font-weight:700;font-size:0.9rem;}
+.v-type{font-size:0.72rem;color:var(--muted);}
+.v-del{background:none;border:none;color:#ccc;font-size:1rem;cursor:pointer;padding:4px;}
+.v-del:active{color:var(--red);}
+
+/* DASHBOARD */
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px 14px 0;}
+.dash-card{background:var(--white);border-radius:12px;padding:14px;box-shadow:var(--sh);}
+.dash-card h3{font-size:0.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:8px;}
+.dash-card .big{font-size:1.4rem;font-weight:800;}
+.dash-full{grid-column:1/-1;}
+.veh-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);}
+.veh-row:last-child{border-bottom:none;}
+.veh-row-name{font-size:0.82rem;font-weight:700;display:flex;align-items:center;gap:5px;}
+
+/* DIESEL VEHICLE SUMMARY CARDS */
+.dv-cards{display:flex;flex-direction:column;gap:10px;padding:14px 14px 0;}
+.dv-card{background:var(--white);border-radius:12px;padding:14px;box-shadow:var(--sh);border-left:4px solid var(--orange);}
+.dv-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.dv-card-name{font-weight:800;font-size:1rem;display:flex;align-items:center;gap:7px;}
+.dv-card-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;}
+.dv-stat{text-align:center;background:var(--cream);border-radius:8px;padding:8px 4px;}
+.dv-stat-val{font-size:1rem;font-weight:800;color:var(--orange);}
+.dv-stat-label{font-size:0.62rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;}
+
+.empty{text-align:center;padding:32px 16px;color:var(--muted);}
+.empty .ei{font-size:2rem;margin-bottom:7px;}
+.empty p{font-size:0.85rem;line-height:1.5;}
+
+#toast{position:fixed;bottom:76px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--soil);color:var(--cream);padding:9px 18px;border-radius:25px;font-size:0.85rem;font-weight:600;opacity:0;transition:opacity 0.3s,transform 0.3s;z-index:9999;pointer-events:none;white-space:nowrap;}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<!-- AUTH -->
+<div id="auth-screen" class="screen">
+  <div class="auth-logo">🌾</div>
+  <div class="auth-title">Khet Diary</div>
+  <div class="auth-sub">Farm & Home Tracker</div>
+  <div class="auth-box">
+    <div class="auth-tabs">
+      <div class="auth-tab active" onclick="showAuthTab('login')">Login</div>
+      <div class="auth-tab" onclick="showAuthTab('register')">Register</div>
+    </div>
+    <div id="login-panel">
+      <div class="afield"><label>Username</label><input type="text" id="lu" placeholder="Your username"/></div>
+      <div class="afield"><label>Password</label><input type="password" id="lp" placeholder="Your password"/></div>
+      <button class="auth-btn" onclick="doLogin()">Login →</button>
+      <div class="auth-err" id="lerr"></div>
+      <div class="auth-hint">No account? Click Register above</div>
+    </div>
+    <div id="reg-panel" style="display:none;">
+      <div class="afield"><label>Full Name</label><input type="text" id="rn" placeholder="e.g. Hanmanth"/></div>
+      <div class="afield"><label>Username</label><input type="text" id="ru" placeholder="Choose a username"/></div>
+      <div class="afield"><label>Password</label><input type="password" id="rp" placeholder="Min 4 characters"/></div>
+      <div class="afield"><label>Confirm Password</label><input type="password" id="rp2" placeholder="Repeat password"/></div>
+      <button class="auth-btn" onclick="doRegister()">Create Account →</button>
+      <div class="auth-err" id="rerr"></div>
+      <div class="auth-hint">Already registered? Click Login above</div>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app-screen" class="screen" style="flex-direction:column;">
+<div id="app-body">
+  <header>
+    <div class="hlogo">🌾</div>
+    <h1>Khet Diary</h1>
+    <div class="uchip">👤 <span id="uname"></span></div>
+    <button class="lbtn" onclick="doLogout()">🚪 Logout</button>
+  </header>
+
+  <!-- DASHBOARD -->
+  <div class="page active" id="pg-dash">
+    <div class="dash-grid">
+      <div class="dash-card" style="border-top:3px solid var(--leaf)"><h3>Total Earned</h3><div class="big ag" id="d-earned">₹0</div></div>
+      <div class="dash-card" style="border-top:3px solid var(--red)"><h3>Farm Costs</h3><div class="big ar" id="d-spent">₹0</div></div>
+      <div class="dash-card" style="border-top:3px solid var(--wheat)"><h3>Net Profit</h3><div class="big" id="d-profit">₹0</div></div>
+      <div class="dash-card" style="border-top:3px solid var(--blue)"><h3>Total Acres</h3><div class="big" id="d-acres" style="color:var(--blue)">0</div></div>
+      <div class="dash-card" style="border-top:3px solid var(--orange)"><h3>Total Diesel</h3><div class="big ao" id="d-diesel">0 L</div></div>
+      <div class="dash-card" style="border-top:3px solid var(--red)"><h3>Home Expenses</h3><div class="big ar" id="d-home">₹0</div></div>
+      <div class="dash-card dash-full">
+        <h3>Vehicle Summary</h3>
+        <div id="d-veh-list"><p style="color:var(--muted);font-size:0.82rem;">No vehicles added yet.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VEHICLES -->
+  <div class="page" id="pg-vehicles">
+    <div class="box">
+      <div class="boxhdr open" onclick="tog('veh-form',this)"><span>🚛</span> Add New Vehicle <span class="arr">▲</span></div>
+      <div class="boxbody open" id="veh-form">
+        <div class="gr2">
+          <div class="field"><label>Vehicle Type</label>
+            <select id="vt">
+              <option value="Tractor">🚜 Tractor</option>
+              <option value="Harvester">🌾 Harvester</option>
+              <option value="Truck">🚛 Truck</option>
+              <option value="Rotavator">⚙️ Rotavator</option>
+              <option value="Other">🔧 Other</option>
+            </select>
+          </div>
+          <div class="field"><label>Vehicle Name / No.</label><input type="text" id="vn" placeholder="e.g. TS09 AB 1234"/></div>
+        </div>
+        <button class="btn bo" onclick="addVehicle()">＋ Add Vehicle</button>
+      </div>
+    </div>
+    <div class="box" style="margin-top:12px;">
+      <div class="boxhdr open"><span>🚛</span> My Vehicles</div>
+      <div class="boxbody open">
+        <div id="veh-list"><p style="color:var(--muted);font-size:0.85rem;text-align:center;padding:16px 0;">No vehicles yet. Add one above!</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FARM WORK -->
+  <div class="page" id="pg-farm">
+    <div class="sscroll"><div class="scards">
+      <div class="scard"><label>Entries</label><div class="sv" id="f-en">0</div></div>
+      <div class="scard g"><label>Earned</label><div class="sv" id="f-ea">₹0</div></div>
+      <div class="scard r"><label>Costs</label><div class="sv" id="f-sp">₹0</div></div>
+      <div class="scard"><label>Profit</label><div class="sv" id="f-pr">₹0</div></div>
+      <div class="scard b"><label>Acres</label><div class="sv" id="f-ac">0</div></div>
+    </div></div>
+
+    <div class="box">
+      <div class="boxhdr" onclick="tog('farm-body',this)"><span>📝</span> Add Work Entry <span class="arr">▼</span></div>
+      <div class="boxbody" id="farm-body">
+        <div class="gr2">
+          <div class="field"><label>Date</label><input type="date" id="fd"/></div>
+          <div class="field"><label>Vehicle</label><select id="fv"><option value="">-- Select --</option></select></div>
+        </div>
+        <div class="field"><label>Work Done</label><input type="text" id="fw" placeholder="e.g. Ploughing, Harvesting wheat…"/></div>
+        <div class="gr2">
+          <div class="field"><label>Start Time</label><input type="time" id="fst" oninput="liveCalc()"/></div>
+          <div class="field"><label>End Time</label><input type="time" id="fet" oninput="liveCalc()"/></div>
+        </div>
+        <div class="gr2">
+          <div class="field"><label>Acres Worked</label><input type="number" id="fac" placeholder="0" min="0" step="0.5" inputmode="decimal" oninput="liveCalc()"/></div>
+          <div class="field"><label>Other Expenses ₹</label><input type="number" id="fex" placeholder="0" min="0" inputmode="numeric" oninput="liveCalc()"/></div>
+        </div>
+        <div class="gr2">
+          <div class="field"><label>₹ / Hour</label><input type="number" id="frh" placeholder="e.g. 200" min="0" inputmode="numeric" oninput="liveCalc()"/></div>
+          <div class="field"><label>₹ / Acre</label><input type="number" id="fra" placeholder="e.g. 500" min="0" inputmode="numeric" oninput="liveCalc()"/></div>
+        </div>
+        <div class="field"><label>Earned ₹ <span style="font-size:0.65rem;color:var(--leaf);font-weight:700;">(auto calculated)</span></label>
+          <input type="number" id="fea" placeholder="Auto fills from ₹/Hr or ₹/Acre" min="0" inputmode="numeric" oninput="liveCalc()"/>
+        </div>
+        <!-- LIVE PREVIEW -->
+        <div class="live-box" id="live-preview">
+          <h4>📊 Live Calculation Preview</h4>
+          <div class="live-grid">
+            <div class="live-label">⏱ Hours Worked</div><div class="live-val" id="pv-hrs">—</div>
+            <div class="live-label">📏 Acres</div><div class="live-val" id="pv-acres">—</div>
+            <div class="live-label">💰 Earned</div><div class="live-val ag" id="pv-earned">₹0</div>
+            <div class="live-label">💸 Total Cost</div><div class="live-val ar" id="pv-cost">₹0</div>
+            <div class="live-profit-label">🏆 Net Profit</div>
+            <div class="live-profit-val" id="pv-profit">₹0</div>
+          </div>
+        </div>
+        <div class="field"><label>Notes</label><textarea id="fn" placeholder="Optional details…"></textarea></div>
+        <button class="btn bg" onclick="addFarm()">＋ Add Entry</button>
+        <button class="btn bgr" onclick="clrFarm()">Clear</button>
+      </div>
+    </div>
+
+    <div class="filbox">
+      <h3>🔍 Filter</h3>
+      <div class="filrow">
+        <input type="text" id="ffs" placeholder="Search…" oninput="renderFarm()"/>
+        <select id="ffv" onchange="renderFarm()"><option value="all">All Vehicles</option></select>
+        <input type="month" id="ffm" onchange="renderFarm()"/>
+        <button class="filclear" onclick="clrFFil()">✕</button>
+      </div>
+    </div>
+    <div class="recsec">
+      <div class="rechdr"><h2>📋 Work Records</h2><button class="expbtn" onclick="exportCSV('farm')">⬇ CSV</button></div>
+      <div id="fl"></div>
+      <div id="fe2" class="empty"><div class="ei">🌱</div><p>No work entries yet.<br>Add your first one above!</p></div>
+    </div>
+  </div>
+
+  <!-- DIESEL -->
+  <div class="page" id="pg-diesel">
+    <div class="sscroll"><div class="scards">
+      <div class="scard o"><label>Total Diesel</label><div class="sv" id="ds-total">0 L</div></div>
+      <div class="scard r"><label>Total Cost</label><div class="sv" id="ds-cost">₹0</div></div>
+      <div class="scard"><label>Entries</label><div class="sv" id="ds-en">0</div></div>
+      <div class="scard b"><label>Avg ₹/Litre</label><div class="sv" id="ds-avg">₹0</div></div>
+    </div></div>
+
+    <!-- Per-vehicle diesel summary cards -->
+    <div id="dv-cards-section" class="dv-cards"></div>
+
+    <!-- Vehicle filter tabs -->
+    <div id="diesel-vtabs" class="vtabs"></div>
+
+    <div class="box">
+      <div class="boxhdr" onclick="tog('diesel-body',this)"><span>⛽</span> Add Diesel Entry <span class="arr">▼</span></div>
+      <div class="boxbody" id="diesel-body">
+        <div class="gr2">
+          <div class="field"><label>Date</label><input type="date" id="dsd"/></div>
+          <div class="field"><label>Vehicle</label><select id="dsv"><option value="">-- Select Vehicle --</option></select></div>
+        </div>
+        <div class="gr2">
+          <div class="field"><label>Diesel (Litres)</label><input type="number" id="dsl" placeholder="e.g. 20" min="0" inputmode="decimal" oninput="calcDieselCost()"/></div>
+          <div class="field"><label>Price per Litre ₹</label><input type="number" id="dspl" placeholder="e.g. 95" min="0" inputmode="decimal" oninput="calcDieselCost()"/></div>
+        </div>
+        <div class="field"><label>Total Cost ₹ <span style="font-size:0.65rem;color:var(--orange);font-weight:700;">(auto calculated)</span></label>
+          <input type="number" id="dsc" placeholder="Auto fills from Litres × Price" min="0" inputmode="numeric"/>
+        </div>
+        <div class="field"><label>Filled At (Pump Name)</label><input type="text" id="dsp" placeholder="e.g. HP Petrol Bunk, Village pump…"/></div>
+        <div class="field"><label>Notes</label><textarea id="dsn" placeholder="Optional details…"></textarea></div>
+        <button class="btn bo" onclick="addDiesel()">＋ Add Diesel Entry</button>
+        <button class="btn bgr" onclick="clrDiesel()">Clear</button>
+      </div>
+    </div>
+
+    <div class="filbox">
+      <h3>🔍 Filter</h3>
+      <div class="filrow">
+        <select id="dsfv" onchange="renderDiesel()"><option value="all">All Vehicles</option></select>
+        <input type="month" id="dsfm" onchange="renderDiesel()"/>
+        <button class="filclear" onclick="clrDFil()">✕</button>
+      </div>
+    </div>
+    <div class="recsec">
+      <div class="rechdr"><h2>⛽ Diesel Records</h2><button class="expbtn" onclick="exportCSV('diesel')">⬇ CSV</button></div>
+      <div id="dsl-list"></div>
+      <div id="dsl-empty" class="empty"><div class="ei">⛽</div><p>No diesel entries yet.<br>Add your first one above!</p></div>
+    </div>
+  </div>
+
+  <!-- HOME -->
+  <div class="page" id="pg-home">
+    <div class="sscroll"><div class="scards">
+      <div class="scard"><label>Entries</label><div class="sv" id="h-en">0</div></div>
+      <div class="scard r"><label>Total Spent</label><div class="sv" id="h-sp">₹0</div></div>
+      <div class="scard b"><label>This Month</label><div class="sv" id="h-tm">₹0</div></div>
+      <div class="scard"><label>Top Category</label><div class="sv" id="h-tc" style="font-size:0.75rem;margin-top:5px;">—</div></div>
+    </div></div>
+
+    <div class="box">
+      <div class="boxhdr" onclick="tog('home-body',this)"><span>🏠</span> Add Home Expense <span class="arr">▼</span></div>
+      <div class="boxbody" id="home-body">
+        <div class="gr2">
+          <div class="field"><label>Date</label><input type="date" id="hd"/></div>
+          <div class="field"><label>Category</label><select id="hc">
+            <option value="Food & Groceries">🛒 Food</option>
+            <option value="Education">📚 Education</option>
+            <option value="Medical">💊 Medical</option>
+            <option value="Electricity & Bills">💡 Bills</option>
+            <option value="Clothing">👕 Clothing</option>
+            <option value="Transport">🚗 Transport</option>
+            <option value="Repair & Maintenance">🔧 Repair</option>
+            <option value="Festival & Celebration">🎉 Festival</option>
+            <option value="Other">📦 Other</option>
+          </select></div>
+        </div>
+        <div class="field"><label>Item / Description</label><input type="text" id="hi" placeholder="e.g. Rice, School fees…"/></div>
+        <div class="gr2">
+          <div class="field"><label>Amount ₹</label><input type="number" id="ha" placeholder="0" min="0" inputmode="numeric"/></div>
+          <div class="field"><label>Paid By</label><input type="text" id="hp" placeholder="Cash / UPI…"/></div>
+        </div>
+        <div class="field"><label>Notes</label><textarea id="hn" placeholder="Optional details…"></textarea></div>
+        <button class="btn bb" onclick="addHome()">＋ Add Expense</button>
+        <button class="btn bgr" onclick="clrHome()">Clear</button>
+      </div>
+    </div>
+
+    <div class="filbox">
+      <h3>🔍 Filter</h3>
+      <div class="filrow">
+        <input type="text" id="hfs" placeholder="Search…" oninput="renderHome()"/>
+        <select id="hfc" onchange="renderHome()">
+          <option value="all">All Categories</option>
+          <option value="Food & Groceries">Food</option>
+          <option value="Education">Education</option>
+          <option value="Medical">Medical</option>
+          <option value="Electricity & Bills">Bills</option>
+          <option value="Clothing">Clothing</option>
+          <option value="Transport">Transport</option>
+          <option value="Repair & Maintenance">Repair</option>
+          <option value="Festival & Celebration">Festival</option>
+          <option value="Other">Other</option>
+        </select>
+        <input type="month" id="hfm" onchange="renderHome()"/>
+        <button class="filclear" onclick="clrHFil()">✕</button>
+      </div>
+    </div>
+    <div class="recsec">
+      <div class="rechdr"><h2>🏠 Expense Records</h2><button class="expbtn" onclick="exportCSV('home')">⬇ CSV</button></div>
+      <div id="hl"></div>
+      <div id="he2" class="empty"><div class="ei">🏡</div><p>No expenses yet.<br>Add your first one above!</p></div>
+    </div>
+  </div>
+
+</div><!-- app-body -->
+
+<div class="tabs">
+  <div class="tab active" id="tab-dash"     onclick="switchTab('dash')"><span class="ti">📊</span>Dashboard</div>
+  <div class="tab"        id="tab-vehicles" onclick="switchTab('vehicles')"><span class="ti">🚛</span>Vehicles</div>
+  <div class="tab"        id="tab-farm"     onclick="switchTab('farm')"><span class="ti">🚜</span>Farm Work</div>
+  <div class="tab"        id="tab-diesel"   onclick="switchTab('diesel')"><span class="ti">⛽</span>Diesel</div>
+  <div class="tab"        id="tab-home"     onclick="switchTab('home')"><span class="ti">🏠</span>Home</div>
+</div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ── SCREENS ──────────────────────────────────────────
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('show'));document.getElementById(id).classList.add('show');}
+function showAuthTab(t){
+  document.getElementById('login-panel').style.display=t==='login'?'block':'none';
+  document.getElementById('reg-panel').style.display=t==='register'?'block':'none';
+  document.querySelectorAll('.auth-tab').forEach((el,i)=>el.classList.toggle('active',(i===0&&t==='login')||(i===1&&t==='register')));
+}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+function tog(id,hdr){const b=document.getElementById(id);const open=b.classList.toggle('open');hdr.classList.toggle('open',open);}
+const TABS=['dash','vehicles','farm','diesel','home'];
+function switchTab(t){TABS.forEach(x=>{document.getElementById('pg-'+x).classList.toggle('active',x===t);document.getElementById('tab-'+x).classList.toggle('active',x===t);});if(t==='diesel')renderDieselPage();}
+
+// ── STORAGE ───────────────────────────────────────────
+function getUsers(){return JSON.parse(localStorage.getItem('KD_users')||'{}');}
+function saveUsers(u){localStorage.setItem('KD_users',JSON.stringify(u));}
+function getSession(){return localStorage.getItem('KD_session')||sessionStorage.getItem('KD_session')||null;}
+function setSession(u){localStorage.setItem('KD_session',u);sessionStorage.setItem('KD_session',u);}
+function clearSession(){localStorage.removeItem('KD_session');sessionStorage.removeItem('KD_session');localStorage.removeItem('KD_name');sessionStorage.removeItem('KD_name');}
+function ku(k){return k+'_'+getSession();}
+function getVehicles(){return JSON.parse(localStorage.getItem(ku('KD_veh'))||'[]');}
+function getFarm(){return JSON.parse(localStorage.getItem(ku('KD_farm'))||'[]');}
+function getDiesel(){return JSON.parse(localStorage.getItem(ku('KD_diesel'))||'[]');}
+function getHome(){return JSON.parse(localStorage.getItem(ku('KD_home'))||'[]');}
+function saveVehicles(d){localStorage.setItem(ku('KD_veh'),JSON.stringify(d));}
+function saveFarm(d){localStorage.setItem(ku('KD_farm'),JSON.stringify(d));}
+function saveDiesel(d){localStorage.setItem(ku('KD_diesel'),JSON.stringify(d));}
+function saveHome(d){localStorage.setItem(ku('KD_home'),JSON.stringify(d));}
+
+// ── AUTH ──────────────────────────────────────────────
+function doLogin(){
+  const u=document.getElementById('lu').value.trim().toLowerCase();
+  const p=document.getElementById('lp').value;
+  const err=document.getElementById('lerr');err.textContent='';
+  if(!u||!p){err.textContent='⚠️ Fill in all fields.';return;}
+  const users=getUsers();
+  if(!users[u]){err.textContent='❌ Username not found.';return;}
+  if(users[u].pw!==btoa(p)){err.textContent='❌ Wrong password.';return;}
+  setSession(u);localStorage.setItem('KD_name',users[u].name);sessionStorage.setItem('KD_name',users[u].name);
+  openApp(users[u].name);
+}
+function doRegister(){
+  const n=document.getElementById('rn').value.trim();
+  const u=document.getElementById('ru').value.trim().toLowerCase();
+  const p=document.getElementById('rp').value;
+  const p2=document.getElementById('rp2').value;
+  const err=document.getElementById('rerr');err.textContent='';
+  if(!n||!u||!p||!p2){err.textContent='⚠️ Fill in all fields.';return;}
+  if(p.length<4){err.textContent='⚠️ Password min 4 chars.';return;}
+  if(p!==p2){err.textContent='❌ Passwords do not match.';return;}
+  if(!/^[a-z0-9_]+$/.test(u)){err.textContent='⚠️ Username: letters/numbers/_ only.';return;}
+  const users=getUsers();
+  if(users[u]){err.textContent='❌ Username taken.';return;}
+  users[u]={name:n,pw:btoa(p)};saveUsers(users);
+  setSession(u);localStorage.setItem('KD_name',n);sessionStorage.setItem('KD_name',n);
+  toast('✅ Welcome '+n+'!');openApp(n);
+}
+function doLogout(){
+  if(!confirm('Logout from Khet Diary?'))return;
+  clearSession();
+  ['lu','lp','rn','ru','rp','rp2'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('lerr').textContent='';document.getElementById('rerr').textContent='';
+  showAuthTab('login');show('auth-screen');
+}
+function openApp(name){
+  document.getElementById('uname').textContent=name;
+  document.getElementById('fd').valueAsDate=new Date();
+  document.getElementById('hd').valueAsDate=new Date();
+  document.getElementById('dsd').valueAsDate=new Date();
+  updateVehicleSelects();renderVehicles();renderDash();renderFarmAll();renderHomeAll();
+  show('app-screen');switchTab('dash');
+}
+
+// ── HELPERS ───────────────────────────────────────────
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function fmtD(d){if(!d)return'';const[y,m,dy]=d.split('-');return`${dy}/${m}/${y}`;}
+function fmtT(t){if(!t)return null;const[h,m]=t.split(':');return`${+h%12||12}:${m} ${+h>=12?'PM':'AM'}`;}
+function calcHN(s,e){if(!s||!e)return 0;const[sh,sm]=s.split(':').map(Number),[eh,em]=e.split(':').map(Number);const d=(eh*60+em)-(sh*60+sm);return d>0?d/60:0;}
+function fmtH(hrs){if(!hrs)return'—';const h=Math.floor(hrs),m=Math.round((hrs-h)*60);return h>0?(m>0?h+'h '+m+'m':h+'h'):m+'m';}
+function inr(n){return'₹'+(n||0).toLocaleString('en-IN');}
+function vIcon(type){return type==='Tractor'?'🚜':type==='Harvester'?'🌾':type==='Truck'?'🚛':type==='Rotavator'?'⚙️':'🔧';}
+
+// ── VEHICLES ──────────────────────────────────────────
+function addVehicle(){
+  const type=document.getElementById('vt').value;
+  const name=document.getElementById('vn').value.trim();
+  if(!name){toast('⚠️ Enter vehicle name/number.');return;}
+  const arr=getVehicles();
+  if(arr.find(v=>v.name.toLowerCase()===name.toLowerCase())){toast('⚠️ Vehicle already exists.');return;}
+  arr.push({id:Date.now(),type,name});saveVehicles(arr);
+  document.getElementById('vn').value='';
+  renderVehicles();updateVehicleSelects();toast('✅ Vehicle added!');
+}
+function delVehicle(id){
+  if(!confirm('Delete this vehicle?'))return;
+  saveVehicles(getVehicles().filter(v=>v.id!==id));
+  renderVehicles();updateVehicleSelects();toast('🗑 Vehicle deleted.');
+}
+function renderVehicles(){
+  const arr=getVehicles();
+  const el=document.getElementById('veh-list');
+  if(!arr.length){el.innerHTML='<p style="color:var(--muted);font-size:0.85rem;text-align:center;padding:16px 0;">No vehicles yet.</p>';return;}
+  el.innerHTML='<div class="v-list">'+arr.map(v=>`
+    <div class="v-item">
+      <div class="v-info"><div class="v-icon">${vIcon(v.type)}</div>
+        <div><div class="v-name">${esc(v.name)}</div><div class="v-type">${esc(v.type)}</div></div>
+      </div>
+      <button class="v-del" onclick="delVehicle(${v.id})">🗑</button>
+    </div>`).join('')+'</div>';
+}
+function updateVehicleSelects(){
+  const arr=getVehicles();
+  const opts='<option value="">-- Select Vehicle --</option>'+arr.map(v=>`<option value="${v.id}">${vIcon(v.type)} ${esc(v.name)}</option>`).join('');
+  const allOpts='<option value="all">All Vehicles</option>'+arr.map(v=>`<option value="${v.id}">${vIcon(v.type)} ${esc(v.name)}</option>`).join('');
+  document.getElementById('fv').innerHTML=opts;
+  document.getElementById('ffv').innerHTML=allOpts;
+  document.getElementById('dsv').innerHTML=opts;
+  document.getElementById('dsfv').innerHTML=allOpts;
+}
+
+// ── LIVE CALC (Farm) ──────────────────────────────────
+function liveCalc(){
+  const st=document.getElementById('fst').value,et=document.getElementById('fet').value;
+  const acres=parseFloat(document.getElementById('fac').value)||0;
+  const rph=parseFloat(document.getElementById('frh').value)||0;
+  const rpa=parseFloat(document.getElementById('fra').value)||0;
+  const otherExp=parseFloat(document.getElementById('fex').value)||0;
+  const manualEarned=parseFloat(document.getElementById('fea').value)||0;
+  const hrs=calcHN(st,et);
+  let earned=manualEarned;
+  if(!earned&&rph&&hrs) earned=Math.round(rph*hrs);
+  if(!earned&&rpa&&acres) earned=Math.round(rpa*acres);
+  if(!manualEarned&&earned) document.getElementById('fea').value=earned;
+  const totalCost=otherExp;
+  const profit=earned-totalCost;
+  const preview=document.getElementById('live-preview');
+  const hasData=hrs||acres||rph||rpa||earned||otherExp;
+  preview.style.display=hasData?'block':'none';
+  document.getElementById('pv-hrs').textContent=fmtH(hrs);
+  document.getElementById('pv-acres').textContent=acres>0?acres+' acres':'—';
+  document.getElementById('pv-earned').textContent=inr(earned);
+  document.getElementById('pv-cost').textContent=inr(totalCost);
+  const pp=document.getElementById('pv-profit');
+  pp.textContent=(profit>=0?'':'-')+inr(Math.abs(profit));
+  pp.style.color=profit>=0?'var(--leaf)':'var(--red)';
+}
+
+// ── DIESEL COST AUTO CALC ─────────────────────────────
+function calcDieselCost(){
+  const l=parseFloat(document.getElementById('dsl').value)||0;
+  const pl=parseFloat(document.getElementById('dspl').value)||0;
+  if(l&&pl) document.getElementById('dsc').value=Math.round(l*pl);
+}
+
+// ── FARM ──────────────────────────────────────────────
+function addFarm(){
+  const date=document.getElementById('fd').value;
+  const work=document.getElementById('fw').value.trim();
+  if(!date||!work){toast('⚠️ Fill in date and work done.');return;}
+  const vid=document.getElementById('fv').value;
+  const vehicles=getVehicles();
+  const veh=vehicles.find(v=>String(v.id)===String(vid));
+  const hrs=calcHN(document.getElementById('fst').value,document.getElementById('fet').value);
+  const acres=parseFloat(document.getElementById('fac').value)||0;
+  const rph=parseFloat(document.getElementById('frh').value)||0;
+  const rpa=parseFloat(document.getElementById('fra').value)||0;
+  const otherExp=parseFloat(document.getElementById('fex').value)||0;
+  let earned=parseFloat(document.getElementById('fea').value)||0;
+  if(!earned&&rph&&hrs) earned=Math.round(rph*hrs);
+  if(!earned&&rpa&&acres) earned=Math.round(rpa*acres);
+  const profit=earned-otherExp;
+  const arr=getFarm();
+  arr.unshift({id:Date.now(),date,work,
+    vid:vid||'',vname:veh?veh.name:'',vtype:veh?veh.type:'',
+    st:document.getElementById('fst').value,
+    et:document.getElementById('fet').value,
+    hrs,acres,otherExp,earned,rph,rpa,profit,
+    notes:document.getElementById('fn').value.trim()
+  });
+  saveFarm(arr);clrFarm();renderFarmAll();renderDash();
+  toast('✅ Entry added! Profit: '+inr(profit));
+}
+function clrFarm(){
+  ['fw','fst','fet','fac','fex','frh','fra','fea','fn'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('fv').value='';document.getElementById('fd').valueAsDate=new Date();
+  document.getElementById('live-preview').style.display='none';
+}
+function delFarm(id){if(!confirm('Delete?'))return;saveFarm(getFarm().filter(e=>e.id!==id));renderFarmAll();renderDash();toast('🗑 Deleted.');}
+function clrFFil(){document.getElementById('ffs').value='';document.getElementById('ffv').value='all';document.getElementById('ffm').value='';renderFarm();}
+function renderFarm(){
+  const s=document.getElementById('ffs').value.toLowerCase();
+  const fv=document.getElementById('ffv').value;
+  const fm=document.getElementById('ffm').value;
+  const data=getFarm().filter(e=>(!s||e.work.toLowerCase().includes(s)||(e.vname||'').toLowerCase().includes(s))&&(fv==='all'||String(e.vid)===fv)&&(!fm||e.date.startsWith(fm)));
+  const list=document.getElementById('fl'),empty=document.getElementById('fe2');
+  if(!data.length){list.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  list.innerHTML=data.map(e=>{
+    const st=fmtT(e.st),et=fmtT(e.et),profit=e.profit||0;
+    return`<div class="rc">
+      <button class="delbtn" onclick="delFarm(${e.id})">🗑</button>
+      <div class="rtop"><div class="rwrk">${e.vtype?vIcon(e.vtype)+' ':''}${esc(e.work)}</div><div class="ramt ag">${e.earned>0?inr(e.earned):''}</div></div>
+      <div class="rmeta">
+        <span class="chip cd">📅 ${fmtD(e.date)}</span>
+        ${e.vname?`<span class="chip cv">${vIcon(e.vtype)} ${esc(e.vname)}</span>`:''}
+        ${st?`<span class="chip cd">▶ ${st}</span>`:''}
+        ${et?`<span class="chip cd">⏹ ${et}</span>`:''}
+        ${e.hrs>0?`<span class="chip cd">⏱ ${fmtH(e.hrs)}</span>`:''}
+        ${e.acres>0?`<span class="chip ca">📏 ${e.acres} ac</span>`:''}
+        ${e.otherExp>0?`<span class="chip cs">Exp: ${inr(e.otherExp)}</span>`:''}
+      </div>
+      ${e.earned>0?`<div class="rprofit ${profit>=0?'pos':'neg'}">Profit: ${profit>=0?'':'-'}${inr(Math.abs(profit))}</div>`:''}
+      ${e.notes?`<div class="rnotes">📝 ${esc(e.notes)}</div>`:''}
+    </div>`;
+  }).join('');
+}
+function renderFarmAll(){
+  const arr=getFarm();
+  const earned=arr.reduce((s,e)=>s+(e.earned||0),0);
+  const costs=arr.reduce((s,e)=>s+(e.otherExp||0),0);
+  const profit=earned-costs;
+  const acres=arr.reduce((s,e)=>s+(e.acres||0),0);
+  document.getElementById('f-en').textContent=arr.length;
+  document.getElementById('f-ea').textContent=inr(earned);
+  document.getElementById('f-sp').textContent=inr(costs);
+  const fp=document.getElementById('f-pr');fp.textContent=inr(profit);fp.style.color=profit>=0?'var(--leaf)':'var(--red)';
+  document.getElementById('f-ac').textContent=acres.toFixed(1);
+  renderFarm();
+}
+
+// ── DIESEL ────────────────────────────────────────────
+let dieselVFilter='all';
+function addDiesel(){
+  const date=document.getElementById('dsd').value;
+  const vid=document.getElementById('dsv').value;
+  const litres=parseFloat(document.getElementById('dsl').value)||0;
+  if(!date||!vid){toast('⚠️ Fill in date and select vehicle.');return;}
+  if(!litres){toast('⚠️ Enter diesel litres.');return;}
+  const vehicles=getVehicles();
+  const veh=vehicles.find(v=>String(v.id)===String(vid));
+  const pricePerL=parseFloat(document.getElementById('dspl').value)||0;
+  const cost=parseFloat(document.getElementById('dsc').value)||Math.round(litres*pricePerL)||0;
+  const arr=getDiesel();
+  arr.unshift({id:Date.now(),date,
+    vid,vname:veh?veh.name:'',vtype:veh?veh.type:'',
+    litres,pricePerL,cost,
+    pump:document.getElementById('dsp').value.trim(),
+    notes:document.getElementById('dsn').value.trim()
+  });
+  saveDiesel(arr);clrDiesel();renderDieselPage();renderDash();
+  toast('✅ Diesel entry added!');
+}
+function clrDiesel(){
+  ['dsl','dspl','dsc','dsp','dsn'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('dsv').value='';document.getElementById('dsd').valueAsDate=new Date();
+}
+function delDiesel(id){if(!confirm('Delete?'))return;saveDiesel(getDiesel().filter(e=>e.id!==id));renderDieselPage();renderDash();toast('🗑 Deleted.');}
+function clrDFil(){document.getElementById('dsfv').value='all';document.getElementById('dsfm').value='';dieselVFilter='all';renderDieselPage();}
+
+function renderDieselPage(){
+  const arr=getDiesel();
+  const vehicles=getVehicles();
+
+  // Summary cards
+  const totalL=arr.reduce((s,e)=>s+(e.litres||0),0);
+  const totalC=arr.reduce((s,e)=>s+(e.cost||0),0);
+  const avgPrice=totalL>0?totalC/totalL:0;
+  document.getElementById('ds-total').textContent=totalL.toFixed(1)+' L';
+  document.getElementById('ds-cost').textContent=inr(totalC);
+  document.getElementById('ds-en').textContent=arr.length;
+  document.getElementById('ds-avg').textContent='₹'+avgPrice.toFixed(1);
+
+  // Per-vehicle summary cards
+  const dvc=document.getElementById('dv-cards-section');
+  if(!vehicles.length){dvc.innerHTML='';} else {
+    dvc.innerHTML=vehicles.map(v=>{
+      const ve=arr.filter(e=>String(e.vid)===String(v.id));
+      const vL=ve.reduce((s,e)=>s+(e.litres||0),0);
+      const vC=ve.reduce((s,e)=>s+(e.cost||0),0);
+      const vAvg=vL>0?vC/vL:0;
+      return`<div class="dv-card">
+        <div class="dv-card-header">
+          <div class="dv-card-name">${vIcon(v.type)} ${esc(v.name)}</div>
+          <span class="chip cd">${ve.length} entries</span>
+        </div>
+        <div class="dv-card-stats">
+          <div class="dv-stat"><div class="dv-stat-val">${vL.toFixed(1)}</div><div class="dv-stat-label">Litres</div></div>
+          <div class="dv-stat"><div class="dv-stat-val">₹${Math.round(vC).toLocaleString('en-IN')}</div><div class="dv-stat-label">Total Cost</div></div>
+          <div class="dv-stat"><div class="dv-stat-val">₹${vAvg.toFixed(1)}</div><div class="dv-stat-label">₹ / Litre</div></div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // Vehicle filter tabs
+  const dvt=document.getElementById('diesel-vtabs');
+  if(!vehicles.length){dvt.innerHTML='';}else{
+    dvt.innerHTML=`<div class="vtab vtab-all ${dieselVFilter==='all'?'active':''}" onclick="setDVFilter('all')">All</div>`+
+    vehicles.map(v=>`<div class="vtab ${dieselVFilter===String(v.id)?'active':''}" onclick="setDVFilter('${v.id}')">${vIcon(v.type)} ${esc(v.name)}</div>`).join('');
+  }
+
+  renderDiesel();
+}
+
+function setDVFilter(vid){
+  dieselVFilter=vid;
+  document.getElementById('dsfv').value=vid;
+  renderDieselPage();
+}
+
+function renderDiesel(){
+  const fv=document.getElementById('dsfv').value;
+  const fm=document.getElementById('dsfm').value;
+  const data=getDiesel().filter(e=>
+    (fv==='all'||String(e.vid)===fv)&&(!fm||e.date.startsWith(fm))
+  );
+  const list=document.getElementById('dsl-list'),empty=document.getElementById('dsl-empty');
+  if(!data.length){list.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  list.innerHTML=data.map(e=>`<div class="rc">
+    <button class="delbtn" onclick="delDiesel(${e.id})">🗑</button>
+    <div class="rtop">
+      <div class="rwrk">${e.vname?vIcon(e.vtype)+' '+esc(e.vname):'⛽ Diesel'}</div>
+      <div class="ramt ao">${e.litres}L</div>
+    </div>
+    <div class="rmeta">
+      <span class="chip cd">📅 ${fmtD(e.date)}</span>
+      ${e.vname?`<span class="chip cv">${vIcon(e.vtype)} ${esc(e.vname)}</span>`:''}
+      ${e.cost>0?`<span class="chip cf">💰 ${inr(e.cost)}</span>`:''}
+      ${e.pricePerL>0?`<span class="chip cf">₹${e.pricePerL}/L</span>`:''}
+      ${e.pump?`<span class="chip cd">⛽ ${esc(e.pump)}</span>`:''}
+    </div>
+    ${e.notes?`<div class="rnotes">📝 ${esc(e.notes)}</div>`:''}
+  </div>`).join('');
+}
+
+// ── HOME ──────────────────────────────────────────────
+function addHome(){
+  const date=document.getElementById('hd').value;
+  const item=document.getElementById('hi').value.trim();
+  if(!date||!item){toast('⚠️ Fill in date and item.');return;}
+  const arr=getHome();
+  arr.unshift({id:Date.now(),date,item,cat:document.getElementById('hc').value,
+    amt:parseFloat(document.getElementById('ha').value)||0,
+    paid:document.getElementById('hp').value.trim(),
+    notes:document.getElementById('hn').value.trim()
+  });
+  saveHome(arr);clrHome();renderHomeAll();renderDash();toast('✅ Expense added!');
+}
+function clrHome(){
+  ['hi','hp','hn'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('ha').value='';document.getElementById('hc').value='Food & Groceries';
+  document.getElementById('hd').valueAsDate=new Date();
+}
+function delHome(id){if(!confirm('Delete?'))return;saveHome(getHome().filter(e=>e.id!==id));renderHomeAll();renderDash();toast('🗑 Deleted.');}
+function clrHFil(){document.getElementById('hfs').value='';document.getElementById('hfc').value='all';document.getElementById('hfm').value='';renderHome();}
+function renderHome(){
+  const s=document.getElementById('hfs').value.toLowerCase();
+  const fc=document.getElementById('hfc').value;
+  const fm=document.getElementById('hfm').value;
+  const data=getHome().filter(e=>(!s||e.item.toLowerCase().includes(s))&&(fc==='all'||e.cat===fc)&&(!fm||e.date.startsWith(fm)));
+  const list=document.getElementById('hl'),empty=document.getElementById('he2');
+  if(!data.length){list.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  list.innerHTML=data.map(e=>`<div class="rc">
+    <button class="delbtn" onclick="delHome(${e.id})">🗑</button>
+    <div class="rtop"><div class="rwrk">${esc(e.item)}</div><div class="ramt ar">${e.amt>0?inr(e.amt):''}</div></div>
+    <div class="rmeta">
+      <span class="chip cd">📅 ${fmtD(e.date)}</span>
+      <span class="chip cv">📦 ${esc(e.cat)}</span>
+      ${e.paid?`<span class="chip ca">💳 ${esc(e.paid)}</span>`:''}
+    </div>
+    ${e.notes?`<div class="rnotes">📝 ${esc(e.notes)}</div>`:''}
+  </div>`).join('');
+}
+function renderHomeAll(){
+  const arr=getHome();
+  const total=arr.reduce((s,e)=>s+(e.amt||0),0);
+  const now=new Date();
+  const ym=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  const thisM=arr.filter(e=>e.date.startsWith(ym)).reduce((s,e)=>s+(e.amt||0),0);
+  const cm={};arr.forEach(e=>{cm[e.cat]=(cm[e.cat]||0)+(e.amt||0);});
+  const top=Object.entries(cm).sort((a,b)=>b[1]-a[1])[0];
+  document.getElementById('h-en').textContent=arr.length;
+  document.getElementById('h-sp').textContent=inr(total);
+  document.getElementById('h-tm').textContent=inr(thisM);
+  document.getElementById('h-tc').textContent=top?top[0]:'—';
+  renderHome();
+}
+
+// ── DASHBOARD ─────────────────────────────────────────
+function renderDash(){
+  const farm=getFarm(),diesel=getDiesel(),home=getHome(),vehicles=getVehicles();
+  const farmEarned=farm.reduce((s,e)=>s+(e.earned||0),0);
+  const farmCost=farm.reduce((s,e)=>s+(e.otherExp||0),0);
+  const dieselCost=diesel.reduce((s,e)=>s+(e.cost||0),0);
+  const homeCost=home.reduce((s,e)=>s+(e.amt||0),0);
+  const netProfit=farmEarned-farmCost-dieselCost;
+  const totalAcres=farm.reduce((s,e)=>s+(e.acres||0),0);
+  const totalDiesel=diesel.reduce((s,e)=>s+(e.litres||0),0);
+  document.getElementById('d-earned').textContent=inr(farmEarned);
+  document.getElementById('d-spent').textContent=inr(farmCost+dieselCost);
+  const dp=document.getElementById('d-profit');dp.textContent=inr(netProfit);dp.style.color=netProfit>=0?'var(--leaf)':'var(--red)';
+  document.getElementById('d-acres').textContent=totalAcres.toFixed(1);
+  document.getElementById('d-diesel').textContent=totalDiesel.toFixed(1)+' L';
+  document.getElementById('d-home').textContent=inr(homeCost);
+  const dvl=document.getElementById('d-veh-list');
+  if(!vehicles.length){dvl.innerHTML='<p style="color:var(--muted);font-size:0.82rem;">No vehicles added yet.</p>';return;}
+  dvl.innerHTML=vehicles.map(v=>{
+    const vf=farm.filter(e=>String(e.vid)===String(v.id));
+    const vd=diesel.filter(e=>String(e.vid)===String(v.id));
+    const ve=vf.reduce((s,e)=>s+(e.earned||0),0);
+    const vc=vf.reduce((s,e)=>s+(e.otherExp||0),0)+vd.reduce((s,e)=>s+(e.cost||0),0);
+    const vp=ve-vc;
+    const vacres=vf.reduce((s,e)=>s+(e.acres||0),0);
+    const vdiesel=vd.reduce((s,e)=>s+(e.litres||0),0);
+    return`<div class="veh-row">
+      <div class="veh-row-name">${vIcon(v.type)} ${esc(v.name)}</div>
+      <div style="text-align:right">
+        <div style="font-size:0.85rem;font-weight:700;color:${vp>=0?'var(--leaf)':'var(--red)'};">${inr(vp)} profit</div>
+        <div style="font-size:0.7rem;color:var(--muted)">${vacres.toFixed(1)} ac · ⛽${vdiesel.toFixed(1)}L</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── EXPORT ────────────────────────────────────────────
+function exportCSV(type){
+  let rows,fn;
+  if(type==='farm'){
+    rows=[['Date','Vehicle','Work','Start','End','Hours','Acres','Other Exp','Earned','Profit','Notes']];
+    getFarm().forEach(e=>rows.push([e.date,e.vname||'',e.work,e.st||'',e.et||'',e.hrs?.toFixed(2)||'',e.acres||0,e.otherExp||0,e.earned||0,e.profit||0,e.notes||'']));
+    fn='khet-farm.csv';
+  }else if(type==='diesel'){
+    rows=[['Date','Vehicle','Litres','Price/L','Total Cost','Pump','Notes']];
+    getDiesel().forEach(e=>rows.push([e.date,e.vname||'',e.litres||0,e.pricePerL||0,e.cost||0,e.pump||'',e.notes||'']));
+    fn='khet-diesel.csv';
+  }else{
+    rows=[['Date','Item','Category','Amount','Paid By','Notes']];
+    getHome().forEach(e=>rows.push([e.date,e.item,e.cat,e.amt,e.paid||'',e.notes||'']));
+    fn='khet-home.csv';
+  }
+  const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download=fn;a.click();
+}
+
+// ── INIT ──────────────────────────────────────────────
+(function(){
+  const u=getSession();
+  if(u){
+    const users=getUsers();
+    const name=users[u]?users[u].name:(localStorage.getItem('KD_name')||sessionStorage.getItem('KD_name')||u);
+    if(users[u]||name){openApp(name);return;}else clearSession();
+  }
+  show('auth-screen');
+})();
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Enter')return;
+  if(document.getElementById('login-panel').style.display!=='none')doLogin();
+  else doRegister();
+});
+</script>
+</body>
+</html>

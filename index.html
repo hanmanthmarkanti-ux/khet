@@ -50,9 +50,10 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
 .lbtn{background:rgba(220,80,60,0.18);border:1px solid rgba(220,80,60,0.35);border-radius:16px;padding:5px 11px;font-size:0.72rem;font-weight:700;color:#ffb0a0;cursor:pointer;}
 .lbtn:active{background:rgba(220,80,60,0.35);}
 
-/* BOTTOM TABS */
-.tabs{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--soil);z-index:200;box-shadow:0 -2px 14px rgba(0,0,0,0.25);}
-.tab{flex:1;padding:9px 2px 12px;text-align:center;cursor:pointer;color:#9A8A77;font-size:0.58rem;font-weight:600;letter-spacing:0.01em;border-top:3px solid transparent;display:flex;flex-direction:column;align-items:center;gap:2px;transition:all 0.2s;}
+/* BOTTOM TABS - scrollable now with more tabs */
+.tabs{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--soil);z-index:200;box-shadow:0 -2px 14px rgba(0,0,0,0.25);overflow-x:auto;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{flex:1 0 auto;min-width:64px;padding:9px 6px 12px;text-align:center;cursor:pointer;color:#9A8A77;font-size:0.58rem;font-weight:600;letter-spacing:0.01em;border-top:3px solid transparent;display:flex;flex-direction:column;align-items:center;gap:2px;transition:all 0.2s;}
 .tab .ti{font-size:1.1rem;line-height:1;}
 .tab.active{color:var(--wheat);border-top-color:var(--wheat);}
 
@@ -102,7 +103,7 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
 .live-profit-label{font-size:0.82rem;font-weight:700;border-top:1px solid var(--border);padding-top:6px;margin-top:2px;}
 .live-profit-val{font-size:1rem;font-weight:800;border-top:1px solid var(--border);padding-top:6px;margin-top:2px;}
 
-/* VEHICLE TABS inside diesel */
+/* VEHICLE TABS */
 .vtabs{display:flex;gap:6px;flex-wrap:wrap;padding:14px 14px 0;}
 .vtab{padding:8px 14px;border-radius:20px;font-size:0.78rem;font-weight:700;cursor:pointer;background:var(--border);color:var(--muted);border:2px solid transparent;transition:all 0.2s;white-space:nowrap;}
 .vtab.active{background:var(--orange);color:#fff;border-color:var(--orange);}
@@ -135,9 +136,11 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
 .cs{background:#FDECEA;color:var(--red);}
 .cf{background:#FEF3E2;color:var(--orange);}
 .ca{background:#EDF5ED;color:var(--leaf2);}
+.cp{background:#F3EAFA;color:var(--purple);}
 .rprofit{margin-top:6px;font-size:0.78rem;font-weight:700;padding:5px 10px;border-radius:8px;display:inline-block;}
 .rprofit.pos{background:#E5F2E5;color:var(--leaf);}
 .rprofit.neg{background:#FDECEA;color:var(--red);}
+.rpending{margin-top:6px;font-size:0.78rem;font-weight:700;padding:5px 10px;border-radius:8px;display:inline-block;background:#FEF3E2;color:var(--orange);}
 .rnotes{margin-top:5px;font-size:0.75rem;color:var(--muted);}
 .delbtn{position:absolute;top:12px;right:12px;background:none;border:none;cursor:pointer;color:#ccc;font-size:0.95rem;padding:4px;border-radius:6px;}
 .delbtn:active{color:var(--red);background:#FDECEA;}
@@ -162,7 +165,7 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
 .veh-row:last-child{border-bottom:none;}
 .veh-row-name{font-size:0.82rem;font-weight:700;display:flex;align-items:center;gap:5px;}
 
-/* DIESEL VEHICLE SUMMARY CARDS */
+/* DIESEL VEHICLE CARDS */
 .dv-cards{display:flex;flex-direction:column;gap:10px;padding:14px 14px 0;}
 .dv-card{background:var(--white);border-radius:12px;padding:14px;box-shadow:var(--sh);border-left:4px solid var(--orange);}
 .dv-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
@@ -171,6 +174,27 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
 .dv-stat{text-align:center;background:var(--cream);border-radius:8px;padding:8px 4px;}
 .dv-stat-val{font-size:1rem;font-weight:800;color:var(--orange);}
 .dv-stat-label{font-size:0.62rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;}
+
+/* DEBT */
+.debt-summary{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px 14px 0;}
+.debt-card{border-radius:14px;padding:16px;box-shadow:var(--sh);text-align:center;}
+.debt-card.owed-to-you{background:#E5F2E5;}
+.debt-card.you-owe{background:#FDECEA;}
+.debt-card h3{font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;}
+.debt-card.owed-to-you h3{color:var(--leaf);}
+.debt-card.you-owe h3{color:var(--red);}
+.debt-card .big{font-size:1.5rem;font-weight:800;}
+.debt-card.owed-to-you .big{color:var(--leaf);}
+.debt-card.you-owe .big{color:var(--red);}
+.debt-net{margin:10px 14px 0;background:var(--soil2);border-radius:12px;padding:14px;text-align:center;}
+.debt-net-label{color:#C8B89A;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;}
+.debt-net-val{color:#fff;font-size:1.5rem;font-weight:800;margin-top:4px;}
+.debt-tag{display:inline-flex;padding:2px 9px;border-radius:12px;font-size:0.62rem;font-weight:800;text-transform:uppercase;letter-spacing:0.04em;}
+.debt-tag.owe-you{background:#E5F2E5;color:var(--leaf);}
+.debt-tag.you-owe{background:#FDECEA;color:var(--red);}
+.settle-btn{background:var(--leaf);color:#fff;border:none;border-radius:7px;padding:6px 12px;font-size:0.72rem;font-weight:700;cursor:pointer;margin-top:8px;}
+.settle-btn:active{opacity:0.8;}
+.settled-badge{display:inline-flex;padding:3px 9px;border-radius:12px;font-size:0.65rem;font-weight:800;background:var(--border);color:var(--muted);text-transform:uppercase;letter-spacing:0.04em;}
 
 .empty{text-align:center;padding:32px 16px;color:var(--muted);}
 .empty .ei{font-size:2rem;margin-bottom:7px;}
@@ -224,12 +248,13 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
   <!-- DASHBOARD -->
   <div class="page active" id="pg-dash">
     <div class="dash-grid">
-      <div class="dash-card" style="border-top:3px solid var(--leaf)"><h3>Total Earned</h3><div class="big ag" id="d-earned">₹0</div></div>
-      <div class="dash-card" style="border-top:3px solid var(--red)"><h3>Farm Costs</h3><div class="big ar" id="d-spent">₹0</div></div>
+      <div class="dash-card" style="border-top:3px solid var(--leaf)"><h3>Total Received</h3><div class="big ag" id="d-earned">₹0</div></div>
+      <div class="dash-card" style="border-top:3px solid var(--orange)"><h3>Pending to Receive</h3><div class="big ao" id="d-pending">₹0</div></div>
+      <div class="dash-card" style="border-top:3px solid var(--red)"><h3>Farm + Diesel Costs</h3><div class="big ar" id="d-spent">₹0</div></div>
       <div class="dash-card" style="border-top:3px solid var(--wheat)"><h3>Net Profit</h3><div class="big" id="d-profit">₹0</div></div>
       <div class="dash-card" style="border-top:3px solid var(--blue)"><h3>Total Acres</h3><div class="big" id="d-acres" style="color:var(--blue)">0</div></div>
-      <div class="dash-card" style="border-top:3px solid var(--orange)"><h3>Total Diesel</h3><div class="big ao" id="d-diesel">0 L</div></div>
       <div class="dash-card" style="border-top:3px solid var(--red)"><h3>Home Expenses</h3><div class="big ar" id="d-home">₹0</div></div>
+      <div class="dash-card dash-full" style="border-top:3px solid var(--purple)"><h3>Debt Balance (Net)</h3><div class="big" id="d-debt">₹0</div></div>
       <div class="dash-card dash-full">
         <h3>Vehicle Summary</h3>
         <div id="d-veh-list"><p style="color:var(--muted);font-size:0.82rem;">No vehicles added yet.</p></div>
@@ -269,7 +294,8 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
   <div class="page" id="pg-farm">
     <div class="sscroll"><div class="scards">
       <div class="scard"><label>Entries</label><div class="sv" id="f-en">0</div></div>
-      <div class="scard g"><label>Earned</label><div class="sv" id="f-ea">₹0</div></div>
+      <div class="scard g"><label>Received</label><div class="sv" id="f-ea">₹0</div></div>
+      <div class="scard o"><label>Pending</label><div class="sv" id="f-pd">₹0</div></div>
       <div class="scard r"><label>Costs</label><div class="sv" id="f-sp">₹0</div></div>
       <div class="scard"><label>Profit</label><div class="sv" id="f-pr">₹0</div></div>
       <div class="scard b"><label>Acres</label><div class="sv" id="f-ac">0</div></div>
@@ -282,7 +308,7 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
           <div class="field"><label>Date</label><input type="date" id="fd"/></div>
           <div class="field"><label>Vehicle</label><select id="fv"><option value="">-- Select --</option></select></div>
         </div>
-        <div class="field"><label>Work Done</label><input type="text" id="fw" placeholder="e.g. Ploughing, Harvesting wheat…"/></div>
+        <div class="field"><label>Work Done / Customer Name</label><input type="text" id="fw" placeholder="e.g. Ploughing for Ramesh garu…"/></div>
         <div class="gr2">
           <div class="field"><label>Start Time</label><input type="time" id="fst" oninput="liveCalc()"/></div>
           <div class="field"><label>End Time</label><input type="time" id="fet" oninput="liveCalc()"/></div>
@@ -295,17 +321,20 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
           <div class="field"><label>₹ / Hour</label><input type="number" id="frh" placeholder="e.g. 200" min="0" inputmode="numeric" oninput="liveCalc()"/></div>
           <div class="field"><label>₹ / Acre</label><input type="number" id="fra" placeholder="e.g. 500" min="0" inputmode="numeric" oninput="liveCalc()"/></div>
         </div>
-        <div class="field"><label>Earned ₹ <span style="font-size:0.65rem;color:var(--leaf);font-weight:700;">(auto calculated)</span></label>
-          <input type="number" id="fea" placeholder="Auto fills from ₹/Hr or ₹/Acre" min="0" inputmode="numeric" oninput="liveCalc()"/>
+        <div class="field"><label>Total Amount ₹ <span style="font-size:0.65rem;color:var(--leaf);font-weight:700;">(auto calculated)</span></label>
+          <input type="number" id="ftot" placeholder="Auto fills from ₹/Hr or ₹/Acre" min="0" inputmode="numeric" oninput="liveCalc()"/>
         </div>
-        <!-- LIVE PREVIEW -->
+        <div class="gr2">
+          <div class="field"><label>💰 Amount Received ₹</label><input type="number" id="frec" placeholder="0" min="0" inputmode="numeric" oninput="liveCalc()"/></div>
+          <div class="field"><label>⏳ Amount Pending ₹ <span style="font-size:0.6rem;color:var(--orange);">(auto)</span></label><input type="number" id="fpen" placeholder="0" min="0" inputmode="numeric" readonly style="background:#FEF3E2;"/></div>
+        </div>
         <div class="live-box" id="live-preview">
           <h4>📊 Live Calculation Preview</h4>
           <div class="live-grid">
             <div class="live-label">⏱ Hours Worked</div><div class="live-val" id="pv-hrs">—</div>
             <div class="live-label">📏 Acres</div><div class="live-val" id="pv-acres">—</div>
-            <div class="live-label">💰 Earned</div><div class="live-val ag" id="pv-earned">₹0</div>
-            <div class="live-label">💸 Total Cost</div><div class="live-val ar" id="pv-cost">₹0</div>
+            <div class="live-label">💵 Total Amount</div><div class="live-val ag" id="pv-total">₹0</div>
+            <div class="live-label">⏳ Pending</div><div class="live-val ao" id="pv-pending">₹0</div>
             <div class="live-profit-label">🏆 Net Profit</div>
             <div class="live-profit-val" id="pv-profit">₹0</div>
           </div>
@@ -340,13 +369,8 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
       <div class="scard"><label>Entries</label><div class="sv" id="ds-en">0</div></div>
       <div class="scard b"><label>Avg ₹/Litre</label><div class="sv" id="ds-avg">₹0</div></div>
     </div></div>
-
-    <!-- Per-vehicle diesel summary cards -->
     <div id="dv-cards-section" class="dv-cards"></div>
-
-    <!-- Vehicle filter tabs -->
     <div id="diesel-vtabs" class="vtabs"></div>
-
     <div class="box">
       <div class="boxhdr" onclick="tog('diesel-body',this)"><span>⛽</span> Add Diesel Entry <span class="arr">▼</span></div>
       <div class="boxbody" id="diesel-body">
@@ -359,15 +383,14 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
           <div class="field"><label>Price per Litre ₹</label><input type="number" id="dspl" placeholder="e.g. 95" min="0" inputmode="decimal" oninput="calcDieselCost()"/></div>
         </div>
         <div class="field"><label>Total Cost ₹ <span style="font-size:0.65rem;color:var(--orange);font-weight:700;">(auto calculated)</span></label>
-          <input type="number" id="dsc" placeholder="Auto fills from Litres × Price" min="0" inputmode="numeric"/>
+          <input type="number" id="dsc" placeholder="Auto fills" min="0" inputmode="numeric"/>
         </div>
-        <div class="field"><label>Filled At (Pump Name)</label><input type="text" id="dsp" placeholder="e.g. HP Petrol Bunk, Village pump…"/></div>
+        <div class="field"><label>Filled At (Pump Name)</label><input type="text" id="dsp" placeholder="e.g. HP Petrol Bunk…"/></div>
         <div class="field"><label>Notes</label><textarea id="dsn" placeholder="Optional details…"></textarea></div>
         <button class="btn bo" onclick="addDiesel()">＋ Add Diesel Entry</button>
         <button class="btn bgr" onclick="clrDiesel()">Clear</button>
       </div>
     </div>
-
     <div class="filbox">
       <h3>🔍 Filter</h3>
       <div class="filrow">
@@ -388,6 +411,7 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
     <div class="sscroll"><div class="scards">
       <div class="scard"><label>Entries</label><div class="sv" id="h-en">0</div></div>
       <div class="scard r"><label>Total Spent</label><div class="sv" id="h-sp">₹0</div></div>
+      <div class="scard g"><label>Money Came In</label><div class="sv" id="h-in">₹0</div></div>
       <div class="scard b"><label>This Month</label><div class="sv" id="h-tm">₹0</div></div>
       <div class="scard"><label>Top Category</label><div class="sv" id="h-tc" style="font-size:0.75rem;margin-top:5px;">—</div></div>
     </div></div>
@@ -420,8 +444,29 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
       </div>
     </div>
 
+    <!-- MONEY CAME IN section -->
+    <div class="box">
+      <div class="boxhdr" onclick="tog('income-body',this)"><span>💰</span> Add Money Came In <span class="arr">▼</span></div>
+      <div class="boxbody" id="income-body">
+        <div class="gr2">
+          <div class="field"><label>Date</label><input type="date" id="ind"/></div>
+          <div class="field"><label>Source</label><select id="insrc">
+            <option value="Income">💵 Income / Side earning</option>
+            <option value="Borrowed">🤝 Borrowed from someone</option>
+            <option value="Gift">🎁 Gift / Relative</option>
+            <option value="Other">📦 Other</option>
+          </select></div>
+        </div>
+        <div class="field"><label>From / Description</label><input type="text" id="infrom" placeholder="e.g. Brother, Neighbor Suresh, Daily wage…"/></div>
+        <div class="field"><label>Amount ₹</label><input type="number" id="inamt" placeholder="0" min="0" inputmode="numeric"/></div>
+        <div class="field"><label>Notes</label><textarea id="inn" placeholder="Optional details…"></textarea></div>
+        <button class="btn bg" onclick="addIncome()">＋ Add Money In</button>
+        <button class="btn bgr" onclick="clrIncome()">Clear</button>
+      </div>
+    </div>
+
     <div class="filbox">
-      <h3>🔍 Filter</h3>
+      <h3>🔍 Filter Expenses</h3>
       <div class="filrow">
         <input type="text" id="hfs" placeholder="Search…" oninput="renderHome()"/>
         <select id="hfc" onchange="renderHome()">
@@ -445,6 +490,96 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
       <div id="hl"></div>
       <div id="he2" class="empty"><div class="ei">🏡</div><p>No expenses yet.<br>Add your first one above!</p></div>
     </div>
+
+    <div class="recsec">
+      <div class="rechdr"><h2>💰 Money Came In Records</h2><button class="expbtn" onclick="exportCSV('income')">⬇ CSV</button></div>
+      <div id="inl"></div>
+      <div id="ine2" class="empty"><div class="ei">💵</div><p>No income entries yet.<br>Add your first one above!</p></div>
+    </div>
+  </div>
+
+  <!-- DEBT -->
+  <div class="page" id="pg-debt">
+    <div class="debt-summary">
+      <div class="debt-card owed-to-you"><h3>People Owe You</h3><div class="big" id="dt-owedtoyou">₹0</div></div>
+      <div class="debt-card you-owe"><h3>You Owe Others</h3><div class="big" id="dt-youowe">₹0</div></div>
+    </div>
+    <div class="debt-net">
+      <div class="debt-net-label">Net Debt Balance</div>
+      <div class="debt-net-val" id="dt-net">₹0</div>
+    </div>
+
+    <!-- PTR SIMPLE INTEREST CALCULATOR -->
+    <div class="box" style="margin-top:12px;">
+      <div class="boxhdr open" onclick="tog('ptr-body',this)"><span>🧮</span> PTR Interest Calculator <span class="arr">▲</span></div>
+      <div class="boxbody open" id="ptr-body">
+        <div class="gr3">
+          <div class="field"><label>Principal ₹</label><input type="number" id="ptrP" placeholder="e.g. 10000" min="0" inputmode="numeric" oninput="calcPTR()"/></div>
+          <div class="field"><label>Rate %</label><input type="number" id="ptrR" placeholder="e.g. 2" min="0" step="0.1" inputmode="decimal" oninput="calcPTR()"/></div>
+          <div class="field"><label>Time</label><input type="number" id="ptrT" placeholder="e.g. 12" min="0" step="0.1" inputmode="decimal" oninput="calcPTR()"/></div>
+        </div>
+        <div class="field"><label>Time Unit</label>
+          <select id="ptrUnit" onchange="calcPTR()">
+            <option value="months">Months</option>
+            <option value="years">Years</option>
+          </select>
+        </div>
+        <div class="live-box" id="ptr-preview" style="display:block;background:#F3EAFA;border-color:var(--purple);">
+          <h4 style="color:var(--purple);">🧮 P × R × T / 100</h4>
+          <div class="live-grid">
+            <div class="live-label">Principal</div><div class="live-val" id="ptr-out-p">₹0</div>
+            <div class="live-label">Rate</div><div class="live-val" id="ptr-out-r">0%</div>
+            <div class="live-label">Time</div><div class="live-val" id="ptr-out-t">0</div>
+            <div class="live-profit-label">Interest Amount</div>
+            <div class="live-profit-val" id="ptr-out-interest" style="color:var(--purple);">₹0</div>
+            <div class="live-label" style="margin-top:4px;">Total (Principal + Interest)</div>
+            <div class="live-val" id="ptr-out-total" style="font-size:0.95rem;font-weight:800;color:var(--soil);">₹0</div>
+          </div>
+        </div>
+        <button class="btn bgr" onclick="clrPTR()">Clear Calculator</button>
+      </div>
+    </div>
+
+    <div class="box" style="margin-top:12px;">
+      <div class="boxhdr" onclick="tog('debt-body',this)"><span>🤝</span> Add Debt Entry <span class="arr">▼</span></div>
+      <div class="boxbody" id="debt-body">
+        <div class="gr2">
+          <div class="field"><label>Date</label><input type="date" id="dtd"/></div>
+          <div class="field"><label>Type</label><select id="dttype">
+            <option value="owed_to_you">🟢 Someone owes ME</option>
+            <option value="i_owe">🔴 I owe SOMEONE</option>
+          </select></div>
+        </div>
+        <div class="field"><label>Person Name</label><input type="text" id="dtperson" placeholder="e.g. Ramesh garu, Suresh…"/></div>
+        <div class="field"><label>Amount ₹</label><input type="number" id="dtamt" placeholder="0" min="0" inputmode="numeric"/></div>
+        <div class="field"><label>Reason</label><input type="text" id="dtreason" placeholder="e.g. Farm work payment, Loan, Diesel money…"/></div>
+        <div class="field"><label>Notes</label><textarea id="dtn" placeholder="Optional details…"></textarea></div>
+        <button class="btn bp" onclick="addDebt()">＋ Add Debt Entry</button>
+        <button class="btn bgr" onclick="clrDebtForm()">Clear</button>
+      </div>
+    </div>
+
+    <div class="filbox">
+      <h3>🔍 Filter</h3>
+      <div class="filrow">
+        <select id="dtft" onchange="renderDebt()">
+          <option value="all">All</option>
+          <option value="owed_to_you">Owed to me</option>
+          <option value="i_owe">I owe</option>
+        </select>
+        <select id="dtfs" onchange="renderDebt()">
+          <option value="all">All Status</option>
+          <option value="pending">Pending</option>
+          <option value="settled">Settled</option>
+        </select>
+        <button class="filclear" onclick="clrDtFil()">✕</button>
+      </div>
+    </div>
+    <div class="recsec">
+      <div class="rechdr"><h2>🤝 Debt Records</h2><button class="expbtn" onclick="exportCSV('debt')">⬇ CSV</button></div>
+      <div id="dtl"></div>
+      <div id="dte2" class="empty"><div class="ei">🤝</div><p>No debt entries yet.<br>Add your first one above!</p></div>
+    </div>
   </div>
 
 </div><!-- app-body -->
@@ -452,9 +587,10 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
 <div class="tabs">
   <div class="tab active" id="tab-dash"     onclick="switchTab('dash')"><span class="ti">📊</span>Dashboard</div>
   <div class="tab"        id="tab-vehicles" onclick="switchTab('vehicles')"><span class="ti">🚛</span>Vehicles</div>
-  <div class="tab"        id="tab-farm"     onclick="switchTab('farm')"><span class="ti">🚜</span>Farm Work</div>
+  <div class="tab"        id="tab-farm"     onclick="switchTab('farm')"><span class="ti">🚜</span>Farm</div>
   <div class="tab"        id="tab-diesel"   onclick="switchTab('diesel')"><span class="ti">⛽</span>Diesel</div>
   <div class="tab"        id="tab-home"     onclick="switchTab('home')"><span class="ti">🏠</span>Home</div>
+  <div class="tab"        id="tab-debt"     onclick="switchTab('debt')"><span class="ti">🤝</span>Debt</div>
 </div>
 </div>
 
@@ -470,8 +606,8 @@ function showAuthTab(t){
 }
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 function tog(id,hdr){const b=document.getElementById(id);const open=b.classList.toggle('open');hdr.classList.toggle('open',open);}
-const TABS=['dash','vehicles','farm','diesel','home'];
-function switchTab(t){TABS.forEach(x=>{document.getElementById('pg-'+x).classList.toggle('active',x===t);document.getElementById('tab-'+x).classList.toggle('active',x===t);});if(t==='diesel')renderDieselPage();}
+const TABS=['dash','vehicles','farm','diesel','home','debt'];
+function switchTab(t){TABS.forEach(x=>{document.getElementById('pg-'+x).classList.toggle('active',x===t);document.getElementById('tab-'+x).classList.toggle('active',x===t);});if(t==='diesel')renderDieselPage();if(t==='debt')renderDebt();}
 
 // ── STORAGE ───────────────────────────────────────────
 function getUsers(){return JSON.parse(localStorage.getItem('KD_users')||'{}');}
@@ -484,10 +620,14 @@ function getVehicles(){return JSON.parse(localStorage.getItem(ku('KD_veh'))||'[]
 function getFarm(){return JSON.parse(localStorage.getItem(ku('KD_farm'))||'[]');}
 function getDiesel(){return JSON.parse(localStorage.getItem(ku('KD_diesel'))||'[]');}
 function getHome(){return JSON.parse(localStorage.getItem(ku('KD_home'))||'[]');}
+function getIncome(){return JSON.parse(localStorage.getItem(ku('KD_income'))||'[]');}
+function getDebt(){return JSON.parse(localStorage.getItem(ku('KD_debt'))||'[]');}
 function saveVehicles(d){localStorage.setItem(ku('KD_veh'),JSON.stringify(d));}
 function saveFarm(d){localStorage.setItem(ku('KD_farm'),JSON.stringify(d));}
 function saveDiesel(d){localStorage.setItem(ku('KD_diesel'),JSON.stringify(d));}
 function saveHome(d){localStorage.setItem(ku('KD_home'),JSON.stringify(d));}
+function saveIncome(d){localStorage.setItem(ku('KD_income'),JSON.stringify(d));}
+function saveDebt(d){localStorage.setItem(ku('KD_debt'),JSON.stringify(d));}
 
 // ── AUTH ──────────────────────────────────────────────
 function doLogin(){
@@ -529,7 +669,9 @@ function openApp(name){
   document.getElementById('fd').valueAsDate=new Date();
   document.getElementById('hd').valueAsDate=new Date();
   document.getElementById('dsd').valueAsDate=new Date();
-  updateVehicleSelects();renderVehicles();renderDash();renderFarmAll();renderHomeAll();
+  document.getElementById('ind').valueAsDate=new Date();
+  document.getElementById('dtd').valueAsDate=new Date();
+  updateVehicleSelects();renderVehicles();renderDash();renderFarmAll();renderHomeAll();renderIncomeAll();
   show('app-screen');switchTab('dash');
 }
 
@@ -587,27 +729,31 @@ function liveCalc(){
   const rph=parseFloat(document.getElementById('frh').value)||0;
   const rpa=parseFloat(document.getElementById('fra').value)||0;
   const otherExp=parseFloat(document.getElementById('fex').value)||0;
-  const manualEarned=parseFloat(document.getElementById('fea').value)||0;
+  const manualTotal=parseFloat(document.getElementById('ftot').value)||0;
   const hrs=calcHN(st,et);
-  let earned=manualEarned;
-  if(!earned&&rph&&hrs) earned=Math.round(rph*hrs);
-  if(!earned&&rpa&&acres) earned=Math.round(rpa*acres);
-  if(!manualEarned&&earned) document.getElementById('fea').value=earned;
+  let total=manualTotal;
+  if(!total&&rph&&hrs) total=Math.round(rph*hrs);
+  if(!total&&rpa&&acres) total=Math.round(rpa*acres);
+  if(!manualTotal&&total) document.getElementById('ftot').value=total;
+
+  const received=parseFloat(document.getElementById('frec').value)||0;
+  const pending=Math.max(0,total-received);
+  document.getElementById('fpen').value=pending>0?pending:'';
+
   const totalCost=otherExp;
-  const profit=earned-totalCost;
+  const profit=received-totalCost;
   const preview=document.getElementById('live-preview');
-  const hasData=hrs||acres||rph||rpa||earned||otherExp;
+  const hasData=hrs||acres||rph||rpa||total||otherExp||received;
   preview.style.display=hasData?'block':'none';
   document.getElementById('pv-hrs').textContent=fmtH(hrs);
   document.getElementById('pv-acres').textContent=acres>0?acres+' acres':'—';
-  document.getElementById('pv-earned').textContent=inr(earned);
-  document.getElementById('pv-cost').textContent=inr(totalCost);
+  document.getElementById('pv-total').textContent=inr(total);
+  document.getElementById('pv-pending').textContent=inr(pending);
   const pp=document.getElementById('pv-profit');
   pp.textContent=(profit>=0?'':'-')+inr(Math.abs(profit));
   pp.style.color=profit>=0?'var(--leaf)':'var(--red)';
 }
 
-// ── DIESEL COST AUTO CALC ─────────────────────────────
 function calcDieselCost(){
   const l=parseFloat(document.getElementById('dsl').value)||0;
   const pl=parseFloat(document.getElementById('dspl').value)||0;
@@ -627,23 +773,26 @@ function addFarm(){
   const rph=parseFloat(document.getElementById('frh').value)||0;
   const rpa=parseFloat(document.getElementById('fra').value)||0;
   const otherExp=parseFloat(document.getElementById('fex').value)||0;
-  let earned=parseFloat(document.getElementById('fea').value)||0;
-  if(!earned&&rph&&hrs) earned=Math.round(rph*hrs);
-  if(!earned&&rpa&&acres) earned=Math.round(rpa*acres);
-  const profit=earned-otherExp;
+  let total=parseFloat(document.getElementById('ftot').value)||0;
+  if(!total&&rph&&hrs) total=Math.round(rph*hrs);
+  if(!total&&rpa&&acres) total=Math.round(rpa*acres);
+  let received=parseFloat(document.getElementById('frec').value)||0;
+  if(received>total) received=total;
+  const pending=Math.max(0,total-received);
+  const profit=received-otherExp;
   const arr=getFarm();
   arr.unshift({id:Date.now(),date,work,
     vid:vid||'',vname:veh?veh.name:'',vtype:veh?veh.type:'',
     st:document.getElementById('fst').value,
     et:document.getElementById('fet').value,
-    hrs,acres,otherExp,earned,rph,rpa,profit,
+    hrs,acres,otherExp,total,received,pending,rph,rpa,profit,
     notes:document.getElementById('fn').value.trim()
   });
   saveFarm(arr);clrFarm();renderFarmAll();renderDash();
-  toast('✅ Entry added! Profit: '+inr(profit));
+  toast(pending>0?'✅ Added! Pending: '+inr(pending):'✅ Entry added! Fully paid.');
 }
 function clrFarm(){
-  ['fw','fst','fet','fac','fex','frh','fra','fea','fn'].forEach(id=>document.getElementById(id).value='');
+  ['fw','fst','fet','fac','fex','frh','fra','ftot','frec','fpen','fn'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('fv').value='';document.getElementById('fd').valueAsDate=new Date();
   document.getElementById('live-preview').style.display='none';
 }
@@ -658,10 +807,10 @@ function renderFarm(){
   if(!data.length){list.innerHTML='';empty.style.display='block';return;}
   empty.style.display='none';
   list.innerHTML=data.map(e=>{
-    const st=fmtT(e.st),et=fmtT(e.et),profit=e.profit||0;
+    const st=fmtT(e.st),et=fmtT(e.et),profit=e.profit||0,pending=e.pending||0;
     return`<div class="rc">
       <button class="delbtn" onclick="delFarm(${e.id})">🗑</button>
-      <div class="rtop"><div class="rwrk">${e.vtype?vIcon(e.vtype)+' ':''}${esc(e.work)}</div><div class="ramt ag">${e.earned>0?inr(e.earned):''}</div></div>
+      <div class="rtop"><div class="rwrk">${e.vtype?vIcon(e.vtype)+' ':''}${esc(e.work)}</div><div class="ramt ag">${e.received>0?inr(e.received):''}</div></div>
       <div class="rmeta">
         <span class="chip cd">📅 ${fmtD(e.date)}</span>
         ${e.vname?`<span class="chip cv">${vIcon(e.vtype)} ${esc(e.vname)}</span>`:''}
@@ -669,21 +818,25 @@ function renderFarm(){
         ${et?`<span class="chip cd">⏹ ${et}</span>`:''}
         ${e.hrs>0?`<span class="chip cd">⏱ ${fmtH(e.hrs)}</span>`:''}
         ${e.acres>0?`<span class="chip ca">📏 ${e.acres} ac</span>`:''}
+        ${e.total>0?`<span class="chip ce">Total: ${inr(e.total)}</span>`:''}
         ${e.otherExp>0?`<span class="chip cs">Exp: ${inr(e.otherExp)}</span>`:''}
       </div>
-      ${e.earned>0?`<div class="rprofit ${profit>=0?'pos':'neg'}">Profit: ${profit>=0?'':'-'}${inr(Math.abs(profit))}</div>`:''}
+      ${pending>0?`<div class="rpending">⏳ Pending: ${inr(pending)}</div>`:''}
+      ${e.total>0?`<div class="rprofit ${profit>=0?'pos':'neg'}">Profit: ${profit>=0?'':'-'}${inr(Math.abs(profit))}</div>`:''}
       ${e.notes?`<div class="rnotes">📝 ${esc(e.notes)}</div>`:''}
     </div>`;
   }).join('');
 }
 function renderFarmAll(){
   const arr=getFarm();
-  const earned=arr.reduce((s,e)=>s+(e.earned||0),0);
+  const received=arr.reduce((s,e)=>s+(e.received||0),0);
+  const pending=arr.reduce((s,e)=>s+(e.pending||0),0);
   const costs=arr.reduce((s,e)=>s+(e.otherExp||0),0);
-  const profit=earned-costs;
+  const profit=received-costs;
   const acres=arr.reduce((s,e)=>s+(e.acres||0),0);
   document.getElementById('f-en').textContent=arr.length;
-  document.getElementById('f-ea').textContent=inr(earned);
+  document.getElementById('f-ea').textContent=inr(received);
+  document.getElementById('f-pd').textContent=inr(pending);
   document.getElementById('f-sp').textContent=inr(costs);
   const fp=document.getElementById('f-pr');fp.textContent=inr(profit);fp.style.color=profit>=0?'var(--leaf)':'var(--red)';
   document.getElementById('f-ac').textContent=acres.toFixed(1);
@@ -718,12 +871,9 @@ function clrDiesel(){
 }
 function delDiesel(id){if(!confirm('Delete?'))return;saveDiesel(getDiesel().filter(e=>e.id!==id));renderDieselPage();renderDash();toast('🗑 Deleted.');}
 function clrDFil(){document.getElementById('dsfv').value='all';document.getElementById('dsfm').value='';dieselVFilter='all';renderDieselPage();}
-
 function renderDieselPage(){
   const arr=getDiesel();
   const vehicles=getVehicles();
-
-  // Summary cards
   const totalL=arr.reduce((s,e)=>s+(e.litres||0),0);
   const totalC=arr.reduce((s,e)=>s+(e.cost||0),0);
   const avgPrice=totalL>0?totalC/totalL:0;
@@ -731,8 +881,6 @@ function renderDieselPage(){
   document.getElementById('ds-cost').textContent=inr(totalC);
   document.getElementById('ds-en').textContent=arr.length;
   document.getElementById('ds-avg').textContent='₹'+avgPrice.toFixed(1);
-
-  // Per-vehicle summary cards
   const dvc=document.getElementById('dv-cards-section');
   if(!vehicles.length){dvc.innerHTML='';} else {
     dvc.innerHTML=vehicles.map(v=>{
@@ -753,29 +901,18 @@ function renderDieselPage(){
       </div>`;
     }).join('');
   }
-
-  // Vehicle filter tabs
   const dvt=document.getElementById('diesel-vtabs');
   if(!vehicles.length){dvt.innerHTML='';}else{
     dvt.innerHTML=`<div class="vtab vtab-all ${dieselVFilter==='all'?'active':''}" onclick="setDVFilter('all')">All</div>`+
     vehicles.map(v=>`<div class="vtab ${dieselVFilter===String(v.id)?'active':''}" onclick="setDVFilter('${v.id}')">${vIcon(v.type)} ${esc(v.name)}</div>`).join('');
   }
-
   renderDiesel();
 }
-
-function setDVFilter(vid){
-  dieselVFilter=vid;
-  document.getElementById('dsfv').value=vid;
-  renderDieselPage();
-}
-
+function setDVFilter(vid){dieselVFilter=vid;document.getElementById('dsfv').value=vid;renderDieselPage();}
 function renderDiesel(){
   const fv=document.getElementById('dsfv').value;
   const fm=document.getElementById('dsfm').value;
-  const data=getDiesel().filter(e=>
-    (fv==='all'||String(e.vid)===fv)&&(!fm||e.date.startsWith(fm))
-  );
+  const data=getDiesel().filter(e=>(fv==='all'||String(e.vid)===fv)&&(!fm||e.date.startsWith(fm)));
   const list=document.getElementById('dsl-list'),empty=document.getElementById('dsl-empty');
   if(!data.length){list.innerHTML='';empty.style.display='block';return;}
   empty.style.display='none';
@@ -835,6 +972,44 @@ function renderHome(){
     ${e.notes?`<div class="rnotes">📝 ${esc(e.notes)}</div>`:''}
   </div>`).join('');
 }
+
+// ── MONEY CAME IN (Income) ───────────────────────────
+function addIncome(){
+  const date=document.getElementById('ind').value;
+  const from=document.getElementById('infrom').value.trim();
+  const amt=parseFloat(document.getElementById('inamt').value)||0;
+  if(!date||!from||!amt){toast('⚠️ Fill in date, source, and amount.');return;}
+  const arr=getIncome();
+  arr.unshift({id:Date.now(),date,from,
+    src:document.getElementById('insrc').value,
+    amt,notes:document.getElementById('inn').value.trim()
+  });
+  saveIncome(arr);clrIncome();renderIncomeAll();renderDash();toast('✅ Money in recorded!');
+}
+function clrIncome(){
+  ['infrom','inamt','inn'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('insrc').value='Income';
+  document.getElementById('ind').valueAsDate=new Date();
+}
+function delIncome(id){if(!confirm('Delete?'))return;saveIncome(getIncome().filter(e=>e.id!==id));renderIncomeAll();renderDash();toast('🗑 Deleted.');}
+function renderIncomeAll(){
+  const arr=getIncome();
+  const total=arr.reduce((s,e)=>s+(e.amt||0),0);
+  document.getElementById('h-in').textContent=inr(total);
+  const list=document.getElementById('inl'),empty=document.getElementById('ine2');
+  if(!arr.length){list.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  const srcIcon={Income:'💵',Borrowed:'🤝',Gift:'🎁',Other:'📦'};
+  list.innerHTML=arr.map(e=>`<div class="rc">
+    <button class="delbtn" onclick="delIncome(${e.id})">🗑</button>
+    <div class="rtop"><div class="rwrk">${srcIcon[e.src]||'💵'} ${esc(e.from)}</div><div class="ramt ag">${inr(e.amt)}</div></div>
+    <div class="rmeta">
+      <span class="chip cd">📅 ${fmtD(e.date)}</span>
+      <span class="chip ce">${esc(e.src)}</span>
+    </div>
+    ${e.notes?`<div class="rnotes">📝 ${esc(e.notes)}</div>`:''}
+  </div>`).join('');
+}
 function renderHomeAll(){
   const arr=getHome();
   const total=arr.reduce((s,e)=>s+(e.amt||0),0);
@@ -850,28 +1025,119 @@ function renderHomeAll(){
   renderHome();
 }
 
+// ── PTR (Simple Interest) CALCULATOR ─────────────────
+function calcPTR(){
+  const p=parseFloat(document.getElementById('ptrP').value)||0;
+  const r=parseFloat(document.getElementById('ptrR').value)||0;
+  let t=parseFloat(document.getElementById('ptrT').value)||0;
+  const unit=document.getElementById('ptrUnit').value;
+  const tYears=unit==='months'?t/12:t;
+  const interest=(p*r*tYears)/100;
+  const total=p+interest;
+  document.getElementById('ptr-out-p').textContent=inr(p);
+  document.getElementById('ptr-out-r').textContent=r+'%';
+  document.getElementById('ptr-out-t').textContent=t+' '+(unit==='months'?(t===1?'month':'months'):(t===1?'year':'years'));
+  document.getElementById('ptr-out-interest').textContent=inr(Math.round(interest));
+  document.getElementById('ptr-out-total').textContent=inr(Math.round(total));
+}
+function clrPTR(){
+  ['ptrP','ptrR','ptrT'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('ptrUnit').value='months';
+  calcPTR();
+}
+
+// ── DEBT ──────────────────────────────────────────────
+function addDebt(){
+  const date=document.getElementById('dtd').value;
+  const person=document.getElementById('dtperson').value.trim();
+  const amt=parseFloat(document.getElementById('dtamt').value)||0;
+  if(!date||!person||!amt){toast('⚠️ Fill in date, person, and amount.');return;}
+  const arr=getDebt();
+  arr.unshift({id:Date.now(),date,person,
+    type:document.getElementById('dttype').value,
+    amt,reason:document.getElementById('dtreason').value.trim(),
+    notes:document.getElementById('dtn').value.trim(),
+    settled:false
+  });
+  saveDebt(arr);clrDebtForm();renderDebt();renderDash();toast('✅ Debt entry added!');
+}
+function clrDebtForm(){
+  ['dtperson','dtamt','dtreason','dtn'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('dttype').value='owed_to_you';
+  document.getElementById('dtd').valueAsDate=new Date();
+}
+function delDebtEntry(id){if(!confirm('Delete?'))return;saveDebt(getDebt().filter(e=>e.id!==id));renderDebt();renderDash();toast('🗑 Deleted.');}
+function toggleSettled(id){
+  const arr=getDebt();
+  const e=arr.find(x=>x.id===id);
+  if(e){e.settled=!e.settled;saveDebt(arr);renderDebt();renderDash();toast(e.settled?'✅ Marked as settled!':'↩️ Marked as pending.');}
+}
+function clrDtFil(){document.getElementById('dtft').value='all';document.getElementById('dtfs').value='all';renderDebt();}
+function renderDebt(){
+  const arr=getDebt();
+  const owedToYou=arr.filter(e=>e.type==='owed_to_you'&&!e.settled).reduce((s,e)=>s+(e.amt||0),0);
+  const youOwe=arr.filter(e=>e.type==='i_owe'&&!e.settled).reduce((s,e)=>s+(e.amt||0),0);
+  const net=owedToYou-youOwe;
+  document.getElementById('dt-owedtoyou').textContent=inr(owedToYou);
+  document.getElementById('dt-youowe').textContent=inr(youOwe);
+  const dn=document.getElementById('dt-net');
+  dn.textContent=(net>=0?'+':'-')+inr(Math.abs(net));
+  dn.style.color=net>=0?'#7FD992':'#FF9B8A';
+
+  const ft=document.getElementById('dtft').value;
+  const fs=document.getElementById('dtfs').value;
+  const data=arr.filter(e=>(ft==='all'||e.type===ft)&&(fs==='all'||(fs==='settled'?e.settled:!e.settled)));
+  const list=document.getElementById('dtl'),empty=document.getElementById('dte2');
+  if(!data.length){list.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  list.innerHTML=data.map(e=>`<div class="rc">
+    <button class="delbtn" onclick="delDebtEntry(${e.id})">🗑</button>
+    <div class="rtop">
+      <div class="rwrk">${esc(e.person)} <span class="debt-tag ${e.type==='owed_to_you'?'owe-you':'you-owe'}">${e.type==='owed_to_you'?'Owes you':'You owe'}</span></div>
+      <div class="ramt ${e.type==='owed_to_you'?'ag':'ar'}">${inr(e.amt)}</div>
+    </div>
+    <div class="rmeta">
+      <span class="chip cd">📅 ${fmtD(e.date)}</span>
+      ${e.reason?`<span class="chip cp">${esc(e.reason)}</span>`:''}
+    </div>
+    ${e.notes?`<div class="rnotes">📝 ${esc(e.notes)}</div>`:''}
+    <div>
+      ${e.settled?'<span class="settled-badge">✓ Settled</span> ':''}
+      <button class="settle-btn" onclick="toggleSettled(${e.id})" style="${e.settled?'background:var(--border);color:var(--soil);':''}">${e.settled?'↩️ Mark Pending':'✅ Mark Settled'}</button>
+    </div>
+  </div>`).join('');
+}
+
 // ── DASHBOARD ─────────────────────────────────────────
 function renderDash(){
-  const farm=getFarm(),diesel=getDiesel(),home=getHome(),vehicles=getVehicles();
-  const farmEarned=farm.reduce((s,e)=>s+(e.earned||0),0);
+  const farm=getFarm(),diesel=getDiesel(),home=getHome(),vehicles=getVehicles(),debt=getDebt();
+  const farmReceived=farm.reduce((s,e)=>s+(e.received||0),0);
+  const farmPending=farm.reduce((s,e)=>s+(e.pending||0),0);
   const farmCost=farm.reduce((s,e)=>s+(e.otherExp||0),0);
   const dieselCost=diesel.reduce((s,e)=>s+(e.cost||0),0);
   const homeCost=home.reduce((s,e)=>s+(e.amt||0),0);
-  const netProfit=farmEarned-farmCost-dieselCost;
+  const netProfit=farmReceived-farmCost-dieselCost;
   const totalAcres=farm.reduce((s,e)=>s+(e.acres||0),0);
-  const totalDiesel=diesel.reduce((s,e)=>s+(e.litres||0),0);
-  document.getElementById('d-earned').textContent=inr(farmEarned);
+  document.getElementById('d-earned').textContent=inr(farmReceived);
+  document.getElementById('d-pending').textContent=inr(farmPending);
   document.getElementById('d-spent').textContent=inr(farmCost+dieselCost);
   const dp=document.getElementById('d-profit');dp.textContent=inr(netProfit);dp.style.color=netProfit>=0?'var(--leaf)':'var(--red)';
   document.getElementById('d-acres').textContent=totalAcres.toFixed(1);
-  document.getElementById('d-diesel').textContent=totalDiesel.toFixed(1)+' L';
   document.getElementById('d-home').textContent=inr(homeCost);
+
+  const owedToYou=debt.filter(e=>e.type==='owed_to_you'&&!e.settled).reduce((s,e)=>s+(e.amt||0),0);
+  const youOwe=debt.filter(e=>e.type==='i_owe'&&!e.settled).reduce((s,e)=>s+(e.amt||0),0);
+  const netDebt=owedToYou-youOwe;
+  const dd=document.getElementById('d-debt');
+  dd.textContent=(netDebt>=0?'+':'-')+inr(Math.abs(netDebt));
+  dd.style.color=netDebt>=0?'var(--leaf)':'var(--red)';
+
   const dvl=document.getElementById('d-veh-list');
   if(!vehicles.length){dvl.innerHTML='<p style="color:var(--muted);font-size:0.82rem;">No vehicles added yet.</p>';return;}
   dvl.innerHTML=vehicles.map(v=>{
     const vf=farm.filter(e=>String(e.vid)===String(v.id));
     const vd=diesel.filter(e=>String(e.vid)===String(v.id));
-    const ve=vf.reduce((s,e)=>s+(e.earned||0),0);
+    const ve=vf.reduce((s,e)=>s+(e.received||0),0);
     const vc=vf.reduce((s,e)=>s+(e.otherExp||0),0)+vd.reduce((s,e)=>s+(e.cost||0),0);
     const vp=ve-vc;
     const vacres=vf.reduce((s,e)=>s+(e.acres||0),0);
@@ -890,13 +1156,21 @@ function renderDash(){
 function exportCSV(type){
   let rows,fn;
   if(type==='farm'){
-    rows=[['Date','Vehicle','Work','Start','End','Hours','Acres','Other Exp','Earned','Profit','Notes']];
-    getFarm().forEach(e=>rows.push([e.date,e.vname||'',e.work,e.st||'',e.et||'',e.hrs?.toFixed(2)||'',e.acres||0,e.otherExp||0,e.earned||0,e.profit||0,e.notes||'']));
+    rows=[['Date','Vehicle','Work','Start','End','Hours','Acres','Other Exp','Total','Received','Pending','Profit','Notes']];
+    getFarm().forEach(e=>rows.push([e.date,e.vname||'',e.work,e.st||'',e.et||'',e.hrs?.toFixed(2)||'',e.acres||0,e.otherExp||0,e.total||0,e.received||0,e.pending||0,e.profit||0,e.notes||'']));
     fn='khet-farm.csv';
   }else if(type==='diesel'){
     rows=[['Date','Vehicle','Litres','Price/L','Total Cost','Pump','Notes']];
     getDiesel().forEach(e=>rows.push([e.date,e.vname||'',e.litres||0,e.pricePerL||0,e.cost||0,e.pump||'',e.notes||'']));
     fn='khet-diesel.csv';
+  }else if(type==='income'){
+    rows=[['Date','From','Source','Amount','Notes']];
+    getIncome().forEach(e=>rows.push([e.date,e.from,e.src,e.amt,e.notes||'']));
+    fn='khet-income.csv';
+  }else if(type==='debt'){
+    rows=[['Date','Person','Type','Amount','Reason','Settled','Notes']];
+    getDebt().forEach(e=>rows.push([e.date,e.person,e.type==='owed_to_you'?'Owed to me':'I owe',e.amt,e.reason||'',e.settled?'Yes':'No',e.notes||'']));
+    fn='khet-debt.csv';
   }else{
     rows=[['Date','Item','Category','Amount','Paid By','Notes']];
     getHome().forEach(e=>rows.push([e.date,e.item,e.cat,e.amt,e.paid||'',e.notes||'']));

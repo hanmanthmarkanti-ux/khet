@@ -254,7 +254,6 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
       <div class="dash-card" style="border-top:3px solid var(--wheat)"><h3>Net Profit</h3><div class="big" id="d-profit">₹0</div></div>
       <div class="dash-card" style="border-top:3px solid var(--blue)"><h3>Total Acres</h3><div class="big" id="d-acres" style="color:var(--blue)">0</div></div>
       <div class="dash-card" style="border-top:3px solid var(--red)"><h3>Home Expenses</h3><div class="big ar" id="d-home">₹0</div></div>
-      <div class="dash-card dash-full" style="border-top:3px solid var(--purple)"><h3>Debt Balance (Net)</h3><div class="big" id="d-debt">₹0</div></div>
       <div class="dash-card dash-full">
         <h3>Vehicle Summary</h3>
         <div id="d-veh-list"><p style="color:var(--muted);font-size:0.82rem;">No vehicles added yet.</p></div>
@@ -498,87 +497,52 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
     </div>
   </div>
 
-  <!-- DEBT -->
+  <!-- PTR CALCULATOR -->
   <div class="page" id="pg-debt">
-    <div class="debt-summary">
-      <div class="debt-card owed-to-you"><h3>People Owe You</h3><div class="big" id="dt-owedtoyou">₹0</div></div>
-      <div class="debt-card you-owe"><h3>You Owe Others</h3><div class="big" id="dt-youowe">₹0</div></div>
-    </div>
-    <div class="debt-net">
-      <div class="debt-net-label">Net Debt Balance</div>
-      <div class="debt-net-val" id="dt-net">₹0</div>
-    </div>
-
-    <!-- PTR SIMPLE INTEREST CALCULATOR -->
     <div class="box" style="margin-top:12px;">
-      <div class="boxhdr open" onclick="tog('ptr-body',this)"><span>🧮</span> PTR Interest Calculator <span class="arr">▲</span></div>
-      <div class="boxbody open" id="ptr-body">
-        <div class="gr3">
-          <div class="field"><label>Principal ₹</label><input type="number" id="ptrP" placeholder="e.g. 10000" min="0" inputmode="numeric" oninput="calcPTR()"/></div>
-          <div class="field"><label>Rate %</label><input type="number" id="ptrR" placeholder="e.g. 2" min="0" step="0.1" inputmode="decimal" oninput="calcPTR()"/></div>
-          <div class="field"><label>Time</label><input type="number" id="ptrT" placeholder="e.g. 12" min="0" step="0.1" inputmode="decimal" oninput="calcPTR()"/></div>
-        </div>
-        <div class="field"><label>Time Unit</label>
+      <div class="boxhdr open"><span>🧮</span> Simple Interest Calculator (P × R × T ÷ 100)</div>
+      <div class="boxbody open">
+        <div class="field"><label>Principal (P) ₹</label><input type="number" id="ptrP" placeholder="e.g. 10000" min="0" step="any" inputmode="decimal" oninput="calcPTR()"/></div>
+        <div class="field"><label>Rate (R) % per month</label><input type="number" id="ptrR" placeholder="e.g. 2" min="0" step="any" inputmode="decimal" oninput="calcPTR()"/></div>
+        <div class="field"><label>Time (T)</label><input type="number" id="ptrT" placeholder="e.g. 18" min="0" step="any" inputmode="decimal" oninput="calcPTR()"/></div>
+        <div class="field"><label>Time Unit Entered</label>
           <select id="ptrUnit" onchange="calcPTR()">
             <option value="months">Months</option>
             <option value="years">Years</option>
+            <option value="days">Days</option>
           </select>
         </div>
-        <div class="live-box" id="ptr-preview" style="display:block;background:#F3EAFA;border-color:var(--purple);">
-          <h4 style="color:var(--purple);">🧮 P × R × T / 100</h4>
+
+        <!-- MONTHS RESULT -->
+        <div class="live-box" id="ptr-preview-months" style="display:block;background:#F3EAFA;border-color:var(--purple);">
+          <h4 style="color:var(--purple);">📅 Calculated in Months</h4>
           <div class="live-grid">
-            <div class="live-label">Principal</div><div class="live-val" id="ptr-out-p">₹0</div>
-            <div class="live-label">Rate</div><div class="live-val" id="ptr-out-r">0%</div>
-            <div class="live-label">Time</div><div class="live-val" id="ptr-out-t">0</div>
-            <div class="live-profit-label">Interest Amount</div>
-            <div class="live-profit-val" id="ptr-out-interest" style="color:var(--purple);">₹0</div>
-            <div class="live-label" style="margin-top:4px;">Total (Principal + Interest)</div>
-            <div class="live-val" id="ptr-out-total" style="font-size:0.95rem;font-weight:800;color:var(--soil);">₹0</div>
+            <div class="live-label">Time</div><div class="live-val" id="ptr-m-t">0 months</div>
+            <div class="live-profit-label">Simple Interest</div>
+            <div class="live-profit-val" id="ptr-m-interest" style="color:var(--purple);">₹0</div>
+            <div class="live-label" style="margin-top:4px;">Total (P + Interest)</div>
+            <div class="live-val" id="ptr-m-total" style="font-size:0.95rem;font-weight:800;color:var(--soil);">₹0</div>
           </div>
+        </div>
+
+        <!-- YEARS RESULT -->
+        <div class="live-box" id="ptr-preview-years" style="display:block;background:#EAF3F8;border-color:var(--blue);">
+          <h4 style="color:var(--blue);">🗓 Calculated in Years</h4>
+          <div class="live-grid">
+            <div class="live-label">Time</div><div class="live-val" id="ptr-y-t">0 years</div>
+            <div class="live-profit-label">Simple Interest</div>
+            <div class="live-profit-val" id="ptr-y-interest" style="color:var(--blue);">₹0</div>
+            <div class="live-label" style="margin-top:4px;">Total (P + Interest)</div>
+            <div class="live-val" id="ptr-y-total" style="font-size:0.95rem;font-weight:800;color:var(--soil);">₹0</div>
+          </div>
+        </div>
+
+        <div style="font-size:0.72rem;color:var(--muted);background:var(--cream);border-radius:8px;padding:9px 11px;margin-bottom:10px;line-height:1.5;">
+          ℹ️ Formula: <strong>Interest = P × R × T ÷ 100</strong> (T in months, since Rate is per month).<br>
+          Enter Time in whichever unit you like above — both the Months and Years results are shown together so you can compare.
         </div>
         <button class="btn bgr" onclick="clrPTR()">Clear Calculator</button>
       </div>
-    </div>
-
-    <div class="box" style="margin-top:12px;">
-      <div class="boxhdr" onclick="tog('debt-body',this)"><span>🤝</span> Add Debt Entry <span class="arr">▼</span></div>
-      <div class="boxbody" id="debt-body">
-        <div class="gr2">
-          <div class="field"><label>Date</label><input type="date" id="dtd"/></div>
-          <div class="field"><label>Type</label><select id="dttype">
-            <option value="owed_to_you">🟢 Someone owes ME</option>
-            <option value="i_owe">🔴 I owe SOMEONE</option>
-          </select></div>
-        </div>
-        <div class="field"><label>Person Name</label><input type="text" id="dtperson" placeholder="e.g. Ramesh garu, Suresh…"/></div>
-        <div class="field"><label>Amount ₹</label><input type="number" id="dtamt" placeholder="0" min="0" inputmode="numeric"/></div>
-        <div class="field"><label>Reason</label><input type="text" id="dtreason" placeholder="e.g. Farm work payment, Loan, Diesel money…"/></div>
-        <div class="field"><label>Notes</label><textarea id="dtn" placeholder="Optional details…"></textarea></div>
-        <button class="btn bp" onclick="addDebt()">＋ Add Debt Entry</button>
-        <button class="btn bgr" onclick="clrDebtForm()">Clear</button>
-      </div>
-    </div>
-
-    <div class="filbox">
-      <h3>🔍 Filter</h3>
-      <div class="filrow">
-        <select id="dtft" onchange="renderDebt()">
-          <option value="all">All</option>
-          <option value="owed_to_you">Owed to me</option>
-          <option value="i_owe">I owe</option>
-        </select>
-        <select id="dtfs" onchange="renderDebt()">
-          <option value="all">All Status</option>
-          <option value="pending">Pending</option>
-          <option value="settled">Settled</option>
-        </select>
-        <button class="filclear" onclick="clrDtFil()">✕</button>
-      </div>
-    </div>
-    <div class="recsec">
-      <div class="rechdr"><h2>🤝 Debt Records</h2><button class="expbtn" onclick="exportCSV('debt')">⬇ CSV</button></div>
-      <div id="dtl"></div>
-      <div id="dte2" class="empty"><div class="ei">🤝</div><p>No debt entries yet.<br>Add your first one above!</p></div>
     </div>
   </div>
 
@@ -590,7 +554,7 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
   <div class="tab"        id="tab-farm"     onclick="switchTab('farm')"><span class="ti">🚜</span>Farm</div>
   <div class="tab"        id="tab-diesel"   onclick="switchTab('diesel')"><span class="ti">⛽</span>Diesel</div>
   <div class="tab"        id="tab-home"     onclick="switchTab('home')"><span class="ti">🏠</span>Home</div>
-  <div class="tab"        id="tab-debt"     onclick="switchTab('debt')"><span class="ti">🤝</span>Debt</div>
+  <div class="tab"        id="tab-debt"     onclick="switchTab('debt')"><span class="ti">🧮</span>Interest</div>
 </div>
 </div>
 
@@ -607,7 +571,7 @@ function showAuthTab(t){
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 function tog(id,hdr){const b=document.getElementById(id);const open=b.classList.toggle('open');hdr.classList.toggle('open',open);}
 const TABS=['dash','vehicles','farm','diesel','home','debt'];
-function switchTab(t){TABS.forEach(x=>{document.getElementById('pg-'+x).classList.toggle('active',x===t);document.getElementById('tab-'+x).classList.toggle('active',x===t);});if(t==='diesel')renderDieselPage();if(t==='debt')renderDebt();}
+function switchTab(t){TABS.forEach(x=>{document.getElementById('pg-'+x).classList.toggle('active',x===t);document.getElementById('tab-'+x).classList.toggle('active',x===t);});if(t==='diesel')renderDieselPage();if(t==='debt')calcPTR();}
 
 // ── STORAGE ───────────────────────────────────────────
 function getUsers(){return JSON.parse(localStorage.getItem('KD_users')||'{}');}
@@ -670,8 +634,7 @@ function openApp(name){
   document.getElementById('hd').valueAsDate=new Date();
   document.getElementById('dsd').valueAsDate=new Date();
   document.getElementById('ind').valueAsDate=new Date();
-  document.getElementById('dtd').valueAsDate=new Date();
-  updateVehicleSelects();renderVehicles();renderDash();renderFarmAll();renderHomeAll();renderIncomeAll();
+  updateVehicleSelects();renderVehicles();renderDash();renderFarmAll();renderHomeAll();renderIncomeAll();calcPTR();
   show('app-screen');switchTab('dash');
 }
 
@@ -681,7 +644,11 @@ function fmtD(d){if(!d)return'';const[y,m,dy]=d.split('-');return`${dy}/${m}/${y
 function fmtT(t){if(!t)return null;const[h,m]=t.split(':');return`${+h%12||12}:${m} ${+h>=12?'PM':'AM'}`;}
 function calcHN(s,e){if(!s||!e)return 0;const[sh,sm]=s.split(':').map(Number),[eh,em]=e.split(':').map(Number);const d=(eh*60+em)-(sh*60+sm);return d>0?d/60:0;}
 function fmtH(hrs){if(!hrs)return'—';const h=Math.floor(hrs),m=Math.round((hrs-h)*60);return h>0?(m>0?h+'h '+m+'m':h+'h'):m+'m';}
-function inr(n){return'₹'+(n||0).toLocaleString('en-IN');}
+function inr(n){
+  n=n||0;
+  const isWhole=Math.abs(n-Math.round(n))<0.005;
+  return '₹'+n.toLocaleString('en-IN',{minimumFractionDigits:isWhole?0:2,maximumFractionDigits:2});
+}
 function vIcon(type){return type==='Tractor'?'🚜':type==='Harvester'?'🌾':type==='Truck'?'🚛':type==='Rotavator'?'⚙️':'🔧';}
 
 // ── VEHICLES ──────────────────────────────────────────
@@ -761,6 +728,55 @@ function calcDieselCost(){
 }
 
 // ── FARM ──────────────────────────────────────────────
+let editingFarmId=null;
+
+function quickPay(id){
+  const arr=getFarm();
+  const e=arr.find(x=>x.id===id);
+  if(!e)return;
+  const pending=e.pending||0;
+  const amtStr=prompt('How much money did they pay you now?\n(Pending: '+inr(pending)+')', pending>0?pending:'');
+  if(amtStr===null)return;
+  const amt=parseFloat(amtStr);
+  if(isNaN(amt)||amt<=0){toast('⚠️ Enter a valid amount.');return;}
+  e.received=(e.received||0)+amt;
+  if(e.received>e.total) e.received=e.total;
+  e.pending=Math.max(0,e.total-e.received);
+  e.profit=e.received-(e.otherExp||0);
+  saveFarm(arr);
+  renderFarmAll();renderDash();
+  toast(e.pending>0?'✅ Payment added! Still pending: '+inr(e.pending):'✅ Fully paid now! 🎉');
+}
+
+function editFarm(id){
+  const arr=getFarm();
+  const e=arr.find(x=>x.id===id);
+  if(!e)return;
+  editingFarmId=id;
+  document.getElementById('fd').value=e.date;
+  document.getElementById('fv').value=e.vid||'';
+  document.getElementById('fw').value=e.work;
+  document.getElementById('fst').value=e.st||'';
+  document.getElementById('fet').value=e.et||'';
+  document.getElementById('fac').value=e.acres||'';
+  document.getElementById('fex').value=e.otherExp||'';
+  document.getElementById('frh').value=e.rph||'';
+  document.getElementById('fra').value=e.rpa||'';
+  document.getElementById('ftot').value=e.total||'';
+  document.getElementById('frec').value=e.received||'';
+  document.getElementById('fn').value=e.notes||'';
+  liveCalc();
+  // open the form box
+  const body=document.getElementById('farm-body');
+  const hdr=body.previousElementSibling;
+  if(!body.classList.contains('open')){body.classList.add('open');hdr.classList.add('open');}
+  // change button text
+  const addBtn=document.querySelector('#farm-body button.bg');
+  if(addBtn) addBtn.textContent='💾 Save Changes';
+  body.scrollIntoView({behavior:'smooth',block:'start'});
+  toast('✏️ Editing entry — scroll up to update and save.');
+}
+
 function addFarm(){
   const date=document.getElementById('fd').value;
   const work=document.getElementById('fw').value.trim();
@@ -781,6 +797,27 @@ function addFarm(){
   const pending=Math.max(0,total-received);
   const profit=received-otherExp;
   const arr=getFarm();
+
+  if(editingFarmId!==null){
+    const idx=arr.findIndex(x=>x.id===editingFarmId);
+    if(idx!==-1){
+      arr[idx]={...arr[idx],date,work,
+        vid:vid||'',vname:veh?veh.name:'',vtype:veh?veh.type:'',
+        st:document.getElementById('fst').value,
+        et:document.getElementById('fet').value,
+        hrs,acres,otherExp,total,received,pending,rph,rpa,profit,
+        notes:document.getElementById('fn').value.trim()
+      };
+      saveFarm(arr);
+      editingFarmId=null;
+      const addBtn=document.querySelector('#farm-body button.bg');
+      if(addBtn) addBtn.textContent='＋ Add Entry';
+      clrFarm();renderFarmAll();renderDash();
+      toast('✅ Entry updated!');
+      return;
+    }
+  }
+
   arr.unshift({id:Date.now(),date,work,
     vid:vid||'',vname:veh?veh.name:'',vtype:veh?veh.type:'',
     st:document.getElementById('fst').value,
@@ -795,6 +832,9 @@ function clrFarm(){
   ['fw','fst','fet','fac','fex','frh','fra','ftot','frec','fpen','fn'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('fv').value='';document.getElementById('fd').valueAsDate=new Date();
   document.getElementById('live-preview').style.display='none';
+  editingFarmId=null;
+  const addBtn=document.querySelector('#farm-body button.bg');
+  if(addBtn) addBtn.textContent='＋ Add Entry';
 }
 function delFarm(id){if(!confirm('Delete?'))return;saveFarm(getFarm().filter(e=>e.id!==id));renderFarmAll();renderDash();toast('🗑 Deleted.');}
 function clrFFil(){document.getElementById('ffs').value='';document.getElementById('ffv').value='all';document.getElementById('ffm').value='';renderFarm();}
@@ -809,8 +849,12 @@ function renderFarm(){
   list.innerHTML=data.map(e=>{
     const st=fmtT(e.st),et=fmtT(e.et),profit=e.profit||0,pending=e.pending||0;
     return`<div class="rc">
-      <button class="delbtn" onclick="delFarm(${e.id})">🗑</button>
-      <div class="rtop"><div class="rwrk">${e.vtype?vIcon(e.vtype)+' ':''}${esc(e.work)}</div><div class="ramt ag">${e.received>0?inr(e.received):''}</div></div>
+      <div style="position:absolute;top:12px;right:12px;display:flex;gap:4px;">
+        <button class="delbtn" onclick="editFarm(${e.id})" title="Edit" style="position:static;">✏️</button>
+        <button class="delbtn" onclick="delFarm(${e.id})" title="Delete" style="position:static;">🗑</button>
+      </div>
+      <div class="rtop" style="padding-right:54px;"><div class="rwrk" style="padding-right:0;">${e.vtype?vIcon(e.vtype)+' ':''}${esc(e.work)}</div></div>
+      <div class="rtop"><div></div><div class="ramt ag">${e.received>0?inr(e.received):''}</div></div>
       <div class="rmeta">
         <span class="chip cd">📅 ${fmtD(e.date)}</span>
         ${e.vname?`<span class="chip cv">${vIcon(e.vtype)} ${esc(e.vname)}</span>`:''}
@@ -821,7 +865,7 @@ function renderFarm(){
         ${e.total>0?`<span class="chip ce">Total: ${inr(e.total)}</span>`:''}
         ${e.otherExp>0?`<span class="chip cs">Exp: ${inr(e.otherExp)}</span>`:''}
       </div>
-      ${pending>0?`<div class="rpending">⏳ Pending: ${inr(pending)}</div>`:''}
+      ${pending>0?`<div class="rpending">⏳ Pending: ${inr(pending)} <button onclick="quickPay(${e.id})" style="margin-left:8px;background:var(--leaf);color:#fff;border:none;border-radius:6px;padding:3px 10px;font-size:0.7rem;font-weight:700;cursor:pointer;">💰 Received Payment</button></div>`:''}
       ${e.total>0?`<div class="rprofit ${profit>=0?'pos':'neg'}">Profit: ${profit>=0?'':'-'}${inr(Math.abs(profit))}</div>`:''}
       ${e.notes?`<div class="rnotes">📝 ${esc(e.notes)}</div>`:''}
     </div>`;
@@ -1026,91 +1070,55 @@ function renderHomeAll(){
 }
 
 // ── PTR (Simple Interest) CALCULATOR ─────────────────
+// Formula: Interest = Principal x Rate x Time(in years) / 100
 function calcPTR(){
-  const p=parseFloat(document.getElementById('ptrP').value)||0;
-  const r=parseFloat(document.getElementById('ptrR').value)||0;
-  let t=parseFloat(document.getElementById('ptrT').value)||0;
+  const pRaw=document.getElementById('ptrP').value;
+  const rRaw=document.getElementById('ptrR').value;
+  const tRaw=document.getElementById('ptrT').value;
   const unit=document.getElementById('ptrUnit').value;
-  const tYears=unit==='months'?t/12:t;
-  const interest=(p*r*tYears)/100;
-  const total=p+interest;
-  document.getElementById('ptr-out-p').textContent=inr(p);
-  document.getElementById('ptr-out-r').textContent=r+'%';
-  document.getElementById('ptr-out-t').textContent=t+' '+(unit==='months'?(t===1?'month':'months'):(t===1?'year':'years'));
-  document.getElementById('ptr-out-interest').textContent=inr(Math.round(interest));
-  document.getElementById('ptr-out-total').textContent=inr(Math.round(total));
+
+  const p=pRaw===''?0:parseFloat(pRaw);
+  const r=rRaw===''?0:parseFloat(rRaw); // Rate is % PER MONTH
+  const t=tRaw===''?0:parseFloat(tRaw);
+
+  if(isNaN(p)||isNaN(r)||isNaN(t)){return;}
+
+  // Convert whatever was entered into total months and total years (exact)
+  let totalMonths, totalYears;
+  if(unit==='months'){ totalMonths=t; totalYears=t/12; }
+  else if(unit==='years'){ totalMonths=t*12; totalYears=t; }
+  else { totalMonths=t/30; totalYears=t/365; } // days (30-day month approximation for the months view)
+
+  // Since Rate (r) is per MONTH, the formula directly uses totalMonths as "T" — no /12 needed.
+  // MONTHS-based result
+  const monthsInterest=(p*r*totalMonths)/100;
+  const monthsTotal=p+monthsInterest;
+  document.getElementById('ptr-m-t').textContent=trimNum(round2(totalMonths))+' '+(round2(totalMonths)===1?'month':'months');
+  document.getElementById('ptr-m-interest').textContent=inr(round2(monthsInterest));
+  document.getElementById('ptr-m-total').textContent=inr(round2(monthsTotal));
+
+  // YEARS-based result — same total time, same total interest as the months box,
+  // just expressed with R converted to an effective yearly rate (R_year = R_month x 12)
+  // so the formula P x R_year x totalYears / 100 gives the IDENTICAL interest as above.
+  const rPerYear=r*12;
+  const yearsInterest=(p*rPerYear*totalYears)/100;
+  const yearsTotal=p+yearsInterest;
+  document.getElementById('ptr-y-t').textContent=trimNum(round2(totalYears))+' '+(round2(totalYears)===1?'year':'years');
+  document.getElementById('ptr-y-interest').textContent=inr(round2(yearsInterest));
+  document.getElementById('ptr-y-total').textContent=inr(round2(yearsTotal));
 }
+// Round to 2 decimals avoiding floating point drift
+function round2(n){return Math.round((n+Number.EPSILON)*100)/100;}
+function trimNum(n){return Number.isInteger(n)?n:parseFloat(n.toFixed(2));}
 function clrPTR(){
   ['ptrP','ptrR','ptrT'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('ptrUnit').value='months';
   calcPTR();
 }
 
-// ── DEBT ──────────────────────────────────────────────
-function addDebt(){
-  const date=document.getElementById('dtd').value;
-  const person=document.getElementById('dtperson').value.trim();
-  const amt=parseFloat(document.getElementById('dtamt').value)||0;
-  if(!date||!person||!amt){toast('⚠️ Fill in date, person, and amount.');return;}
-  const arr=getDebt();
-  arr.unshift({id:Date.now(),date,person,
-    type:document.getElementById('dttype').value,
-    amt,reason:document.getElementById('dtreason').value.trim(),
-    notes:document.getElementById('dtn').value.trim(),
-    settled:false
-  });
-  saveDebt(arr);clrDebtForm();renderDebt();renderDash();toast('✅ Debt entry added!');
-}
-function clrDebtForm(){
-  ['dtperson','dtamt','dtreason','dtn'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('dttype').value='owed_to_you';
-  document.getElementById('dtd').valueAsDate=new Date();
-}
-function delDebtEntry(id){if(!confirm('Delete?'))return;saveDebt(getDebt().filter(e=>e.id!==id));renderDebt();renderDash();toast('🗑 Deleted.');}
-function toggleSettled(id){
-  const arr=getDebt();
-  const e=arr.find(x=>x.id===id);
-  if(e){e.settled=!e.settled;saveDebt(arr);renderDebt();renderDash();toast(e.settled?'✅ Marked as settled!':'↩️ Marked as pending.');}
-}
-function clrDtFil(){document.getElementById('dtft').value='all';document.getElementById('dtfs').value='all';renderDebt();}
-function renderDebt(){
-  const arr=getDebt();
-  const owedToYou=arr.filter(e=>e.type==='owed_to_you'&&!e.settled).reduce((s,e)=>s+(e.amt||0),0);
-  const youOwe=arr.filter(e=>e.type==='i_owe'&&!e.settled).reduce((s,e)=>s+(e.amt||0),0);
-  const net=owedToYou-youOwe;
-  document.getElementById('dt-owedtoyou').textContent=inr(owedToYou);
-  document.getElementById('dt-youowe').textContent=inr(youOwe);
-  const dn=document.getElementById('dt-net');
-  dn.textContent=(net>=0?'+':'-')+inr(Math.abs(net));
-  dn.style.color=net>=0?'#7FD992':'#FF9B8A';
-
-  const ft=document.getElementById('dtft').value;
-  const fs=document.getElementById('dtfs').value;
-  const data=arr.filter(e=>(ft==='all'||e.type===ft)&&(fs==='all'||(fs==='settled'?e.settled:!e.settled)));
-  const list=document.getElementById('dtl'),empty=document.getElementById('dte2');
-  if(!data.length){list.innerHTML='';empty.style.display='block';return;}
-  empty.style.display='none';
-  list.innerHTML=data.map(e=>`<div class="rc">
-    <button class="delbtn" onclick="delDebtEntry(${e.id})">🗑</button>
-    <div class="rtop">
-      <div class="rwrk">${esc(e.person)} <span class="debt-tag ${e.type==='owed_to_you'?'owe-you':'you-owe'}">${e.type==='owed_to_you'?'Owes you':'You owe'}</span></div>
-      <div class="ramt ${e.type==='owed_to_you'?'ag':'ar'}">${inr(e.amt)}</div>
-    </div>
-    <div class="rmeta">
-      <span class="chip cd">📅 ${fmtD(e.date)}</span>
-      ${e.reason?`<span class="chip cp">${esc(e.reason)}</span>`:''}
-    </div>
-    ${e.notes?`<div class="rnotes">📝 ${esc(e.notes)}</div>`:''}
-    <div>
-      ${e.settled?'<span class="settled-badge">✓ Settled</span> ':''}
-      <button class="settle-btn" onclick="toggleSettled(${e.id})" style="${e.settled?'background:var(--border);color:var(--soil);':''}">${e.settled?'↩️ Mark Pending':'✅ Mark Settled'}</button>
-    </div>
-  </div>`).join('');
-}
-
 // ── DASHBOARD ─────────────────────────────────────────
 function renderDash(){
-  const farm=getFarm(),diesel=getDiesel(),home=getHome(),vehicles=getVehicles(),debt=getDebt();
+  const farm=getFarm(),diesel=getDiesel(),home=getHome(),vehicles=getVehicles();
   const farmReceived=farm.reduce((s,e)=>s+(e.received||0),0);
   const farmPending=farm.reduce((s,e)=>s+(e.pending||0),0);
   const farmCost=farm.reduce((s,e)=>s+(e.otherExp||0),0);
@@ -1124,13 +1132,6 @@ function renderDash(){
   const dp=document.getElementById('d-profit');dp.textContent=inr(netProfit);dp.style.color=netProfit>=0?'var(--leaf)':'var(--red)';
   document.getElementById('d-acres').textContent=totalAcres.toFixed(1);
   document.getElementById('d-home').textContent=inr(homeCost);
-
-  const owedToYou=debt.filter(e=>e.type==='owed_to_you'&&!e.settled).reduce((s,e)=>s+(e.amt||0),0);
-  const youOwe=debt.filter(e=>e.type==='i_owe'&&!e.settled).reduce((s,e)=>s+(e.amt||0),0);
-  const netDebt=owedToYou-youOwe;
-  const dd=document.getElementById('d-debt');
-  dd.textContent=(netDebt>=0?'+':'-')+inr(Math.abs(netDebt));
-  dd.style.color=netDebt>=0?'var(--leaf)':'var(--red)';
 
   const dvl=document.getElementById('d-veh-list');
   if(!vehicles.length){dvl.innerHTML='<p style="color:var(--muted);font-size:0.82rem;">No vehicles added yet.</p>';return;}
@@ -1167,10 +1168,6 @@ function exportCSV(type){
     rows=[['Date','From','Source','Amount','Notes']];
     getIncome().forEach(e=>rows.push([e.date,e.from,e.src,e.amt,e.notes||'']));
     fn='khet-income.csv';
-  }else if(type==='debt'){
-    rows=[['Date','Person','Type','Amount','Reason','Settled','Notes']];
-    getDebt().forEach(e=>rows.push([e.date,e.person,e.type==='owed_to_you'?'Owed to me':'I owe',e.amt,e.reason||'',e.settled?'Yes':'No',e.notes||'']));
-    fn='khet-debt.csv';
   }else{
     rows=[['Date','Item','Category','Amount','Paid By','Notes']];
     getHome().forEach(e=>rows.push([e.date,e.item,e.cat,e.amt,e.paid||'',e.notes||'']));

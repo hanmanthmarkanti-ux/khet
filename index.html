@@ -9,6 +9,38 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png"/>
 <link rel="manifest" href="manifest.json"/>
 <meta name="theme-color" content="#3B2A1A"/>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import {
+    getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+    onAuthStateChanged, signOut, sendPasswordResetEmail, updateProfile
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import {
+    getFirestore, doc, getDoc, setDoc, collection, getDocs
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyB4n2adhczkNsr4DUw7jR_EFL129SyRzgQ",
+    authDomain: "khet-diary-76200.firebaseapp.com",
+    projectId: "khet-diary-76200",
+    storageBucket: "khet-diary-76200.firebasestorage.app",
+    messagingSenderId: "184564195930",
+    appId: "1:184564195930:web:a7762d3aeb7773c8bdae63"
+  };
+
+  const fbApp = initializeApp(firebaseConfig);
+  const fbAuth = getAuth(fbApp);
+  const fbDb = getFirestore(fbApp);
+
+  // Expose to global (non-module) scope so the rest of the app's plain <script> can use it
+  window.FB = {
+    auth: fbAuth, db: fbDb,
+    createUserWithEmailAndPassword, signInWithEmailAndPassword,
+    onAuthStateChanged, signOut, sendPasswordResetEmail, updateProfile,
+    doc, getDoc, setDoc, collection, getDocs
+  };
+  window.dispatchEvent(new Event('firebase-ready'));
+</script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 :root{
@@ -206,6 +238,19 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
 </head>
 <body>
 
+<!-- INITIAL LOADING (shown until Firebase tells us login state) -->
+<div id="initial-loading" style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--soil);">
+  <div style="font-size:3.2rem;margin-bottom:14px;">🌾</div>
+  <div style="color:var(--cream);font-size:1.1rem;font-weight:700;">Khet Diary</div>
+  <div style="color:#B8A890;font-size:0.8rem;margin-top:6px;">Loading…</div>
+</div>
+
+<!-- IN-APP LOADING (shown briefly after login while syncing cloud data) -->
+<div id="auth-loading" style="display:none;min-height:100vh;flex-direction:column;align-items:center;justify-content:center;background:var(--soil);position:fixed;inset:0;z-index:9998;">
+  <div style="font-size:3.2rem;margin-bottom:14px;">☁️</div>
+  <div style="color:var(--cream);font-size:1.1rem;font-weight:700;">Syncing your data…</div>
+</div>
+
 <!-- AUTH -->
 <div id="auth-screen" class="screen">
   <div class="auth-logo">🌾</div>
@@ -217,20 +262,35 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
       <div class="auth-tab" onclick="showAuthTab('register')">Register</div>
     </div>
     <div id="login-panel">
-      <div class="afield"><label>Username</label><input type="text" id="lu" placeholder="Your username"/></div>
-      <div class="afield"><label>Password</label><input type="password" id="lp" placeholder="Your password"/></div>
+      <div class="afield"><label>Email</label><input type="email" id="lu" placeholder="you@example.com" autocomplete="username"/></div>
+      <div class="afield"><label>Password</label><input type="password" id="lp" placeholder="Your password" autocomplete="current-password"/></div>
       <button class="auth-btn" onclick="doLogin()">Login →</button>
       <div class="auth-err" id="lerr"></div>
+      <div class="auth-hint" style="margin-top:14px;">
+        <a href="javascript:void(0)" onclick="showAuthTab('forgot')" style="color:var(--blue);font-weight:700;text-decoration:none;">Forgot password?</a>
+      </div>
       <div class="auth-hint">No account? Click Register above</div>
     </div>
     <div id="reg-panel" style="display:none;">
       <div class="afield"><label>Full Name</label><input type="text" id="rn" placeholder="e.g. Hanmanth"/></div>
-      <div class="afield"><label>Username</label><input type="text" id="ru" placeholder="Choose a username"/></div>
-      <div class="afield"><label>Password</label><input type="password" id="rp" placeholder="Min 4 characters"/></div>
+      <div class="afield"><label>Email</label><input type="email" id="ru" placeholder="you@example.com" autocomplete="username"/></div>
+      <div class="afield"><label>Password</label><input type="password" id="rp" placeholder="Min 6 characters" autocomplete="new-password"/></div>
       <div class="afield"><label>Confirm Password</label><input type="password" id="rp2" placeholder="Repeat password"/></div>
       <button class="auth-btn" onclick="doRegister()">Create Account →</button>
       <div class="auth-err" id="rerr"></div>
       <div class="auth-hint">Already registered? Click Login above</div>
+    </div>
+    <div id="forgot-panel" style="display:none;">
+      <div style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;line-height:1.5;">
+        Enter your email and we'll send you a link to reset your password.
+      </div>
+      <div class="afield"><label>Email</label><input type="email" id="fpu" placeholder="you@example.com"/></div>
+      <button class="auth-btn" onclick="doForgotPassword()" style="background:var(--blue);">📧 Send Reset Link</button>
+      <div class="auth-err" id="fperr"></div>
+      <div class="auth-hint" id="fpmsg" style="color:var(--leaf);font-weight:600;"></div>
+      <div class="auth-hint" style="margin-top:14px;">
+        <a href="javascript:void(0)" onclick="showAuthTab('login')" style="color:var(--blue);font-weight:700;text-decoration:none;">← Back to Login</a>
+      </div>
     </div>
   </div>
 </div>
@@ -566,6 +626,7 @@ function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.re
 function showAuthTab(t){
   document.getElementById('login-panel').style.display=t==='login'?'block':'none';
   document.getElementById('reg-panel').style.display=t==='register'?'block':'none';
+  document.getElementById('forgot-panel').style.display=t==='forgot'?'block':'none';
   document.querySelectorAll('.auth-tab').forEach((el,i)=>el.classList.toggle('active',(i===0&&t==='login')||(i===1&&t==='register')));
 }
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
@@ -573,61 +634,172 @@ function tog(id,hdr){const b=document.getElementById(id);const open=b.classList.
 const TABS=['dash','vehicles','farm','diesel','home','debt'];
 function switchTab(t){TABS.forEach(x=>{document.getElementById('pg-'+x).classList.toggle('active',x===t);document.getElementById('tab-'+x).classList.toggle('active',x===t);});if(t==='diesel')renderDieselPage();if(t==='debt')calcPTR();}
 
-// ── STORAGE ───────────────────────────────────────────
-function getUsers(){return JSON.parse(localStorage.getItem('KD_users')||'{}');}
-function saveUsers(u){localStorage.setItem('KD_users',JSON.stringify(u));}
-function getSession(){return localStorage.getItem('KD_session')||sessionStorage.getItem('KD_session')||null;}
-function setSession(u){localStorage.setItem('KD_session',u);sessionStorage.setItem('KD_session',u);}
-function clearSession(){localStorage.removeItem('KD_session');sessionStorage.removeItem('KD_session');localStorage.removeItem('KD_name');sessionStorage.removeItem('KD_name');}
-function ku(k){return k+'_'+getSession();}
-function getVehicles(){return JSON.parse(localStorage.getItem(ku('KD_veh'))||'[]');}
-function getFarm(){return JSON.parse(localStorage.getItem(ku('KD_farm'))||'[]');}
-function getDiesel(){return JSON.parse(localStorage.getItem(ku('KD_diesel'))||'[]');}
-function getHome(){return JSON.parse(localStorage.getItem(ku('KD_home'))||'[]');}
-function getIncome(){return JSON.parse(localStorage.getItem(ku('KD_income'))||'[]');}
-function getDebt(){return JSON.parse(localStorage.getItem(ku('KD_debt'))||'[]');}
-function saveVehicles(d){localStorage.setItem(ku('KD_veh'),JSON.stringify(d));}
-function saveFarm(d){localStorage.setItem(ku('KD_farm'),JSON.stringify(d));}
-function saveDiesel(d){localStorage.setItem(ku('KD_diesel'),JSON.stringify(d));}
-function saveHome(d){localStorage.setItem(ku('KD_home'),JSON.stringify(d));}
-function saveIncome(d){localStorage.setItem(ku('KD_income'),JSON.stringify(d));}
-function saveDebt(d){localStorage.setItem(ku('KD_debt'),JSON.stringify(d));}
+// ── FIREBASE-BACKED STORAGE ───────────────────────────
+// Strategy: keep an in-memory cache (cloudData) that mirrors Firestore.
+// All getXxx()/saveXxx() functions below read/write this cache instantly (sync, no UI rewrite needed),
+// while saveXxx() also pushes the change to Firestore in the background so it syncs across devices.
+let currentUID=null;
+let cloudData={veh:[],farm:[],diesel:[],home:[],income:[]};
+let fbReady=false;
 
-// ── AUTH ──────────────────────────────────────────────
-function doLogin(){
-  const u=document.getElementById('lu').value.trim().toLowerCase();
+window.addEventListener('firebase-ready',()=>{ fbReady=true; });
+
+async function waitForFirebase(){
+  if(fbReady) return;
+  await new Promise(res=>window.addEventListener('firebase-ready',res,{once:true}));
+}
+
+async function loadCloudData(uid){
+  const ref=window.FB.doc(window.FB.db,'users',uid,'app','data');
+  try{
+    const snap=await window.FB.getDoc(ref);
+    if(snap.exists()){
+      const d=snap.data();
+      cloudData={
+        veh:d.veh||[], farm:d.farm||[], diesel:d.diesel||[],
+        home:d.home||[], income:d.income||[]
+      };
+    } else {
+      cloudData={veh:[],farm:[],diesel:[],home:[],income:[]};
+      await window.FB.setDoc(ref,cloudData);
+    }
+  }catch(err){
+    console.error('Load cloud data failed',err);
+    toast('⚠️ Could not load cloud data. Check internet connection.');
+  }
+}
+
+let saveTimer=null;
+function pushCloudData(){
+  if(!currentUID) return;
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(async()=>{
+    try{
+      const ref=window.FB.doc(window.FB.db,'users',currentUID,'app','data');
+      await window.FB.setDoc(ref,cloudData);
+    }catch(err){
+      console.error('Save to cloud failed',err);
+      toast('⚠️ Could not save to cloud. Check internet connection.');
+    }
+  },300); // debounce rapid edits
+}
+
+function getVehicles(){return cloudData.veh;}
+function getFarm(){return cloudData.farm;}
+function getDiesel(){return cloudData.diesel;}
+function getHome(){return cloudData.home;}
+function getIncome(){return cloudData.income;}
+function saveVehicles(d){cloudData.veh=d;pushCloudData();}
+function saveFarm(d){cloudData.farm=d;pushCloudData();}
+function saveDiesel(d){cloudData.diesel=d;pushCloudData();}
+function saveHome(d){cloudData.home=d;pushCloudData();}
+function saveIncome(d){cloudData.income=d;pushCloudData();}
+
+// ── AUTH (Firebase) ───────────────────────────────────
+function friendlyAuthError(code){
+  const map={
+    'auth/invalid-email':'⚠️ That email address looks invalid.',
+    'auth/user-not-found':'❌ No account with that email. Please register.',
+    'auth/wrong-password':'❌ Wrong password.',
+    'auth/invalid-credential':'❌ Wrong email or password.',
+    'auth/email-already-in-use':'❌ An account already exists with that email.',
+    'auth/weak-password':'⚠️ Password must be at least 6 characters.',
+    'auth/too-many-requests':'⚠️ Too many attempts. Please wait a bit and try again.',
+    'auth/network-request-failed':'⚠️ Network error. Check your internet connection.'
+  };
+  return map[code]||('❌ '+(code||'Something went wrong. Please try again.'));
+}
+
+async function doLogin(){
+  await waitForFirebase();
+  const u=document.getElementById('lu').value.trim();
   const p=document.getElementById('lp').value;
   const err=document.getElementById('lerr');err.textContent='';
   if(!u||!p){err.textContent='⚠️ Fill in all fields.';return;}
-  const users=getUsers();
-  if(!users[u]){err.textContent='❌ Username not found.';return;}
-  if(users[u].pw!==btoa(p)){err.textContent='❌ Wrong password.';return;}
-  setSession(u);localStorage.setItem('KD_name',users[u].name);sessionStorage.setItem('KD_name',users[u].name);
-  openApp(users[u].name);
+  const btn=document.querySelector('#login-panel .auth-btn');
+  btn.disabled=true;btn.textContent='Logging in…';
+  try{
+    await window.FB.signInWithEmailAndPassword(window.FB.auth,u,p);
+    // onAuthStateChanged will pick this up and call openApp
+  }catch(e){
+    err.textContent=friendlyAuthError(e.code);
+  }finally{
+    btn.disabled=false;btn.textContent='Login →';
+  }
 }
-function doRegister(){
+
+async function doRegister(){
+  await waitForFirebase();
   const n=document.getElementById('rn').value.trim();
-  const u=document.getElementById('ru').value.trim().toLowerCase();
+  const u=document.getElementById('ru').value.trim();
   const p=document.getElementById('rp').value;
   const p2=document.getElementById('rp2').value;
   const err=document.getElementById('rerr');err.textContent='';
   if(!n||!u||!p||!p2){err.textContent='⚠️ Fill in all fields.';return;}
-  if(p.length<4){err.textContent='⚠️ Password min 4 chars.';return;}
+  if(p.length<6){err.textContent='⚠️ Password min 6 characters.';return;}
   if(p!==p2){err.textContent='❌ Passwords do not match.';return;}
-  if(!/^[a-z0-9_]+$/.test(u)){err.textContent='⚠️ Username: letters/numbers/_ only.';return;}
-  const users=getUsers();
-  if(users[u]){err.textContent='❌ Username taken.';return;}
-  users[u]={name:n,pw:btoa(p)};saveUsers(users);
-  setSession(u);localStorage.setItem('KD_name',n);sessionStorage.setItem('KD_name',n);
-  toast('✅ Welcome '+n+'!');openApp(n);
+  const btn=document.querySelector('#reg-panel .auth-btn');
+  btn.disabled=true;btn.textContent='Creating account…';
+  try{
+    const cred=await window.FB.createUserWithEmailAndPassword(window.FB.auth,u,p);
+    await window.FB.updateProfile(cred.user,{displayName:n});
+    toast('✅ Welcome '+n+'!');
+    // onAuthStateChanged will pick this up and call openApp
+  }catch(e){
+    err.textContent=friendlyAuthError(e.code);
+  }finally{
+    btn.disabled=false;btn.textContent='Create Account →';
+  }
 }
-function doLogout(){
+
+async function doForgotPassword(){
+  await waitForFirebase();
+  const u=document.getElementById('fpu').value.trim();
+  const err=document.getElementById('fperr');err.textContent='';
+  const msg=document.getElementById('fpmsg');msg.textContent='';
+  if(!u){err.textContent='⚠️ Enter your email address.';return;}
+  const btn=document.querySelector('#forgot-panel .auth-btn');
+  btn.disabled=true;btn.textContent='Sending…';
+  try{
+    await window.FB.sendPasswordResetEmail(window.FB.auth,u);
+    msg.textContent='✅ Reset link sent! Check your email inbox (and spam folder).';
+  }catch(e){
+    err.textContent=friendlyAuthError(e.code);
+  }finally{
+    btn.disabled=false;btn.textContent='📧 Send Reset Link';
+  }
+}
+
+async function doLogout(){
   if(!confirm('Logout from Khet Diary?'))return;
-  clearSession();
-  ['lu','lp','rn','ru','rp','rp2'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('lerr').textContent='';document.getElementById('rerr').textContent='';
-  showAuthTab('login');show('auth-screen');
+  await waitForFirebase();
+  await window.FB.signOut(window.FB.auth);
+  // onAuthStateChanged will show the auth screen
 }
+
+window.addEventListener('firebase-ready',()=>{
+  window.FB.onAuthStateChanged(window.FB.auth,async(user)=>{
+    document.getElementById('initial-loading').style.display='none';
+    if(user){
+      currentUID=user.uid;
+      document.getElementById('auth-loading').style.display='flex';
+      await loadCloudData(user.uid);
+      openApp(user.displayName||user.email||'Farmer');
+      document.getElementById('auth-loading').style.display='none';
+    } else {
+      currentUID=null;
+      cloudData={veh:[],farm:[],diesel:[],home:[],income:[]};
+      ['lu','lp','rn','ru','rp','rp2','fpu'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+      document.getElementById('lerr').textContent='';
+      document.getElementById('rerr').textContent='';
+      const fpe=document.getElementById('fperr');if(fpe)fpe.textContent='';
+      const fpm=document.getElementById('fpmsg');if(fpm)fpm.textContent='';
+      showAuthTab('login');
+      show('auth-screen');
+    }
+  });
+});
+
 function openApp(name){
   document.getElementById('uname').textContent=name;
   document.getElementById('fd').valueAsDate=new Date();
@@ -1178,19 +1350,12 @@ function exportCSV(type){
 }
 
 // ── INIT ──────────────────────────────────────────────
-(function(){
-  const u=getSession();
-  if(u){
-    const users=getUsers();
-    const name=users[u]?users[u].name:(localStorage.getItem('KD_name')||sessionStorage.getItem('KD_name')||u);
-    if(users[u]||name){openApp(name);return;}else clearSession();
-  }
-  show('auth-screen');
-})();
+// Show a loading state until Firebase tells us whether the user is logged in.
 document.addEventListener('keydown',e=>{
   if(e.key!=='Enter')return;
   if(document.getElementById('login-panel').style.display!=='none')doLogin();
-  else doRegister();
+  else if(document.getElementById('reg-panel').style.display!=='none')doRegister();
+  else if(document.getElementById('forgot-panel').style.display!=='none')doForgotPassword();
 });
 </script>
 </body>

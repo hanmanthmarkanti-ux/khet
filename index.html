@@ -9,16 +9,12 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png"/>
 <link rel="manifest" href="manifest.json"/>
 <meta name="theme-color" content="#3B2A1A"/>
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import {
-    getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
-    onAuthStateChanged, signOut, sendPasswordResetEmail, updateProfile
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import {
-    getFirestore, doc, getDoc, setDoc, collection, getDocs
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
+<!-- Firebase CDN (compat version - works on local files AND GitHub Pages) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+<script>
   const firebaseConfig = {
     apiKey: "AIzaSyB4n2adhczkNsr4DUw7jR_EFL129SyRzgQ",
     authDomain: "khet-diary-76200.firebaseapp.com",
@@ -27,19 +23,10 @@
     messagingSenderId: "184564195930",
     appId: "1:184564195930:web:a7762d3aeb7773c8bdae63"
   };
-
-  const fbApp = initializeApp(firebaseConfig);
-  const fbAuth = getAuth(fbApp);
-  const fbDb = getFirestore(fbApp);
-
-  // Expose to global (non-module) scope so the rest of the app's plain <script> can use it
-  window.FB = {
-    auth: fbAuth, db: fbDb,
-    createUserWithEmailAndPassword, signInWithEmailAndPassword,
-    onAuthStateChanged, signOut, sendPasswordResetEmail, updateProfile,
-    doc, getDoc, setDoc, collection, getDocs
-  };
-  window.dispatchEvent(new Event('firebase-ready'));
+  firebase.initializeApp(firebaseConfig);
+  window.fbAuth = firebase.auth();
+  window.fbDb   = firebase.firestore();
+  window.fbStorage = firebase.storage();
 </script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
@@ -232,8 +219,66 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
 .empty .ei{font-size:2rem;margin-bottom:7px;}
 .empty p{font-size:0.85rem;line-height:1.5;}
 
+/* PHOTO UPLOAD */
+.photo-upload-area{border:2px dashed var(--border);border-radius:10px;padding:14px;text-align:center;cursor:pointer;transition:border 0.2s;margin-bottom:12px;}
+.photo-upload-area:hover{border-color:var(--wheat);}
+.photo-upload-area input{display:none;}
+.photo-upload-label{font-size:0.82rem;color:var(--muted);font-weight:600;}
+.photo-preview-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
+.photo-thumb{position:relative;width:80px;height:80px;border-radius:8px;overflow:hidden;box-shadow:var(--sh);}
+.photo-thumb img{width:100%;height:100%;object-fit:cover;}
+.photo-thumb-del{position:absolute;top:2px;right:2px;background:rgba(0,0,0,0.6);color:#fff;border:none;border-radius:50%;width:20px;height:20px;font-size:0.7rem;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;}
+.photo-upload-progress{font-size:0.78rem;color:var(--blue);font-weight:600;margin-bottom:8px;display:none;}
+/* PENDING REMINDER */
+.pending-old{background:#FFF3E0!important;border-left:4px solid var(--orange)!important;}
+.pending-old .overdue-badge{display:inline-flex;align-items:center;gap:4px;background:var(--orange);color:#fff;font-size:0.65rem;font-weight:800;padding:3px 8px;border-radius:12px;margin-left:6px;}
+.pending-new .overdue-badge{display:none;}
+/* DASH PENDING ALERT */
+.pending-alert{margin:14px 14px 0;background:#FEF3E2;border:1.5px solid var(--orange);border-radius:12px;padding:13px 14px;}
+.pending-alert-title{font-size:0.78rem;font-weight:800;color:var(--orange);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em;}
+.pending-alert-item{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #FFE0B2;}
+.pending-alert-item:last-child{border-bottom:none;}
+.pending-alert-name{font-size:0.82rem;font-weight:700;color:var(--soil);}
+.pending-alert-meta{font-size:0.7rem;color:var(--muted);margin-top:1px;}
+.pending-alert-amt{font-size:0.88rem;font-weight:800;color:var(--orange);}
+/* WHATSAPP SHARE ON ENTRY */
+.wa-share-btn{background:#25D366;color:#fff;border:none;border-radius:7px;padding:5px 11px;font-size:0.7rem;font-weight:700;cursor:pointer;white-space:nowrap;margin-top:6px;display:inline-flex;align-items:center;gap:4px;}
+.wa-share-btn:active{opacity:0.8;}
 #toast{position:fixed;bottom:76px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--soil);color:var(--cream);padding:9px 18px;border-radius:25px;font-size:0.85rem;font-weight:600;opacity:0;transition:opacity 0.3s,transform 0.3s;z-index:9999;pointer-events:none;white-space:nowrap;}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* LANGUAGE TOGGLE */
+.lang-btn{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);border-radius:14px;padding:4px 10px;font-size:0.72rem;font-weight:700;color:#C8B89A;cursor:pointer;white-space:nowrap;}
+.lang-btn:active{background:rgba(255,255,255,0.25);}
+
+/* MONTHLY REPORT */
+.report-month-select{display:flex;gap:10px;padding:14px 14px 0;align-items:center;flex-wrap:wrap;}
+.report-month-select input{flex:1;border:1.5px solid var(--border);border-radius:9px;padding:11px 12px;font-size:0.95rem;font-family:'Inter',sans-serif;color:var(--soil);background:var(--white);outline:none;}
+.report-section{margin:12px 14px 0;background:var(--white);border-radius:14px;box-shadow:var(--sh);overflow:hidden;}
+.report-section-title{padding:12px 14px;font-size:0.88rem;font-weight:700;border-bottom:1px solid var(--border);background:#F5EFE4;}
+.report-row{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid #F0E8DA;}
+.report-row:last-child{border-bottom:none;}
+.report-row-label{font-size:0.85rem;color:var(--muted);font-weight:600;}
+.report-row-val{font-size:0.9rem;font-weight:800;}
+.report-total-row{display:flex;justify-content:space-between;align-items:center;padding:14px;background:var(--soil2);border-radius:12px;margin:10px 14px 0;}
+.report-total-label{color:var(--cream);font-size:0.88rem;font-weight:700;}
+.report-total-val{color:var(--wheat);font-size:1.2rem;font-weight:800;}
+.share-btn{width:calc(100% - 28px);margin:12px 14px 0;padding:13px;border-radius:9px;font-size:0.97rem;font-weight:700;border:none;cursor:pointer;background:#25D366;color:#fff;}
+.share-btn:active{opacity:0.8;}
+
+/* CUSTOMER VIEW */
+.customer-search-bar{padding:14px 14px 0;}
+.customer-search-bar input{width:100%;border:1.5px solid var(--border);border-radius:9px;padding:11px 12px;font-size:0.95rem;font-family:'Inter',sans-serif;color:var(--soil);background:var(--white);outline:none;}
+.customer-card{margin:10px 14px 0;background:var(--white);border-radius:14px;box-shadow:var(--sh);overflow:hidden;cursor:pointer;}
+.customer-card-header{padding:14px;display:flex;justify-content:space-between;align-items:center;}
+.customer-name{font-size:0.95rem;font-weight:800;}
+.customer-stats{display:flex;gap:8px;flex-wrap:wrap;padding:0 14px 12px;}
+.cstat{background:var(--cream);border-radius:8px;padding:7px 10px;text-align:center;flex:1;min-width:80px;}
+.cstat-val{font-size:0.9rem;font-weight:800;}
+.cstat-label{font-size:0.62rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;}
+.customer-entries{padding:0 14px 14px;}
+.customer-entry{padding:8px 10px;background:var(--cream);border-radius:8px;margin-bottom:6px;}
+.customer-entry:last-child{margin-bottom:0;}
 </style>
 </head>
 <body>
@@ -300,9 +345,10 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
 <div id="app-body">
   <header>
     <div class="hlogo">🌾</div>
-    <h1>Khet Diary</h1>
+    <h1 id="app-title">Khet Diary</h1>
+    <button class="lang-btn" onclick="toggleLang()" id="lang-btn">తెలుగు</button>
     <div class="uchip">👤 <span id="uname"></span></div>
-    <button class="lbtn" onclick="doLogout()">🚪 Logout</button>
+    <button class="lbtn" onclick="doLogout()" id="logout-text">🚪 Logout</button>
   </header>
 
   <!-- DASHBOARD -->
@@ -319,6 +365,8 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
         <div id="d-veh-list"><p style="color:var(--muted);font-size:0.82rem;">No vehicles added yet.</p></div>
       </div>
     </div>
+    <!-- PENDING PAYMENT REMINDERS -->
+    <div id="pending-alert-section"></div>
   </div>
 
   <!-- VEHICLES -->
@@ -399,6 +447,15 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
           </div>
         </div>
         <div class="field"><label>Notes</label><textarea id="fn" placeholder="Optional details…"></textarea></div>
+        <div class="field">
+          <label>📷 Photos (optional)</label>
+          <div class="photo-preview-grid" id="farm-photo-previews"></div>
+          <div class="photo-upload-progress" id="farm-photo-progress">⏫ Uploading photos…</div>
+          <div class="photo-upload-area" onclick="document.getElementById('farm-photo-input').click()">
+            <input type="file" id="farm-photo-input" accept="image/*" multiple onchange="previewFarmPhotos(this)"/>
+            <div class="photo-upload-label">📷 Tap to add photos<br><span style="font-size:0.7rem;color:#bbb;">Receipt, field photo, etc.</span></div>
+          </div>
+        </div>
         <button class="btn bg" onclick="addFarm()">＋ Add Entry</button>
         <button class="btn bgr" onclick="clrFarm()">Clear</button>
       </div>
@@ -606,15 +663,44 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
     </div>
   </div>
 
+  <!-- MONTHLY REPORT -->
+  <div class="page" id="pg-report">
+    <div class="report-month-select">
+      <input type="month" id="report-month" onchange="renderReport()"/>
+      <button class="btn bg" style="width:auto;padding:11px 18px;margin-top:0;" onclick="shareReport()">📤 Share</button>
+    </div>
+    <div id="report-content">
+      <div class="empty" style="padding:40px 16px;">
+        <div class="ei">📋</div>
+        <p id="report-empty-text">Select a month above to see the report</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CUSTOMER VIEW -->
+  <div class="page" id="pg-customers">
+    <div class="customer-search-bar">
+      <input type="text" id="cust-search" placeholder="Search customer name…" oninput="renderCustomers()"/>
+    </div>
+    <div id="customers-list">
+      <div class="empty" style="padding:40px 16px;">
+        <div class="ei">👨‍🌾</div>
+        <p id="cust-empty-text">No farm work entries yet</p>
+      </div>
+    </div>
+  </div>
+
 </div><!-- app-body -->
 
 <div class="tabs">
-  <div class="tab active" id="tab-dash"     onclick="switchTab('dash')"><span class="ti">📊</span>Dashboard</div>
-  <div class="tab"        id="tab-vehicles" onclick="switchTab('vehicles')"><span class="ti">🚛</span>Vehicles</div>
-  <div class="tab"        id="tab-farm"     onclick="switchTab('farm')"><span class="ti">🚜</span>Farm</div>
-  <div class="tab"        id="tab-diesel"   onclick="switchTab('diesel')"><span class="ti">⛽</span>Diesel</div>
-  <div class="tab"        id="tab-home"     onclick="switchTab('home')"><span class="ti">🏠</span>Home</div>
-  <div class="tab"        id="tab-debt"     onclick="switchTab('debt')"><span class="ti">🧮</span>Interest</div>
+  <div class="tab active" id="tab-dash"      onclick="switchTab('dash')"><span class="ti">📊</span><span class="tl" data-key="tab_dash">Dashboard</span></div>
+  <div class="tab"        id="tab-vehicles"  onclick="switchTab('vehicles')"><span class="ti">🚛</span><span class="tl" data-key="tab_vehicles">Vehicles</span></div>
+  <div class="tab"        id="tab-farm"      onclick="switchTab('farm')"><span class="ti">🚜</span><span class="tl" data-key="tab_farm">Farm</span></div>
+  <div class="tab"        id="tab-diesel"    onclick="switchTab('diesel')"><span class="ti">⛽</span><span class="tl" data-key="tab_diesel">Diesel</span></div>
+  <div class="tab"        id="tab-home"      onclick="switchTab('home')"><span class="ti">🏠</span><span class="tl" data-key="tab_home">Home</span></div>
+  <div class="tab"        id="tab-report"    onclick="switchTab('report')"><span class="ti">📋</span><span class="tl" data-key="tab_report">Report</span></div>
+  <div class="tab"        id="tab-customers" onclick="switchTab('customers')"><span class="ti">👨‍🌾</span><span class="tl" data-key="tab_customers">Customers</span></div>
+  <div class="tab"        id="tab-debt"      onclick="switchTab('debt')"><span class="ti">🧮</span><span class="tl" data-key="tab_interest">Interest</span></div>
 </div>
 </div>
 
@@ -631,8 +717,17 @@ function showAuthTab(t){
 }
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 function tog(id,hdr){const b=document.getElementById(id);const open=b.classList.toggle('open');hdr.classList.toggle('open',open);}
-const TABS=['dash','vehicles','farm','diesel','home','debt'];
-function switchTab(t){TABS.forEach(x=>{document.getElementById('pg-'+x).classList.toggle('active',x===t);document.getElementById('tab-'+x).classList.toggle('active',x===t);});if(t==='diesel')renderDieselPage();if(t==='debt')calcPTR();}
+const TABS=['dash','vehicles','farm','diesel','home','report','customers','debt'];
+function switchTab(t){
+  TABS.forEach(x=>{
+    document.getElementById('pg-'+x).classList.toggle('active',x===t);
+    document.getElementById('tab-'+x).classList.toggle('active',x===t);
+  });
+  if(t==='diesel') renderDieselPage();
+  if(t==='debt') calcPTR();
+  if(t==='report') renderReport();
+  if(t==='customers') renderCustomers();
+}
 
 // ── FIREBASE-BACKED STORAGE ───────────────────────────
 // Strategy: keep an in-memory cache (cloudData) that mirrors Firestore.
@@ -640,20 +735,13 @@ function switchTab(t){TABS.forEach(x=>{document.getElementById('pg-'+x).classLis
 // while saveXxx() also pushes the change to Firestore in the background so it syncs across devices.
 let currentUID=null;
 let cloudData={veh:[],farm:[],diesel:[],home:[],income:[]};
-let fbReady=false;
 
-window.addEventListener('firebase-ready',()=>{ fbReady=true; });
-
-async function waitForFirebase(){
-  if(fbReady) return;
-  await new Promise(res=>window.addEventListener('firebase-ready',res,{once:true}));
-}
 
 async function loadCloudData(uid){
-  const ref=window.FB.doc(window.FB.db,'users',uid,'app','data');
+  const ref=window.fbDb.collection('users').doc(uid).collection('app').doc('data');
   try{
-    const snap=await window.FB.getDoc(ref);
-    if(snap.exists()){
+    const snap=await ref.get();
+    if(snap.exists){
       const d=snap.data();
       cloudData={
         veh:d.veh||[], farm:d.farm||[], diesel:d.diesel||[],
@@ -661,7 +749,7 @@ async function loadCloudData(uid){
       };
     } else {
       cloudData={veh:[],farm:[],diesel:[],home:[],income:[]};
-      await window.FB.setDoc(ref,cloudData);
+      await ref.set(cloudData);
     }
   }catch(err){
     console.error('Load cloud data failed',err);
@@ -675,8 +763,8 @@ function pushCloudData(){
   clearTimeout(saveTimer);
   saveTimer=setTimeout(async()=>{
     try{
-      const ref=window.FB.doc(window.FB.db,'users',currentUID,'app','data');
-      await window.FB.setDoc(ref,cloudData);
+      const ref=window.fbDb.collection('users').doc(currentUID).collection('app').doc('data');
+      await ref.set(cloudData);
     }catch(err){
       console.error('Save to cloud failed',err);
       toast('⚠️ Could not save to cloud. Check internet connection.');
@@ -711,7 +799,6 @@ function friendlyAuthError(code){
 }
 
 async function doLogin(){
-  await waitForFirebase();
   const u=document.getElementById('lu').value.trim();
   const p=document.getElementById('lp').value;
   const err=document.getElementById('lerr');err.textContent='';
@@ -719,7 +806,7 @@ async function doLogin(){
   const btn=document.querySelector('#login-panel .auth-btn');
   btn.disabled=true;btn.textContent='Logging in…';
   try{
-    await window.FB.signInWithEmailAndPassword(window.FB.auth,u,p);
+    await window.fbAuth.signInWithEmailAndPassword(u,p);
     // onAuthStateChanged will pick this up and call openApp
   }catch(e){
     err.textContent=friendlyAuthError(e.code);
@@ -729,7 +816,6 @@ async function doLogin(){
 }
 
 async function doRegister(){
-  await waitForFirebase();
   const n=document.getElementById('rn').value.trim();
   const u=document.getElementById('ru').value.trim();
   const p=document.getElementById('rp').value;
@@ -741,8 +827,8 @@ async function doRegister(){
   const btn=document.querySelector('#reg-panel .auth-btn');
   btn.disabled=true;btn.textContent='Creating account…';
   try{
-    const cred=await window.FB.createUserWithEmailAndPassword(window.FB.auth,u,p);
-    await window.FB.updateProfile(cred.user,{displayName:n});
+    const cred=await window.fbAuth.createUserWithEmailAndPassword(u,p);
+    await cred.user.updateProfile({displayName:n});
     toast('✅ Welcome '+n+'!');
     // onAuthStateChanged will pick this up and call openApp
   }catch(e){
@@ -753,7 +839,6 @@ async function doRegister(){
 }
 
 async function doForgotPassword(){
-  await waitForFirebase();
   const u=document.getElementById('fpu').value.trim();
   const err=document.getElementById('fperr');err.textContent='';
   const msg=document.getElementById('fpmsg');msg.textContent='';
@@ -761,7 +846,7 @@ async function doForgotPassword(){
   const btn=document.querySelector('#forgot-panel .auth-btn');
   btn.disabled=true;btn.textContent='Sending…';
   try{
-    await window.FB.sendPasswordResetEmail(window.FB.auth,u);
+    await window.fbAuth.sendPasswordResetEmail(u);
     msg.textContent='✅ Reset link sent! Check your email inbox (and spam folder).';
   }catch(e){
     err.textContent=friendlyAuthError(e.code);
@@ -772,13 +857,11 @@ async function doForgotPassword(){
 
 async function doLogout(){
   if(!confirm('Logout from Khet Diary?'))return;
-  await waitForFirebase();
-  await window.FB.signOut(window.FB.auth);
+  await window.fbAuth.signOut();
   // onAuthStateChanged will show the auth screen
 }
 
-window.addEventListener('firebase-ready',()=>{
-  window.FB.onAuthStateChanged(window.FB.auth,async(user)=>{
+window.fbAuth.onAuthStateChanged(async(user)=>{
     document.getElementById('initial-loading').style.display='none';
     if(user){
       currentUID=user.uid;
@@ -798,7 +881,6 @@ window.addEventListener('firebase-ready',()=>{
       show('auth-screen');
     }
   });
-});
 
 function openApp(name){
   document.getElementById('uname').textContent=name;
@@ -806,6 +888,9 @@ function openApp(name){
   document.getElementById('hd').valueAsDate=new Date();
   document.getElementById('dsd').valueAsDate=new Date();
   document.getElementById('ind').valueAsDate=new Date();
+  // Set report month to current month by default
+  const now=new Date();
+  document.getElementById('report-month').value=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
   updateVehicleSelects();renderVehicles();renderDash();renderFarmAll();renderHomeAll();renderIncomeAll();calcPTR();
   show('app-screen');switchTab('dash');
 }
@@ -917,6 +1002,7 @@ function quickPay(id){
   e.profit=e.received-(e.otherExp||0);
   saveFarm(arr);
   renderFarmAll();renderDash();
+  if(document.getElementById('pg-customers').classList.contains('active')) renderCustomers();
   toast(e.pending>0?'✅ Payment added! Still pending: '+inr(e.pending):'✅ Fully paid now! 🎉');
 }
 
@@ -949,7 +1035,7 @@ function editFarm(id){
   toast('✏️ Editing entry — scroll up to update and save.');
 }
 
-function addFarm(){
+async function addFarm(){
   const date=document.getElementById('fd').value;
   const work=document.getElementById('fw').value.trim();
   if(!date||!work){toast('⚠️ Fill in date and work done.');return;}
@@ -973,12 +1059,16 @@ function addFarm(){
   if(editingFarmId!==null){
     const idx=arr.findIndex(x=>x.id===editingFarmId);
     if(idx!==-1){
+      // Upload any new photos for edit
+      const newPhotos=await uploadFarmPhotos(editingFarmId);
+      const existingPhotos=arr[idx].photos||[];
       arr[idx]={...arr[idx],date,work,
         vid:vid||'',vname:veh?veh.name:'',vtype:veh?veh.type:'',
         st:document.getElementById('fst').value,
         et:document.getElementById('fet').value,
         hrs,acres,otherExp,total,received,pending,rph,rpa,profit,
-        notes:document.getElementById('fn').value.trim()
+        notes:document.getElementById('fn').value.trim(),
+        photos:[...existingPhotos,...newPhotos]
       };
       saveFarm(arr);
       editingFarmId=null;
@@ -990,21 +1080,74 @@ function addFarm(){
     }
   }
 
-  arr.unshift({id:Date.now(),date,work,
+  const newId=Date.now();
+  const photos=await uploadFarmPhotos(newId);
+  arr.unshift({id:newId,date,work,
     vid:vid||'',vname:veh?veh.name:'',vtype:veh?veh.type:'',
     st:document.getElementById('fst').value,
     et:document.getElementById('fet').value,
     hrs,acres,otherExp,total,received,pending,rph,rpa,profit,
-    notes:document.getElementById('fn').value.trim()
+    notes:document.getElementById('fn').value.trim(),
+    photos
   });
   saveFarm(arr);clrFarm();renderFarmAll();renderDash();
   toast(pending>0?'✅ Added! Pending: '+inr(pending):'✅ Entry added! Fully paid.');
 }
+// pending photo files (before upload)
+let farmPhotoFiles=[];
+
+function previewFarmPhotos(input){
+  const files=Array.from(input.files);
+  files.forEach(f=>{
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      farmPhotoFiles.push({file:f,dataUrl:ev.target.result});
+      refreshFarmPhotoPreviews();
+    };
+    reader.readAsDataURL(f);
+  });
+  input.value=''; // allow re-selecting same file
+}
+
+function refreshFarmPhotoPreviews(){
+  const grid=document.getElementById('farm-photo-previews');
+  grid.innerHTML=farmPhotoFiles.map((p,i)=>`
+    <div class="photo-thumb">
+      <img src="${p.dataUrl}"/>
+      <button class="photo-thumb-del" onclick="removeFarmPhoto(${i})">✕</button>
+    </div>`).join('');
+}
+
+function removeFarmPhoto(i){
+  farmPhotoFiles.splice(i,1);
+  refreshFarmPhotoPreviews();
+}
+
+async function uploadFarmPhotos(entryId){
+  if(!farmPhotoFiles.length) return [];
+  const progress=document.getElementById('farm-photo-progress');
+  progress.style.display='block';
+  const urls=[];
+  for(let i=0;i<farmPhotoFiles.length;i++){
+    const f=farmPhotoFiles[i].file;
+    const ref=window.fbStorage.ref(`users/${currentUID}/farm/${entryId}/${Date.now()}_${f.name}`);
+    await ref.put(f);
+    const url=await ref.getDownloadURL();
+    urls.push(url);
+  }
+  progress.style.display='none';
+  farmPhotoFiles=[];
+  document.getElementById('farm-photo-previews').innerHTML='';
+  return urls;
+}
+
 function clrFarm(){
   ['fw','fst','fet','fac','fex','frh','fra','ftot','frec','fpen','fn'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('fv').value='';document.getElementById('fd').valueAsDate=new Date();
   document.getElementById('live-preview').style.display='none';
   editingFarmId=null;
+  farmPhotoFiles=[];
+  document.getElementById('farm-photo-previews').innerHTML='';
   const addBtn=document.querySelector('#farm-body button.bg');
   if(addBtn) addBtn.textContent='＋ Add Entry';
 }
@@ -1018,14 +1161,25 @@ function renderFarm(){
   const list=document.getElementById('fl'),empty=document.getElementById('fe2');
   if(!data.length){list.innerHTML='';empty.style.display='block';return;}
   empty.style.display='none';
+  const today=new Date(); today.setHours(0,0,0,0);
   list.innerHTML=data.map(e=>{
     const st=fmtT(e.st),et=fmtT(e.et),profit=e.profit||0,pending=e.pending||0;
-    return`<div class="rc">
+    // Check if overdue (pending > 0 and entry is more than 7 days old)
+    const entryDate=new Date(e.date); entryDate.setHours(0,0,0,0);
+    const daysDiff=Math.floor((today-entryDate)/(1000*60*60*24));
+    const isOverdue=pending>0&&daysDiff>7;
+    // Photos HTML
+    const photosHtml=(e.photos&&e.photos.length)
+      ?`<div class="photo-preview-grid" style="margin-top:8px;">${e.photos.map(url=>`<div class="photo-thumb"><img src="${url}" loading="lazy" onclick="window.open('${url}','_blank')"/></div>`).join('')}</div>`
+      :'';
+    return`<div class="rc ${isOverdue?'pending-old':''}">
       <div style="position:absolute;top:12px;right:12px;display:flex;gap:4px;">
         <button class="delbtn" onclick="editFarm(${e.id})" title="Edit" style="position:static;">✏️</button>
         <button class="delbtn" onclick="delFarm(${e.id})" title="Delete" style="position:static;">🗑</button>
       </div>
-      <div class="rtop" style="padding-right:54px;"><div class="rwrk" style="padding-right:0;">${e.vtype?vIcon(e.vtype)+' ':''}${esc(e.work)}</div></div>
+      <div class="rtop" style="padding-right:54px;">
+        <div class="rwrk" style="padding-right:0;">${e.vtype?vIcon(e.vtype)+' ':''}${esc(e.work)}${isOverdue?`<span class="overdue-badge">⚠️ ${daysDiff}d overdue</span>`:''}</div>
+      </div>
       <div class="rtop"><div></div><div class="ramt ag">${e.received>0?inr(e.received):''}</div></div>
       <div class="rmeta">
         <span class="chip cd">📅 ${fmtD(e.date)}</span>
@@ -1037,9 +1191,13 @@ function renderFarm(){
         ${e.total>0?`<span class="chip ce">Total: ${inr(e.total)}</span>`:''}
         ${e.otherExp>0?`<span class="chip cs">Exp: ${inr(e.otherExp)}</span>`:''}
       </div>
-      ${pending>0?`<div class="rpending">⏳ Pending: ${inr(pending)} <button onclick="quickPay(${e.id})" style="margin-left:8px;background:var(--leaf);color:#fff;border:none;border-radius:6px;padding:3px 10px;font-size:0.7rem;font-weight:700;cursor:pointer;">💰 Received Payment</button></div>`:''}
+      ${pending>0?`<div class="rpending">⏳ ${currentLang==='te'?'రావలసింది':'Pending'}: ${inr(pending)}
+        <button onclick="quickPay(${e.id})" style="margin-left:6px;background:var(--leaf);color:#fff;border:none;border-radius:6px;padding:3px 9px;font-size:0.68rem;font-weight:700;cursor:pointer;">💰 ${currentLang==='te'?'వచ్చింది':'Received'}</button>
+      </div>`:''}
       ${e.total>0?`<div class="rprofit ${profit>=0?'pos':'neg'}">Profit: ${profit>=0?'':'-'}${inr(Math.abs(profit))}</div>`:''}
+      ${photosHtml}
       ${e.notes?`<div class="rnotes">📝 ${esc(e.notes)}</div>`:''}
+      <button class="wa-share-btn" onclick="shareFarmEntryWA(${e.id})">📤 WhatsApp</button>
     </div>`;
   }).join('');
 }
@@ -1323,6 +1481,67 @@ function renderDash(){
       </div>
     </div>`;
   }).join('');
+  renderPendingReminders(farm);
+}
+
+// ── PENDING PAYMENT REMINDERS ─────────────────────────
+function renderPendingReminders(farm){
+  const el=document.getElementById('pending-alert-section');
+  if(!el) return;
+  const today=new Date(); today.setHours(0,0,0,0);
+  const overdue=farm.filter(e=>{
+    if(!e.pending||e.pending<=0) return false;
+    const d=new Date(e.date); d.setHours(0,0,0,0);
+    return Math.floor((today-d)/(1000*60*60*24))>7;
+  }).sort((a,b)=>(b.pending||0)-(a.pending||0));
+
+  if(!overdue.length){ el.innerHTML=''; return; }
+
+  el.innerHTML=`<div class="pending-alert">
+    <div class="pending-alert-title">⚠️ ${currentLang==='te'?'7 రోజులకు పైగా రావలసిన చెల్లింపులు':'Payments Pending Over 7 Days'} (${overdue.length})</div>
+    ${overdue.map(e=>{
+      const d=new Date(e.date); d.setHours(0,0,0,0);
+      const days=Math.floor((today-d)/(1000*60*60*24));
+      return`<div class="pending-alert-item">
+        <div>
+          <div class="pending-alert-name">👨‍🌾 ${esc(e.work)}</div>
+          <div class="pending-alert-meta">📅 ${fmtD(e.date)} · ${days} ${currentLang==='te'?'రోజులు':'days ago'}</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="pending-alert-amt">${inr(e.pending)}</div>
+          <button onclick="quickPay(${e.id})" style="margin-top:4px;background:var(--leaf);color:#fff;border:none;border-radius:6px;padding:3px 9px;font-size:0.68rem;font-weight:700;cursor:pointer;">💰 ${currentLang==='te'?'వచ్చింది':'Mark Paid'}</button>
+        </div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+// ── WHATSAPP SHARE INDIVIDUAL ENTRY ──────────────────
+function shareFarmEntryWA(id){
+  const e=getFarm().find(x=>x.id===id);
+  if(!e) return;
+  const msg=currentLang==='te'
+    ?`🌾 *ఖేత్ డైరీ — పని వివరాలు*\n\n`+
+      `📋 పని: ${e.work}\n`+
+      `📅 తేదీ: ${fmtD(e.date)}\n`+
+      `${e.vname?`🚛 వాహనం: ${e.vname}\n`:''}`+
+      `${e.acres>0?`📏 ఎకరాలు: ${e.acres}\n`:''}`+
+      `${e.hrs>0?`⏱ గంటలు: ${fmtH(e.hrs)}\n`:''}`+
+      `💰 మొత్తం: ${inr(e.total||0)}\n`+
+      `✅ వచ్చింది: ${inr(e.received||0)}\n`+
+      `${e.pending>0?`⏳ రావలసింది: ${inr(e.pending)}\n`:''}`+
+      `\n_Khet Diary App ద్వారా_`
+    :`🌾 *Khet Diary — Work Entry*\n\n`+
+      `📋 Work: ${e.work}\n`+
+      `📅 Date: ${fmtD(e.date)}\n`+
+      `${e.vname?`🚛 Vehicle: ${e.vname}\n`:''}`+
+      `${e.acres>0?`📏 Acres: ${e.acres}\n`:''}`+
+      `${e.hrs>0?`⏱ Hours: ${fmtH(e.hrs)}\n`:''}`+
+      `💰 Total: ${inr(e.total||0)}\n`+
+      `✅ Received: ${inr(e.received||0)}\n`+
+      `${e.pending>0?`⏳ Pending: ${inr(e.pending)}\n`:''}`+
+      `\n_via Khet Diary App_`;
+  window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
 }
 
 // ── EXPORT ────────────────────────────────────────────
@@ -1348,6 +1567,291 @@ function exportCSV(type){
   const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
   const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download=fn;a.click();
 }
+
+// ── LANGUAGE SYSTEM (English / Telugu) ───────────────
+let currentLang = localStorage.getItem('KD_lang') || 'en';
+
+const T = {
+  en: {
+    app_title:'Khet Diary', logout:'🚪 Logout', lang_btn:'తెలుగు',
+    tab_dash:'Dashboard', tab_vehicles:'Vehicles', tab_farm:'Farm',
+    tab_diesel:'Diesel', tab_home:'Home', tab_report:'Report',
+    tab_customers:'Customers', tab_interest:'Interest',
+    // Dashboard
+    total_received:'Total Received', pending_receive:'Pending to Receive',
+    farm_costs:'Farm + Diesel Costs', net_profit:'Net Profit',
+    total_acres:'Total Acres', home_expenses:'Home Expenses',
+    vehicle_summary:'Vehicle Summary',
+    // Farm
+    add_work:'Add Work Entry', work_done:'Work Done / Customer Name',
+    start_time:'Start Time', end_time:'End Time',
+    acres_worked:'Acres Worked', other_exp:'Other Expenses ₹',
+    rate_hour:'₹ / Hour', rate_acre:'₹ / Acre',
+    total_amount:'Total Amount ₹', amount_received:'💰 Amount Received ₹',
+    amount_pending:'⏳ Amount Pending ₹', add_entry:'＋ Add Entry',
+    work_records:'Work Records',
+    // Report
+    monthly_report:'Monthly Report', farm_earned:'Farm Earned',
+    farm_pending:'Farm Pending', diesel_cost:'Diesel Cost',
+    home_spent:'Home Spent', net_balance:'Net Balance',
+    total_entries:'Total Entries', total_hours:'Total Hours',
+    total_diesel:'Total Diesel Used',
+    // Customer
+    customer_view:'Customer-wise Records', total_work:'Total Work',
+    total_paid:'Total Paid', balance_due:'Balance Due',
+    // Common
+    no_data:'No data for this month', entries:'entries',
+    search_customer:'Search customer name…',
+    select_month:'Select a month above to see the report',
+    no_customers:'No farm work entries yet',
+  },
+  te: {
+    app_title:'ఖేత్ డైరీ', logout:'🚪 లాగ్అవుట్', lang_btn:'English',
+    tab_dash:'డాష్‌బోర్డ్', tab_vehicles:'వాహనాలు', tab_farm:'పొలం',
+    tab_diesel:'డీజిల్', tab_home:'ఇల్లు', tab_report:'నివేదిక',
+    tab_customers:'కస్టమర్లు', tab_interest:'వడ్డీ',
+    // Dashboard
+    total_received:'మొత్తం వచ్చింది', pending_receive:'రావలసింది',
+    farm_costs:'పొలం + డీజిల్ ఖర్చు', net_profit:'నికర లాభం',
+    total_acres:'మొత్తం ఎకరాలు', home_expenses:'ఇంటి ఖర్చులు',
+    vehicle_summary:'వాహన సారాంశం',
+    // Farm
+    add_work:'పని నమోదు చేయండి', work_done:'చేసిన పని / రైతు పేరు',
+    start_time:'మొదలైన సమయం', end_time:'అయిన సమయం',
+    acres_worked:'పని చేసిన ఎకరాలు', other_exp:'ఇతర ఖర్చులు ₹',
+    rate_hour:'₹ / గంట', rate_acre:'₹ / ఎకర',
+    total_amount:'మొత్తం మొత్తం ₹', amount_received:'💰 వచ్చిన డబ్బు ₹',
+    amount_pending:'⏳ రావలసిన డబ్బు ₹', add_entry:'＋ నమోదు చేయండి',
+    work_records:'పని రికార్డులు',
+    // Report
+    monthly_report:'నెల నివేదిక', farm_earned:'పొలం సంపాదన',
+    farm_pending:'రావలసిన మొత్తం', diesel_cost:'డీజిల్ ఖర్చు',
+    home_spent:'ఇంటి ఖర్చు', net_balance:'నికర నిల్వ',
+    total_entries:'మొత్తం నమోదులు', total_hours:'మొత్తం గంటలు',
+    total_diesel:'మొత్తం డీజిల్',
+    // Customer
+    customer_view:'కస్టమర్ వారీగా రికార్డులు', total_work:'మొత్తం పని',
+    total_paid:'చెల్లించింది', balance_due:'చెల్లించవలసింది',
+    // Common
+    no_data:'ఈ నెలకు డేటా లేదు', entries:'నమోదులు',
+    search_customer:'కస్టమర్ పేరు వెతకండి…',
+    select_month:'నివేదిక చూడటానికి పైన నెల ఎంచుకోండి',
+    no_customers:'పొలం పని నమోదులు లేవు',
+  }
+};
+
+function t(key){ return (T[currentLang]||T.en)[key] || (T.en)[key] || key; }
+
+function toggleLang(){
+  currentLang = currentLang === 'en' ? 'te' : 'en';
+  localStorage.setItem('KD_lang', currentLang);
+  applyLang();
+}
+
+function applyLang(){
+  // Header
+  document.getElementById('app-title').textContent = t('app_title');
+  document.getElementById('lang-btn').textContent = t('lang_btn');
+  document.getElementById('logout-text').textContent = t('logout');
+  // All tab labels
+  document.querySelectorAll('.tl[data-key]').forEach(el=>{
+    el.textContent = t(el.dataset.key);
+  });
+  // Search placeholders
+  const cs = document.getElementById('cust-search');
+  if(cs) cs.placeholder = t('search_customer');
+  // Re-render active pages
+  renderDash();
+  renderReport();
+  renderCustomers();
+}
+
+// ── MONTHLY REPORT ────────────────────────────────────
+function renderReport(){
+  const month = document.getElementById('report-month').value;
+  const container = document.getElementById('report-content');
+  if(!month){
+    container.innerHTML=`<div class="empty" style="padding:40px 16px;"><div class="ei">📋</div><p>${t('select_month')}</p></div>`;
+    return;
+  }
+
+  const farm    = getFarm().filter(e=>e.date.startsWith(month));
+  const diesel  = getDiesel().filter(e=>e.date.startsWith(month));
+  const home    = getHome().filter(e=>e.date.startsWith(month));
+  const income  = getIncome().filter(e=>e.date.startsWith(month));
+
+  const farmEarned  = farm.reduce((s,e)=>s+(e.received||0),0);
+  const farmPending = farm.reduce((s,e)=>s+(e.pending||0),0);
+  const farmTotal   = farm.reduce((s,e)=>s+(e.total||0),0);
+  const farmCost    = farm.reduce((s,e)=>s+(e.otherExp||0),0);
+  const dieselCost  = diesel.reduce((s,e)=>s+(e.cost||0),0);
+  const dieselLtrs  = diesel.reduce((s,e)=>s+(e.litres||0),0);
+  const homeSpent   = home.reduce((s,e)=>s+(e.amt||0),0);
+  const incomeTotal = income.reduce((s,e)=>s+(e.amt||0),0);
+  const totalHrs    = farm.reduce((s,e)=>s+(e.hrs||0),0);
+  const totalAcres  = farm.reduce((s,e)=>s+(e.acres||0),0);
+  const netBalance  = farmEarned - farmCost - dieselCost - homeSpent;
+
+  // Format month display
+  const [y,m] = month.split('-');
+  const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const teMonthNames = ['జనవరి','ఫిబ్రవరి','మార్చి','ఏప్రిల్','మే','జూన్','జులై','ఆగస్టు','సెప్టెంబర్','అక్టోబర్','నవంబర్','డిసెంబర్'];
+  const monthLabel = currentLang==='te' ? teMonthNames[+m-1]+' '+y : monthNames[+m-1]+' '+y;
+
+  container.innerHTML = `
+    <div style="padding:14px 14px 0;font-size:1rem;font-weight:800;color:var(--soil);">📋 ${monthLabel}</div>
+
+    <div class="report-section" style="margin-top:10px;">
+      <div class="report-section-title">🚜 ${t('monthly_report')} — ${currentLang==='te'?'పొలం పని':'Farm Work'}</div>
+      <div class="report-row"><span class="report-row-label">${t('farm_earned')}</span><span class="report-row-val ag">${inr(farmEarned)}</span></div>
+      <div class="report-row"><span class="report-row-label">${t('farm_pending')}</span><span class="report-row-val ao">${inr(farmPending)}</span></div>
+      <div class="report-row"><span class="report-row-label">${currentLang==='te'?'మొత్తం పని':'Total Work Value'}</span><span class="report-row-val">${inr(farmTotal)}</span></div>
+      <div class="report-row"><span class="report-row-label">${t('total_entries')}</span><span class="report-row-val">${farm.length}</span></div>
+      <div class="report-row"><span class="report-row-label">${t('total_hours')}</span><span class="report-row-val">${fmtH(totalHrs)}</span></div>
+      <div class="report-row"><span class="report-row-label">${t('total_acres')}</span><span class="report-row-val">${totalAcres.toFixed(1)} ${currentLang==='te'?'ఎకరాలు':'acres'}</span></div>
+      <div class="report-row"><span class="report-row-label">${currentLang==='te'?'ఇతర ఖర్చులు':'Other Farm Costs'}</span><span class="report-row-val ar">${inr(farmCost)}</span></div>
+    </div>
+
+    <div class="report-section">
+      <div class="report-section-title">⛽ ${currentLang==='te'?'డీజిల్':'Diesel'}</div>
+      <div class="report-row"><span class="report-row-label">${t('total_diesel')}</span><span class="report-row-val ao">${dieselLtrs.toFixed(1)} L</span></div>
+      <div class="report-row"><span class="report-row-label">${t('diesel_cost')}</span><span class="report-row-val ar">${inr(dieselCost)}</span></div>
+      <div class="report-row"><span class="report-row-label">${currentLang==='te'?'నమోదులు':'Entries'}</span><span class="report-row-val">${diesel.length}</span></div>
+    </div>
+
+    <div class="report-section">
+      <div class="report-section-title">🏠 ${currentLang==='te'?'ఇంటి ఖర్చులు':'Home Expenses'}</div>
+      <div class="report-row"><span class="report-row-label">${t('home_spent')}</span><span class="report-row-val ar">${inr(homeSpent)}</span></div>
+      ${incomeTotal>0?`<div class="report-row"><span class="report-row-label">${currentLang==='te'?'వచ్చిన డబ్బు':'Money Came In'}</span><span class="report-row-val ag">${inr(incomeTotal)}</span></div>`:''}
+      <div class="report-row"><span class="report-row-label">${currentLang==='te'?'నమోదులు':'Entries'}</span><span class="report-row-val">${home.length}</span></div>
+    </div>
+
+    <div class="report-total-row">
+      <span class="report-total-label">🏆 ${t('net_balance')}</span>
+      <span class="report-total-val" style="color:${netBalance>=0?'#7FD992':'#FF9B8A'}">${netBalance>=0?'+':'-'}${inr(Math.abs(netBalance))}</span>
+    </div>
+
+    <button class="share-btn" onclick="shareReport()">📤 ${currentLang==='te'?'వాట్సాప్‌లో పంపు':'Share on WhatsApp'}</button>
+    <div style="height:14px;"></div>
+  `;
+}
+
+function shareReport(){
+  const month = document.getElementById('report-month').value;
+  if(!month){ toast('⚠️ '+(currentLang==='te'?'ముందు నెల ఎంచుకోండి':'Select a month first')); return; }
+
+  const farm    = getFarm().filter(e=>e.date.startsWith(month));
+  const diesel  = getDiesel().filter(e=>e.date.startsWith(month));
+  const home    = getHome().filter(e=>e.date.startsWith(month));
+
+  const farmEarned  = farm.reduce((s,e)=>s+(e.received||0),0);
+  const farmPending = farm.reduce((s,e)=>s+(e.pending||0),0);
+  const dieselCost  = diesel.reduce((s,e)=>s+(e.cost||0),0);
+  const homeSpent   = home.reduce((s,e)=>s+(e.amt||0),0);
+  const netBalance  = farmEarned - farm.reduce((s,e)=>s+(e.otherExp||0),0) - dieselCost - homeSpent;
+
+  const [y,m] = month.split('-');
+  const monthNames=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const ml = monthNames[+m-1]+' '+y;
+
+  const msg = currentLang==='te'
+    ? `🌾 *ఖేత్ డైరీ — ${ml}*\n\n`+
+      `✅ వచ్చిన డబ్బు: ${inr(farmEarned)}\n`+
+      `⏳ రావలసింది: ${inr(farmPending)}\n`+
+      `⛽ డీజిల్ ఖర్చు: ${inr(dieselCost)}\n`+
+      `🏠 ఇంటి ఖర్చు: ${inr(homeSpent)}\n`+
+      `🏆 నికర నిల్వ: ${netBalance>=0?'+':''}${inr(netBalance)}\n\n`+
+      `_Khet Diary App ద్వారా_`
+    : `🌾 *Khet Diary — ${ml} Report*\n\n`+
+      `✅ Farm Earned: ${inr(farmEarned)}\n`+
+      `⏳ Pending: ${inr(farmPending)}\n`+
+      `⛽ Diesel Cost: ${inr(dieselCost)}\n`+
+      `🏠 Home Expenses: ${inr(homeSpent)}\n`+
+      `🏆 Net Balance: ${netBalance>=0?'+':''}${inr(netBalance)}\n\n`+
+      `_via Khet Diary App_`;
+
+  const url = 'https://wa.me/?text='+encodeURIComponent(msg);
+  window.open(url,'_blank');
+}
+
+// ── CUSTOMER VIEW ─────────────────────────────────────
+function renderCustomers(){
+  const search = (document.getElementById('cust-search')?.value||'').toLowerCase();
+  const farm = getFarm();
+  if(!farm.length){
+    document.getElementById('customers-list').innerHTML=
+      `<div class="empty" style="padding:40px 16px;"><div class="ei">👨‍🌾</div><p>${t('no_customers')}</p></div>`;
+    return;
+  }
+
+  // Group entries by customer/work name (first word or full name)
+  const custMap = {};
+  farm.forEach(e=>{
+    const name = e.work || 'Unknown';
+    if(!custMap[name]) custMap[name]={name, entries:[]};
+    custMap[name].entries.push(e);
+  });
+
+  // Filter by search
+  let customers = Object.values(custMap).filter(c=>
+    !search || c.name.toLowerCase().includes(search)
+  );
+
+  // Sort by total pending (most pending first)
+  customers.sort((a,b)=>{
+    const pa = a.entries.reduce((s,e)=>s+(e.pending||0),0);
+    const pb = b.entries.reduce((s,e)=>s+(e.pending||0),0);
+    return pb-pa;
+  });
+
+  if(!customers.length){
+    document.getElementById('customers-list').innerHTML=
+      `<div class="empty" style="padding:40px 16px;"><div class="ei">🔍</div><p>${currentLang==='te'?'కస్టమర్ కనుగొనబడలేదు':'No customers found'}</p></div>`;
+    return;
+  }
+
+  document.getElementById('customers-list').innerHTML = customers.map(c=>{
+    const totalWork  = c.entries.reduce((s,e)=>s+(e.total||0),0);
+    const totalPaid  = c.entries.reduce((s,e)=>s+(e.received||0),0);
+    const totalPend  = c.entries.reduce((s,e)=>s+(e.pending||0),0);
+    const totalAcres = c.entries.reduce((s,e)=>s+(e.acres||0),0);
+    const hasPending = totalPend > 0;
+
+    return `<div class="customer-card" style="border-left:4px solid ${hasPending?'var(--orange)':'var(--leaf)'};">
+      <div class="customer-card-header">
+        <div>
+          <div class="customer-name">👨‍🌾 ${esc(c.name)}</div>
+          <div style="font-size:0.72rem;color:var(--muted);margin-top:2px;">${c.entries.length} ${t('entries')} · ${totalAcres.toFixed(1)} ${currentLang==='te'?'ఎకరాలు':'acres'}</div>
+        </div>
+        ${hasPending
+          ?'<div style="background:#FEF3E2;border-radius:8px;padding:6px 10px;text-align:center;"><div style="font-size:0.65rem;color:var(--orange);font-weight:700;text-transform:uppercase;">'+(currentLang==='te'?'రావలసింది':'Pending')+'</div><div style="font-size:0.9rem;font-weight:800;color:var(--orange);">'+inr(totalPend)+'</div></div>'
+          :'<div style="background:#E5F2E5;border-radius:8px;padding:6px 10px;"><div style="font-size:0.65rem;color:var(--leaf);font-weight:700;">✅ '+(currentLang==='te'?'చెల్లించారు':'PAID')+'</div></div>'
+        }
+      </div>
+      <div class="customer-stats">
+        <div class="cstat"><div class="cstat-val">${inr(totalWork)}</div><div class="cstat-label">${t('total_work')}</div></div>
+        <div class="cstat"><div class="cstat-val ag">${inr(totalPaid)}</div><div class="cstat-label">${t('total_paid')}</div></div>
+        <div class="cstat"><div class="cstat-val" style="color:${hasPending?'var(--orange)':'var(--leaf)'};">${inr(totalPend)}</div><div class="cstat-label">${t('balance_due')}</div></div>
+      </div>
+      <div class="customer-entries">
+        ${c.entries.sort((a,b)=>new Date(b.date)-new Date(a.date)).map(e=>`
+          <div class="customer-entry">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div style="font-size:0.8rem;color:var(--muted);">📅 ${fmtD(e.date)}${e.vname?' · '+vIcon(e.vtype)+' '+e.vname:''}</div>
+              <div style="font-size:0.82rem;font-weight:700;">${e.total>0?inr(e.total):''}</div>
+            </div>
+            ${e.pending>0
+              ?'<div style="font-size:0.75rem;color:var(--orange);font-weight:600;margin-top:3px;">⏳ '+(currentLang==='te'?'రావలసింది':'Pending')+': '+inr(e.pending)+'<button onclick="quickPay('+e.id+')" style="margin-left:8px;background:var(--leaf);color:#fff;border:none;border-radius:6px;padding:2px 8px;font-size:0.68rem;font-weight:700;cursor:pointer;">💰 '+(currentLang==='te'?'వచ్చింది':'Received')+'</button></div>'
+              :'<div style="font-size:0.75rem;color:var(--leaf);font-weight:600;margin-top:3px;">✅ '+(currentLang==='te'?'చెల్లించారు':'Fully Paid')+'</div>'
+            }
+          </div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── INIT LANGUAGE ─────────────────────────────────────
+applyLang();
 
 // ── INIT ──────────────────────────────────────────────
 // Show a loading state until Firebase tells us whether the user is logged in.

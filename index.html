@@ -13,7 +13,6 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 <script>
   const firebaseConfig = {
     apiKey: "AIzaSyB4n2adhczkNsr4DUw7jR_EFL129SyRzgQ",
@@ -26,7 +25,6 @@
   firebase.initializeApp(firebaseConfig);
   window.fbAuth = firebase.auth();
   window.fbDb   = firebase.firestore();
-  window.fbStorage = firebase.storage();
 </script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
@@ -67,6 +65,24 @@ header{background:var(--soil);color:var(--cream);padding:11px 14px;display:flex;
 header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
 .uchip{background:rgba(255,255,255,0.10);border-radius:16px;padding:4px 10px;font-size:0.72rem;font-weight:600;color:#C8B89A;white-space:nowrap;}
 .lbtn{background:rgba(220,80,60,0.18);border:1px solid rgba(220,80,60,0.35);border-radius:16px;padding:5px 11px;font-size:0.72rem;font-weight:700;color:#ffb0a0;cursor:pointer;}
+
+/* HOME SCREEN CARDS */
+.home-card{background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:18px;padding:22px 18px;display:flex;align-items:center;gap:16px;cursor:pointer;transition:all 0.2s;-webkit-tap-highlight-color:transparent;}
+.home-card:active{background:rgba(255,255,255,0.16);transform:scale(0.98);}
+.home-card-icon{font-size:2.8rem;line-height:1;flex-shrink:0;}
+.home-card-content{flex:1;}
+.home-card-title{color:var(--cream);font-size:1.2rem;font-weight:800;margin-bottom:4px;}
+.home-card-sub{color:#B8A890;font-size:0.78rem;line-height:1.5;}
+.home-card-arrow{color:var(--wheat);font-size:2rem;font-weight:300;flex-shrink:0;}
+
+/* CROP STATUS BADGES */
+.crop-status{display:inline-flex;padding:3px 9px;border-radius:12px;font-size:0.68rem;font-weight:700;}
+.crop-status.Growing{background:#E5F2E5;color:var(--leaf);}
+.crop-status.Harvested{background:#FEF3E2;color:var(--orange);}
+.crop-status.Sold{background:#E8F0F8;color:var(--blue);}
+.crop-status.Failed{background:#FDECEA;color:var(--red);}
+.crop-edit-btn{background:none;border:1px solid var(--border);border-radius:7px;padding:4px 10px;font-size:0.72rem;font-weight:700;color:var(--muted);cursor:pointer;margin-top:8px;margin-right:6px;}
+.crop-edit-btn:active{background:var(--cream);}
 .lbtn:active{background:rgba(220,80,60,0.35);}
 
 /* BOTTOM TABS - scrollable now with more tabs */
@@ -340,12 +356,165 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
   </div>
 </div>
 
-<!-- APP -->
+<!-- HOME SCREEN (after login, choose Business or Crops) -->
+<div id="home-screen" class="screen" style="flex-direction:column;background:var(--soil);min-height:100vh;">
+  <div style="padding:32px 20px 16px;text-align:center;">
+    <div style="font-size:3rem;margin-bottom:8px;">🌾</div>
+    <div style="color:var(--cream);font-size:1.5rem;font-weight:800;">Khet Diary</div>
+    <div style="color:#B8A890;font-size:0.85rem;margin-top:4px;">Welcome, <span id="home-uname"></span> 👋</div>
+  </div>
+
+  <div style="padding:0 20px;flex:1;display:flex;flex-direction:column;gap:16px;justify-content:center;padding-bottom:40px;">
+    <!-- BUSINESS CARD -->
+    <div class="home-card" onclick="enterSection('business')">
+      <div class="home-card-icon">🏢</div>
+      <div class="home-card-content">
+        <div class="home-card-title">Business</div>
+        <div class="home-card-sub">Farm work · Vehicles · Diesel<br>Home expenses · Interest calculator</div>
+      </div>
+      <div class="home-card-arrow">›</div>
+    </div>
+
+    <!-- CROPS CARD -->
+    <div class="home-card" onclick="enterSection('crops')">
+      <div class="home-card-icon">🌱</div>
+      <div class="home-card-content">
+        <div class="home-card-title">Crops</div>
+        <div class="home-card-sub">Track your crops · Planting & harvest<br>Expenses per crop · Profit per acre</div>
+      </div>
+      <div class="home-card-arrow">›</div>
+    </div>
+  </div>
+
+  <div style="text-align:center;padding-bottom:28px;">
+    <button onclick="doLogout()" style="background:rgba(255,255,255,0.10);border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:8px 20px;color:#C8B89A;font-size:0.8rem;font-weight:600;cursor:pointer;">🚪 Logout</button>
+  </div>
+</div>
+
+<!-- CROPS SCREEN -->
+<div id="crops-screen" class="screen" style="flex-direction:column;">
+<div id="crops-body" style="flex:1;padding-bottom:80px;">
+  <header>
+    <button onclick="goHome()" style="background:none;border:none;color:var(--cream);font-size:1.3rem;cursor:pointer;padding:0 10px 0 0;">‹</button>
+    <div class="hlogo">🌱</div>
+    <h1>Crops</h1>
+    <div class="uchip">👤 <span id="crops-uname"></span></div>
+  </header>
+
+  <!-- CROPS SUMMARY -->
+  <div class="sscroll"><div class="scards" id="crops-summary-cards">
+    <div class="scard"><label>Total Crops</label><div class="sv" id="cr-total">0</div></div>
+    <div class="scard g"><label>Total Revenue</label><div class="sv" id="cr-revenue">₹0</div></div>
+    <div class="scard r"><label>Total Expenses</label><div class="sv" id="cr-expenses">₹0</div></div>
+    <div class="scard"><label>Net Profit</label><div class="sv" id="cr-profit">₹0</div></div>
+    <div class="scard b"><label>Total Acres</label><div class="sv" id="cr-acres">0</div></div>
+  </div></div>
+
+  <!-- ADD CROP -->
+  <div class="box">
+    <div class="boxhdr" onclick="tog('crop-form-body',this)"><span>🌱</span> Add New Crop <span class="arr">▼</span></div>
+    <div class="boxbody" id="crop-form-body">
+      <div class="gr2">
+        <div class="field"><label>Crop Name</label>
+          <select id="cr-name">
+            <option value="Rice">🌾 Rice (వరి)</option>
+            <option value="Cotton">🌿 Cotton (పత్తి)</option>
+            <option value="Chilli">🌶️ Chilli (మిర్చి)</option>
+            <option value="Groundnut">🥜 Groundnut (వేరుశనగ)</option>
+            <option value="Maize">🌽 Maize (మొక్కజొన్న)</option>
+            <option value="Sugarcane">🎋 Sugarcane (చెరకు)</option>
+            <option value="Turmeric">🟡 Turmeric (పసుపు)</option>
+            <option value="Onion">🧅 Onion (ఉల్లిపాయ)</option>
+            <option value="Tomato">🍅 Tomato (టమాటా)</option>
+            <option value="Other">🌿 Other</option>
+          </select>
+        </div>
+        <div class="field"><label>Custom Name (if Other)</label><input type="text" id="cr-custom" placeholder="e.g. Bengalgram…"/></div>
+      </div>
+      <div class="gr2">
+        <div class="field"><label>Field / Land Name</label><input type="text" id="cr-field" placeholder="e.g. East field, Ramaiah land…"/></div>
+        <div class="field"><label>Acres</label><input type="number" id="cr-acres" placeholder="e.g. 2.5" min="0" step="0.5" inputmode="decimal"/></div>
+      </div>
+      <div class="gr2">
+        <div class="field"><label>Planting Date</label><input type="date" id="cr-plant-date"/></div>
+        <div class="field"><label>Expected Harvest Date</label><input type="date" id="cr-harvest-date"/></div>
+      </div>
+      <div class="gr2">
+        <div class="field"><label>Seed Cost ₹</label><input type="number" id="cr-seed-cost" placeholder="0" min="0" inputmode="numeric"/></div>
+        <div class="field"><label>Fertilizer Cost ₹</label><input type="number" id="cr-fert-cost" placeholder="0" min="0" inputmode="numeric"/></div>
+      </div>
+      <div class="gr2">
+        <div class="field"><label>Labour Cost ₹</label><input type="number" id="cr-labour-cost" placeholder="0" min="0" inputmode="numeric"/></div>
+        <div class="field"><label>Other Expenses ₹</label><input type="number" id="cr-other-cost" placeholder="0" min="0" inputmode="numeric"/></div>
+      </div>
+      <div class="gr2">
+        <div class="field"><label>Harvest Qty (kg/bags)</label><input type="number" id="cr-qty" placeholder="e.g. 500" min="0" inputmode="decimal"/></div>
+        <div class="field"><label>Sell Price ₹ per unit</label><input type="number" id="cr-price" placeholder="e.g. 25" min="0" inputmode="decimal" oninput="calcCropProfit()"/></div>
+      </div>
+      <div class="field"><label>Revenue ₹ <span style="font-size:0.65rem;color:var(--leaf);font-weight:700;">(auto calculated)</span></label>
+        <input type="number" id="cr-revenue-inp" placeholder="Auto fills from Qty × Price" min="0" inputmode="numeric"/>
+      </div>
+      <div class="field"><label>Status</label>
+        <select id="cr-status">
+          <option value="Growing">🌱 Growing</option>
+          <option value="Harvested">🌾 Harvested</option>
+          <option value="Sold">💰 Sold</option>
+          <option value="Failed">❌ Failed</option>
+        </select>
+      </div>
+      <div class="field"><label>Notes</label><textarea id="cr-notes" placeholder="Any extra details…" style="resize:none;height:65px;"></textarea></div>
+
+      <!-- LIVE CROP PROFIT PREVIEW -->
+      <div class="live-box" id="crop-preview" style="display:none;background:#F0F7F0;border-color:var(--leaf);">
+        <h4 style="color:var(--leaf);">📊 Crop Profit Preview</h4>
+        <div class="live-grid">
+          <div class="live-label">Total Expenses</div><div class="live-val ar" id="crp-exp">₹0</div>
+          <div class="live-label">Revenue</div><div class="live-val ag" id="crp-rev">₹0</div>
+          <div class="live-profit-label">Net Profit</div>
+          <div class="live-profit-val" id="crp-profit">₹0</div>
+        </div>
+      </div>
+
+      <button class="btn bg" onclick="addCrop()">＋ Add Crop</button>
+      <button class="btn bgr" onclick="clrCropForm()">Clear</button>
+    </div>
+  </div>
+
+  <!-- FILTER -->
+  <div class="filbox">
+    <h3>🔍 Filter</h3>
+    <div class="filrow">
+      <select id="cr-filter-status" onchange="renderCrops()">
+        <option value="all">All Status</option>
+        <option value="Growing">Growing</option>
+        <option value="Harvested">Harvested</option>
+        <option value="Sold">Sold</option>
+        <option value="Failed">Failed</option>
+      </select>
+      <input type="text" id="cr-filter-search" placeholder="Search crop…" oninput="renderCrops()"/>
+      <button class="filclear" onclick="clrCropFilter()">✕</button>
+    </div>
+  </div>
+
+  <!-- CROP RECORDS -->
+  <div class="recsec">
+    <div class="rechdr"><h2>🌱 Crop Records</h2><button class="expbtn" onclick="exportCSV('crops')">⬇ CSV</button></div>
+    <div id="cr-list"></div>
+    <div id="cr-empty" class="empty"><div class="ei">🌱</div><p>No crops added yet.<br>Add your first crop above!</p></div>
+  </div>
+
+</div><!-- crops-body -->
+<div class="tabs">
+  <div class="tab active" id="ctab-crops" onclick="switchCropTab('crops')"><span class="ti">🌱</span>Crops</div>
+</div>
+</div><!-- crops-screen -->
+
+<!-- APP (Business) -->
 <div id="app-screen" class="screen" style="flex-direction:column;">
 <div id="app-body">
   <header>
-    <div class="hlogo">🌾</div>
-    <h1 id="app-title">Khet Diary</h1>
+    <button onclick="goHome()" style="background:none;border:none;color:var(--cream);font-size:1.2rem;cursor:pointer;padding:0 8px 0 0;">🏠</button>
+    <h1 id="app-title">Business</h1>
     <button class="lang-btn" onclick="toggleLang()" id="lang-btn">తెలుగు</button>
     <div class="uchip">👤 <span id="uname"></span></div>
     <button class="lbtn" onclick="doLogout()" id="logout-text">🚪 Logout</button>
@@ -448,12 +617,12 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
         </div>
         <div class="field"><label>Notes</label><textarea id="fn" placeholder="Optional details…"></textarea></div>
         <div class="field">
-          <label>📷 Photos (optional)</label>
+          <label>📷 Photos (optional, max 3)</label>
           <div class="photo-preview-grid" id="farm-photo-previews"></div>
-          <div class="photo-upload-progress" id="farm-photo-progress">⏫ Uploading photos…</div>
+          <div class="photo-upload-progress" id="farm-photo-progress" style="display:none;">🔄 Compressing photos…</div>
           <div class="photo-upload-area" onclick="document.getElementById('farm-photo-input').click()">
             <input type="file" id="farm-photo-input" accept="image/*" multiple onchange="previewFarmPhotos(this)"/>
-            <div class="photo-upload-label">📷 Tap to add photos<br><span style="font-size:0.7rem;color:#bbb;">Receipt, field photo, etc.</span></div>
+            <div class="photo-upload-label">📷 Tap to add photos<br><span style="font-size:0.7rem;color:#bbb;">Receipt, field photo (max 3 · saved to cloud free)</span></div>
           </div>
         </div>
         <button class="btn bg" onclick="addFarm()">＋ Add Entry</button>
@@ -745,10 +914,10 @@ async function loadCloudData(uid){
       const d=snap.data();
       cloudData={
         veh:d.veh||[], farm:d.farm||[], diesel:d.diesel||[],
-        home:d.home||[], income:d.income||[]
+        home:d.home||[], income:d.income||[], crops:d.crops||[]
       };
     } else {
-      cloudData={veh:[],farm:[],diesel:[],home:[],income:[]};
+      cloudData={veh:[],farm:[],diesel:[],home:[],income:[],crops:[]};
       await ref.set(cloudData);
     }
   }catch(err){
@@ -871,7 +1040,7 @@ window.fbAuth.onAuthStateChanged(async(user)=>{
       document.getElementById('auth-loading').style.display='none';
     } else {
       currentUID=null;
-      cloudData={veh:[],farm:[],diesel:[],home:[],income:[]};
+      cloudData={veh:[],farm:[],diesel:[],home:[],income:[],crops:[]};
       ['lu','lp','rn','ru','rp','rp2','fpu'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
       document.getElementById('lerr').textContent='';
       document.getElementById('rerr').textContent='';
@@ -883,16 +1052,232 @@ window.fbAuth.onAuthStateChanged(async(user)=>{
   });
 
 function openApp(name){
+  document.getElementById('home-uname').textContent=name;
   document.getElementById('uname').textContent=name;
-  document.getElementById('fd').valueAsDate=new Date();
-  document.getElementById('hd').valueAsDate=new Date();
-  document.getElementById('dsd').valueAsDate=new Date();
-  document.getElementById('ind').valueAsDate=new Date();
+  document.getElementById('crops-uname').textContent=name;
   // Set report month to current month by default
   const now=new Date();
-  document.getElementById('report-month').value=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
-  updateVehicleSelects();renderVehicles();renderDash();renderFarmAll();renderHomeAll();renderIncomeAll();calcPTR();
-  show('app-screen');switchTab('dash');
+  const el=document.getElementById('report-month');
+  if(el) el.value=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  show('home-screen');
+}
+
+function goHome(){
+  show('home-screen');
+}
+
+function enterSection(section){
+  if(section==='business'){
+    // Init business section
+    document.getElementById('fd').valueAsDate=new Date();
+    document.getElementById('hd').valueAsDate=new Date();
+    document.getElementById('dsd').valueAsDate=new Date();
+    document.getElementById('ind').valueAsDate=new Date();
+    updateVehicleSelects();renderVehicles();renderDash();renderFarmAll();renderHomeAll();renderIncomeAll();calcPTR();
+    show('app-screen');switchTab('dash');
+  } else {
+    // Init crops section
+    document.getElementById('cr-plant-date').valueAsDate=new Date();
+    renderCropsAll();
+    show('crops-screen');
+  }
+}
+
+// ── CROPS ──────────────────────────────────────────────
+function getCrops(){return cloudData.crops||[];}
+function saveCrops(d){cloudData.crops=d;pushCloudData();}
+
+function cropIcon(name){
+  const icons={'Rice':'🌾','Cotton':'🌿','Chilli':'🌶️','Groundnut':'🥜','Maize':'🌽','Sugarcane':'🎋','Turmeric':'🟡','Onion':'🧅','Tomato':'🍅'};
+  return icons[name]||'🌿';
+}
+
+function calcCropProfit(){
+  const qty=parseFloat(document.getElementById('cr-qty').value)||0;
+  const price=parseFloat(document.getElementById('cr-price').value)||0;
+  if(qty&&price){
+    const rev=Math.round(qty*price);
+    document.getElementById('cr-revenue-inp').value=rev;
+  }
+  const seed=parseFloat(document.getElementById('cr-seed-cost').value)||0;
+  const fert=parseFloat(document.getElementById('cr-fert-cost').value)||0;
+  const lab=parseFloat(document.getElementById('cr-labour-cost').value)||0;
+  const other=parseFloat(document.getElementById('cr-other-cost').value)||0;
+  const totalExp=seed+fert+lab+other;
+  const rev=parseFloat(document.getElementById('cr-revenue-inp').value)||0;
+  const profit=rev-totalExp;
+  const prev=document.getElementById('crop-preview');
+  if(totalExp>0||rev>0){
+    prev.style.display='block';
+    document.getElementById('crp-exp').textContent=inr(totalExp);
+    document.getElementById('crp-rev').textContent=inr(rev);
+    const pp=document.getElementById('crp-profit');
+    pp.textContent=(profit>=0?'':'-')+inr(Math.abs(profit));
+    pp.style.color=profit>=0?'var(--leaf)':'var(--red)';
+  } else {
+    prev.style.display='none';
+  }
+}
+
+let editingCropId=null;
+
+function addCrop(){
+  const nameVal=document.getElementById('cr-name').value;
+  const custom=document.getElementById('cr-custom').value.trim();
+  const cropName=nameVal==='Other'&&custom?custom:nameVal;
+  const field=document.getElementById('cr-field').value.trim();
+  const acres=parseFloat(document.getElementById('cr-acres').value)||0;
+  const plantDate=document.getElementById('cr-plant-date').value;
+  if(!cropName||!plantDate){toast('⚠️ Fill in crop name and planting date.');return;}
+  const seed=parseFloat(document.getElementById('cr-seed-cost').value)||0;
+  const fert=parseFloat(document.getElementById('cr-fert-cost').value)||0;
+  const labour=parseFloat(document.getElementById('cr-labour-cost').value)||0;
+  const otherCost=parseFloat(document.getElementById('cr-other-cost').value)||0;
+  const totalExp=seed+fert+labour+otherCost;
+  const qty=parseFloat(document.getElementById('cr-qty').value)||0;
+  const price=parseFloat(document.getElementById('cr-price').value)||0;
+  let rev=parseFloat(document.getElementById('cr-revenue-inp').value)||0;
+  if(!rev&&qty&&price) rev=Math.round(qty*price);
+  const profit=rev-totalExp;
+  const arr=getCrops();
+  const entry={
+    id:editingCropId||Date.now(),
+    cropName,field,acres,plantDate,
+    harvestDate:document.getElementById('cr-harvest-date').value,
+    seed,fert,labour,otherCost,totalExp,
+    qty,price,rev,profit,
+    status:document.getElementById('cr-status').value,
+    notes:document.getElementById('cr-notes').value.trim()
+  };
+  if(editingCropId){
+    const idx=arr.findIndex(x=>x.id===editingCropId);
+    if(idx!==-1) arr[idx]=entry;
+    editingCropId=null;
+    toast('✅ Crop updated!');
+  } else {
+    arr.unshift(entry);
+    toast('✅ Crop added!');
+  }
+  saveCrops(arr);
+  clrCropForm();
+  renderCropsAll();
+}
+
+function clrCropForm(){
+  ['cr-custom','cr-field','cr-harvest-date','cr-notes'].forEach(id=>document.getElementById(id).value='');
+  ['cr-acres','cr-seed-cost','cr-fert-cost','cr-labour-cost','cr-other-cost','cr-qty','cr-price','cr-revenue-inp'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('cr-name').value='Rice';
+  document.getElementById('cr-status').value='Growing';
+  document.getElementById('cr-plant-date').valueAsDate=new Date();
+  document.getElementById('crop-preview').style.display='none';
+  editingCropId=null;
+  const btn=document.querySelector('#crop-form-body button.bg');
+  if(btn) btn.textContent='＋ Add Crop';
+}
+
+function editCrop(id){
+  const arr=getCrops();
+  const e=arr.find(x=>x.id===id);
+  if(!e) return;
+  editingCropId=id;
+  // Fill form
+  const nameOpts=['Rice','Cotton','Chilli','Groundnut','Maize','Sugarcane','Turmeric','Onion','Tomato'];
+  if(nameOpts.includes(e.cropName)){
+    document.getElementById('cr-name').value=e.cropName;
+    document.getElementById('cr-custom').value='';
+  } else {
+    document.getElementById('cr-name').value='Other';
+    document.getElementById('cr-custom').value=e.cropName;
+  }
+  document.getElementById('cr-field').value=e.field||'';
+  document.getElementById('cr-acres').value=e.acres||'';
+  document.getElementById('cr-plant-date').value=e.plantDate||'';
+  document.getElementById('cr-harvest-date').value=e.harvestDate||'';
+  document.getElementById('cr-seed-cost').value=e.seed||'';
+  document.getElementById('cr-fert-cost').value=e.fert||'';
+  document.getElementById('cr-labour-cost').value=e.labour||'';
+  document.getElementById('cr-other-cost').value=e.otherCost||'';
+  document.getElementById('cr-qty').value=e.qty||'';
+  document.getElementById('cr-price').value=e.price||'';
+  document.getElementById('cr-revenue-inp').value=e.rev||'';
+  document.getElementById('cr-status').value=e.status||'Growing';
+  document.getElementById('cr-notes').value=e.notes||'';
+  calcCropProfit();
+  const body=document.getElementById('crop-form-body');
+  const hdr=body.previousElementSibling;
+  if(!body.classList.contains('open')){body.classList.add('open');hdr.classList.add('open');}
+  const btn=document.querySelector('#crop-form-body button.bg');
+  if(btn) btn.textContent='💾 Save Changes';
+  body.scrollIntoView({behavior:'smooth',block:'start'});
+  toast('✏️ Editing crop — update and save.');
+}
+
+function delCrop(id){
+  if(!confirm('Delete this crop entry?')) return;
+  saveCrops(getCrops().filter(x=>x.id!==id));
+  renderCropsAll();
+  toast('🗑 Crop deleted.');
+}
+
+function clrCropFilter(){
+  document.getElementById('cr-filter-status').value='all';
+  document.getElementById('cr-filter-search').value='';
+  renderCrops();
+}
+
+function renderCrops(){
+  const fs=document.getElementById('cr-filter-status').value;
+  const search=document.getElementById('cr-filter-search').value.toLowerCase();
+  const data=getCrops().filter(e=>
+    (fs==='all'||e.status===fs)&&
+    (!search||e.cropName.toLowerCase().includes(search)||(e.field||'').toLowerCase().includes(search))
+  );
+  const list=document.getElementById('cr-list');
+  const empty=document.getElementById('cr-empty');
+  if(!data.length){list.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  list.innerHTML=data.map(e=>`<div class="rc">
+    <div style="position:absolute;top:12px;right:12px;display:flex;gap:4px;">
+      <button class="delbtn" onclick="editCrop(${e.id})" style="position:static;">✏️</button>
+      <button class="delbtn" onclick="delCrop(${e.id})" style="position:static;">🗑</button>
+    </div>
+    <div class="rtop" style="padding-right:54px;">
+      <div class="rwrk" style="padding-right:0;">${cropIcon(e.cropName)} ${esc(e.cropName)} ${e.field?'· '+esc(e.field):''}</div>
+      <div class="ramt ${e.profit>=0?'ag':'ar'}">${e.rev>0?inr(e.rev):''}</div>
+    </div>
+    <div class="rmeta">
+      <span class="crop-status ${e.status}">${e.status}</span>
+      ${e.acres>0?`<span class="chip ca">📏 ${e.acres} acres</span>`:''}
+      <span class="chip cd">🌱 ${fmtD(e.plantDate)}</span>
+      ${e.harvestDate?`<span class="chip cd">🌾 ${fmtD(e.harvestDate)}</span>`:''}
+    </div>
+    ${e.totalExp>0?`<div class="rmeta" style="margin-top:4px;">
+      <span class="chip cs">💸 Exp: ${inr(e.totalExp)}</span>
+      ${e.profit!==undefined?`<span class="chip ${e.profit>=0?'ce':'cs'}">${e.profit>=0?'Profit':'Loss'}: ${inr(Math.abs(e.profit))}</span>`:''}
+    </div>`:''}
+    ${e.notes?`<div class="rnotes">📝 ${esc(e.notes)}</div>`:''}
+  </div>`).join('');
+}
+
+function renderCropsSummary(){
+  const arr=getCrops();
+  const totalRev=arr.reduce((s,e)=>s+(e.rev||0),0);
+  const totalExp=arr.reduce((s,e)=>s+(e.totalExp||0),0);
+  const totalProfit=totalRev-totalExp;
+  const totalAcres=arr.reduce((s,e)=>s+(e.acres||0),0);
+  document.getElementById('cr-total').textContent=arr.length;
+  document.getElementById('cr-revenue').textContent=inr(totalRev);
+  document.getElementById('cr-expenses').textContent=inr(totalExp);
+  const cp=document.getElementById('cr-profit');
+  cp.textContent=inr(totalProfit);
+  cp.style.color=totalProfit>=0?'var(--leaf)':'var(--red)';
+  document.getElementById('cr-acres').textContent=totalAcres.toFixed(1);
+}
+
+function renderCropsAll(){renderCropsSummary();renderCrops();}
+
+function switchCropTab(t){
+  // Only one tab for now, placeholder for future expansion
 }
 
 // ── HELPERS ───────────────────────────────────────────
@@ -1060,7 +1445,7 @@ async function addFarm(){
     const idx=arr.findIndex(x=>x.id===editingFarmId);
     if(idx!==-1){
       // Upload any new photos for edit
-      const newPhotos=await uploadFarmPhotos(editingFarmId);
+      const newPhotos=await uploadFarmPhotos();
       const existingPhotos=arr[idx].photos||[];
       arr[idx]={...arr[idx],date,work,
         vid:vid||'',vname:veh?veh.name:'',vtype:veh?veh.type:'',
@@ -1081,7 +1466,7 @@ async function addFarm(){
   }
 
   const newId=Date.now();
-  const photos=await uploadFarmPhotos(newId);
+  const photos=await uploadFarmPhotos();
   arr.unshift({id:newId,date,work,
     vid:vid||'',vname:veh?veh.name:'',vtype:veh?veh.type:'',
     st:document.getElementById('fst').value,
@@ -1098,6 +1483,11 @@ let farmPhotoFiles=[];
 
 function previewFarmPhotos(input){
   const files=Array.from(input.files);
+  if(farmPhotoFiles.length+files.length>3){
+    toast('⚠️ Max 3 photos per entry.');
+    input.value='';
+    return;
+  }
   files.forEach(f=>{
     const reader=new FileReader();
     reader.onload=ev=>{
@@ -1106,7 +1496,7 @@ function previewFarmPhotos(input){
     };
     reader.readAsDataURL(f);
   });
-  input.value=''; // allow re-selecting same file
+  input.value='';
 }
 
 function refreshFarmPhotoPreviews(){
@@ -1123,22 +1513,38 @@ function removeFarmPhoto(i){
   refreshFarmPhotoPreviews();
 }
 
-async function uploadFarmPhotos(entryId){
+// Compress image to base64 using canvas (max 800px wide, 70% quality JPEG)
+// This keeps each photo under ~100KB so it fits in Firestore (1MB doc limit)
+function compressPhoto(dataUrl){
+  return new Promise(resolve=>{
+    const img=new Image();
+    img.onload=()=>{
+      const MAX=800;
+      let w=img.width, h=img.height;
+      if(w>MAX){ h=Math.round(h*MAX/w); w=MAX; }
+      const canvas=document.createElement('canvas');
+      canvas.width=w; canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      resolve(canvas.toDataURL('image/jpeg',0.70));
+    };
+    img.src=dataUrl;
+  });
+}
+
+async function uploadFarmPhotos(){
   if(!farmPhotoFiles.length) return [];
   const progress=document.getElementById('farm-photo-progress');
   progress.style.display='block';
-  const urls=[];
-  for(let i=0;i<farmPhotoFiles.length;i++){
-    const f=farmPhotoFiles[i].file;
-    const ref=window.fbStorage.ref(`users/${currentUID}/farm/${entryId}/${Date.now()}_${f.name}`);
-    await ref.put(f);
-    const url=await ref.getDownloadURL();
-    urls.push(url);
+  progress.textContent='🔄 Compressing photos…';
+  const compressed=[];
+  for(const p of farmPhotoFiles){
+    const b64=await compressPhoto(p.dataUrl);
+    compressed.push(b64);
   }
   progress.style.display='none';
   farmPhotoFiles=[];
   document.getElementById('farm-photo-previews').innerHTML='';
-  return urls;
+  return compressed;
 }
 
 function clrFarm(){
@@ -1559,6 +1965,10 @@ function exportCSV(type){
     rows=[['Date','From','Source','Amount','Notes']];
     getIncome().forEach(e=>rows.push([e.date,e.from,e.src,e.amt,e.notes||'']));
     fn='khet-income.csv';
+  }else if(type==='crops'){
+    rows=[['Crop','Field','Acres','Planting Date','Harvest Date','Seed Cost','Fertilizer Cost','Labour Cost','Other Cost','Total Expense','Qty','Price/unit','Revenue','Profit','Status','Notes']];
+    getCrops().forEach(e=>rows.push([e.cropName,e.field||'',e.acres||0,e.plantDate||'',e.harvestDate||'',e.seed||0,e.fert||0,e.labour||0,e.otherCost||0,e.totalExp||0,e.qty||0,e.price||0,e.rev||0,e.profit||0,e.status||'',e.notes||'']));
+    fn='khet-crops.csv';
   }else{
     rows=[['Date','Item','Category','Amount','Paid By','Notes']];
     getHome().forEach(e=>rows.push([e.date,e.item,e.cat,e.amt,e.paid||'',e.notes||'']));

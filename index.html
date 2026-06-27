@@ -38,6 +38,10 @@
 body{background:var(--cream);font-family:'Inter',sans-serif;color:var(--soil);min-height:100vh;}
 .screen{display:none;min-height:100vh;}
 .screen.show{display:flex;}
+#home-screen.show{flex-direction:column;background:var(--soil);}
+#auth-screen.show{flex-direction:column;align-items:center;justify-content:center;}
+#crops-screen.show{flex-direction:column;}
+#app-screen.show{flex-direction:column;}
 
 /* AUTH */
 #auth-screen{flex-direction:column;align-items:center;justify-content:center;padding:24px 16px;background:var(--soil);}
@@ -357,7 +361,7 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
 </div>
 
 <!-- HOME SCREEN (after login, choose Business or Crops) -->
-<div id="home-screen" class="screen" style="flex-direction:column;background:var(--soil);min-height:100vh;">
+<div id="home-screen" class="screen">
   <div style="padding:32px 20px 16px;text-align:center;">
     <div style="font-size:3rem;margin-bottom:8px;">🌾</div>
     <div style="color:var(--cream);font-size:1.5rem;font-weight:800;">Khet Diary</div>
@@ -392,7 +396,7 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
 </div>
 
 <!-- CROPS SCREEN -->
-<div id="crops-screen" class="screen" style="flex-direction:column;">
+<div id="crops-screen" class="screen">
 <div id="crops-body" style="flex:1;padding-bottom:80px;">
   <header>
     <button onclick="goHome()" style="background:none;border:none;color:var(--cream);font-size:1.3rem;cursor:pointer;padding:0 10px 0 0;">‹</button>
@@ -505,12 +509,14 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
 
 </div><!-- crops-body -->
 <div class="tabs">
-  <div class="tab active" id="ctab-crops" onclick="switchCropTab('crops')"><span class="ti">🌱</span>Crops</div>
+  <div class="tab" onclick="goHome()" style="color:#9A8A77;"><span class="ti">🏠</span>Home</div>
+  <div class="tab active" id="ctab-crops"><span class="ti">🌱</span>Crops</div>
+  <div class="tab" onclick="enterSection('business')"><span class="ti">🏢</span>Business</div>
 </div>
 </div><!-- crops-screen -->
 
 <!-- APP (Business) -->
-<div id="app-screen" class="screen" style="flex-direction:column;">
+<div id="app-screen" class="screen">
 <div id="app-body">
   <header>
     <button onclick="goHome()" style="background:none;border:none;color:var(--cream);font-size:1.2rem;cursor:pointer;padding:0 8px 0 0;">🏠</button>
@@ -862,14 +868,16 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
 </div><!-- app-body -->
 
 <div class="tabs">
+  <div class="tab" onclick="goHome()" style="color:#9A8A77;"><span class="ti">🏠</span>Home</div>
   <div class="tab active" id="tab-dash"      onclick="switchTab('dash')"><span class="ti">📊</span><span class="tl" data-key="tab_dash">Dashboard</span></div>
   <div class="tab"        id="tab-vehicles"  onclick="switchTab('vehicles')"><span class="ti">🚛</span><span class="tl" data-key="tab_vehicles">Vehicles</span></div>
   <div class="tab"        id="tab-farm"      onclick="switchTab('farm')"><span class="ti">🚜</span><span class="tl" data-key="tab_farm">Farm</span></div>
   <div class="tab"        id="tab-diesel"    onclick="switchTab('diesel')"><span class="ti">⛽</span><span class="tl" data-key="tab_diesel">Diesel</span></div>
-  <div class="tab"        id="tab-home"      onclick="switchTab('home')"><span class="ti">🏠</span><span class="tl" data-key="tab_home">Home</span></div>
+  <div class="tab"        id="tab-home"      onclick="switchTab('home')"><span class="ti">🏡</span><span class="tl" data-key="tab_home">Home</span></div>
   <div class="tab"        id="tab-report"    onclick="switchTab('report')"><span class="ti">📋</span><span class="tl" data-key="tab_report">Report</span></div>
   <div class="tab"        id="tab-customers" onclick="switchTab('customers')"><span class="ti">👨‍🌾</span><span class="tl" data-key="tab_customers">Customers</span></div>
   <div class="tab"        id="tab-debt"      onclick="switchTab('debt')"><span class="ti">🧮</span><span class="tl" data-key="tab_interest">Interest</span></div>
+  <div class="tab"        onclick="enterSection('crops')"><span class="ti">🌱</span>Crops</div>
 </div>
 </div>
 
@@ -1031,13 +1039,16 @@ async function doLogout(){
 }
 
 window.fbAuth.onAuthStateChanged(async(user)=>{
-    document.getElementById('initial-loading').style.display='none';
+    // Hide the initial loading screen
+    const initLoad = document.getElementById('initial-loading');
+    if(initLoad) initLoad.style.display='none';
     if(user){
       currentUID=user.uid;
-      document.getElementById('auth-loading').style.display='flex';
+      const authLoad = document.getElementById('auth-loading');
+      if(authLoad) authLoad.style.display='flex';
       await loadCloudData(user.uid);
       openApp(user.displayName||user.email||'Farmer');
-      document.getElementById('auth-loading').style.display='none';
+      if(authLoad) authLoad.style.display='none';
     } else {
       currentUID=null;
       cloudData={veh:[],farm:[],diesel:[],home:[],income:[],crops:[]};
@@ -1049,7 +1060,16 @@ window.fbAuth.onAuthStateChanged(async(user)=>{
       showAuthTab('login');
       show('auth-screen');
     }
-  });
+});
+
+// Safety fallback: if Firebase doesn't respond in 5 seconds, show login screen
+setTimeout(()=>{
+  const initLoad=document.getElementById('initial-loading');
+  if(initLoad && initLoad.style.display!=='none'){
+    initLoad.style.display='none';
+    show('auth-screen');
+  }
+},5000);
 
 function openApp(name){
   document.getElementById('home-uname').textContent=name;

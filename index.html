@@ -36,15 +36,14 @@
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 body{background:var(--cream);font-family:'Inter',sans-serif;color:var(--soil);min-height:100vh;}
-.screen{display:none;min-height:100vh;}
+.screen{display:none;width:100%;min-height:100vh;}
 .screen.show{display:flex;}
-#home-screen.show{flex-direction:column;background:var(--soil);}
-#auth-screen.show{flex-direction:column;align-items:center;justify-content:center;}
+#home-screen.show{flex-direction:column;background:var(--soil);min-height:100vh;}
+#auth-screen.show{flex-direction:column;align-items:center;justify-content:center;min-height:100vh;background:var(--soil);padding:24px 16px;}
 #crops-screen.show{flex-direction:column;}
-#app-screen.show{flex-direction:column;}
+#app-screen.show{display:block;}
 
 /* AUTH */
-#auth-screen{flex-direction:column;align-items:center;justify-content:center;padding:24px 16px;background:var(--soil);}
 .auth-logo{font-size:3.2rem;margin-bottom:8px;}
 .auth-title{color:var(--cream);font-size:1.9rem;font-weight:800;letter-spacing:-0.02em;}
 .auth-sub{color:#B8A890;font-size:0.82rem;margin-bottom:28px;}
@@ -63,7 +62,8 @@ body{background:var(--cream);font-family:'Inter',sans-serif;color:var(--soil);mi
 
 /* APP */
 #app-screen{flex-direction:column;}
-#app-body{flex:1;padding-bottom:76px;overflow-y:auto;}
+#app-body{flex:1;padding-bottom:76px;}
+#crops-body{flex:1;padding-bottom:76px;overflow-y:auto;-webkit-overflow-scrolling:touch;}
 header{background:var(--soil);color:var(--cream);padding:11px 14px;display:flex;align-items:center;gap:9px;position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(0,0,0,0.35);}
 .hlogo{font-size:1.5rem;line-height:1;}
 header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
@@ -98,6 +98,7 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
 
 /* ACCORDION SECTIONS */
 .acc-section{margin:10px 14px 0;border-radius:14px;overflow:hidden;box-shadow:var(--sh);}
+.acc-section:last-child{margin-bottom:10px;}
 .acc-header{background:var(--soil2);color:var(--cream);padding:14px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;}
 .acc-header:active{background:var(--soil);}
 .acc-header .acc-icon{font-size:1.3rem;line-height:1;}
@@ -106,6 +107,17 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
 .acc-header.open .acc-arrow{transform:rotate(180deg);}
 .acc-body{display:none;background:var(--white);}
 .acc-body.open{display:block;}
+
+/* ── BUSINESS TAB BAR ── */
+.business-tab-bar{display:flex;flex-wrap:wrap;gap:6px;padding:10px 14px 8px;position:sticky;top:52px;z-index:50;background:var(--soil2);border-bottom:1px solid rgba(255,255,255,0.06);}
+.business-tab-bar::-webkit-scrollbar{display:none;}
+.business-tab{flex:0 0 auto;padding:7px 12px;border-radius:18px;font-size:0.74rem;font-weight:700;cursor:pointer;background:rgba(255,255,255,0.08);color:#C8B89A;border:1px solid rgba(255,255,255,0.06);white-space:nowrap;transition:all 0.2s;user-select:none;-webkit-tap-highlight-color:transparent;display:flex;align-items:center;gap:4px;}
+.business-tab:active{background:rgba(255,255,255,0.18);}
+.business-tab.active{background:var(--leaf);color:#fff;border-color:var(--leaf);}
+.business-mode .acc-header{display:none;}
+.business-mode .acc-section{margin:0;border-radius:0;box-shadow:none;}
+.business-mode .acc-body{padding:16px 14px 80px;}
+.business-mode .recsec{margin:10px 0 0;}
 
 
 
@@ -532,7 +544,9 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
   <header>
     <button onclick="goHome()" style="background:none;border:none;color:var(--cream);font-size:1.2rem;cursor:pointer;padding:0 8px 0 0;">🏠</button>
     <h1 id="app-title">Business</h1>
+    <button class="lang-btn" onclick="cycleLang()" id="lang-btn">తెలుగు</button>
     <div class="uchip">👤 <span id="uname"></span></div>
+    <button class="lbtn" onclick="doLogout()" id="logout-text">🚪</button>
   </header>
 
   <!-- DASHBOARD -->
@@ -558,6 +572,7 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
     <!-- PENDING PAYMENT REMINDERS -->
     <div id="pending-alert-section"></div>
   </div>
+  </div><!-- /sec-dash -->
 
   <!-- VEHICLES -->
   <div class="acc-section" id="sec-vehicles">
@@ -592,6 +607,7 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
       </div>
     </div>
   </div>
+  </div><!-- /sec-vehicles -->
 
   <!-- FARM WORK -->
   <div class="acc-section" id="sec-farm">
@@ -678,6 +694,7 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
       <div id="fe2" class="empty"><div class="ei">🌱</div><p>No work entries yet.<br>Add your first one above!</p></div>
     </div>
   </div>
+  </div><!-- /sec-farm -->
 
   <!-- DIESEL -->
   <div class="acc-section" id="sec-diesel">
@@ -729,6 +746,7 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
       <div id="dsl-empty" class="empty"><div class="ei">⛽</div><p>No diesel entries yet.<br>Add your first one above!</p></div>
     </div>
   </div>
+  </div><!-- /sec-diesel -->
 
   <!-- HOME -->
   <div class="acc-section" id="sec-home">
@@ -827,6 +845,7 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
       <div id="ine2" class="empty"><div class="ei">💵</div><p>No income entries yet.<br>Add your first one above!</p></div>
     </div>
   </div>
+  </div><!-- /sec-home -->
 
   <!-- PTR CALCULATOR -->
   <div class="acc-section" id="sec-debt">
@@ -882,6 +901,7 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
       </div>
     </div>
   </div>
+  </div><!-- /sec-debt -->
 
   <!-- MONTHLY REPORT -->
   <div class="acc-section" id="sec-report">
@@ -922,7 +942,7 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
     </div>
   </div>
   </div><!-- /acc-body-customers -->
-</div><!-- /sec-customers -->
+  </div><!-- /sec-customers -->
 
 </div><!-- app-body -->
 
@@ -952,14 +972,16 @@ const TABS=['dash','vehicles','farm','diesel','home','report','customers','debt'
 
 function toggleSection(sid){
   const body=document.getElementById('pg-'+sid);
+  if(!body) return;
   const hdr=body.previousElementSibling;
   const wasOpen=body.classList.contains('open');
   // Close all sections first
   TABS.forEach(x=>{
     const b=document.getElementById('pg-'+x);
+    if(!b) return;
     const h=b.previousElementSibling;
     b.classList.remove('open');
-    h.classList.remove('open');
+    if(h) h.classList.remove('open');
   });
   // If it was closed, open it now
   if(!wasOpen){
@@ -970,10 +992,25 @@ function toggleSection(sid){
     if(sid==='debt') calcPTR();
     if(sid==='report') renderReport();
     if(sid==='customers') renderCustomers();
-    // Scroll to this section smoothly
+    // Update tab bar active state
+    try{
+      const bar=document.getElementById('app-body');
+      if(bar&&bar.classList.contains('business-mode')){
+        bar.querySelectorAll('.business-tab').forEach(t=>t.classList.remove('active'));
+        const at=bar.querySelector('.business-tab[data-section="'+sid+'"]');
+        if(at) at.classList.add('active');
+      }
+    }catch(e){}
+    // Scroll section into view (skip in business mode)
     setTimeout(()=>{
-      document.getElementById('sec-'+sid).scrollIntoView({behavior:'smooth',block:'start'});
-    },50);
+      try{
+        const ab=document.getElementById('app-body');
+        if(ab&&!ab.classList.contains('business-mode')){
+          const sec=document.getElementById('sec-'+sid);
+          if(sec) sec.scrollIntoView({behavior:'smooth',block:'start'});
+        }
+      }catch(e){}
+    },80);
   }
 }
 
@@ -1162,19 +1199,66 @@ function goHome(){
 
 function enterSection(section){
   if(section==='business'){
-    document.getElementById('fd').valueAsDate=new Date();
-    document.getElementById('hd').valueAsDate=new Date();
-    document.getElementById('dsd').valueAsDate=new Date();
-    document.getElementById('ind').valueAsDate=new Date();
-    updateVehicleSelects();renderVehicles();renderDash();renderFarmAll();renderHomeAll();renderIncomeAll();calcPTR();
-    renderPendingReminders();
     show('app-screen');
-    // Scroll to top
-    document.getElementById('app-body').scrollTop=0;
+    window.scrollTo(0,0);
+    try{ document.getElementById('app-body').scrollTop=0; }catch(e){}
+    // Build tab bar
+    const appBody=document.getElementById('app-body');
+    appBody.classList.add('business-mode');
+    const oldBar=appBody.querySelector('.business-tab-bar');
+    if(oldBar) oldBar.remove();
+    const tabBar=document.createElement('div');
+    tabBar.className='business-tab-bar';
+    TABS.forEach(id=>{
+      const sec=document.getElementById('sec-'+id);
+      const hdr=sec?sec.querySelector('.acc-header'):null;
+      if(!hdr) return;
+      const ic=hdr.querySelector('.acc-icon');
+      const tt=hdr.querySelector('.acc-title');
+      const tab=document.createElement('div');
+      tab.className='business-tab'+(id==='dash'?' active':'');
+      tab.dataset.section=id;
+      tab.textContent=(ic?ic.textContent+' ':'')+(tt?tt.textContent:id);
+      tab.onclick=()=>toggleSection(id);
+      tabBar.appendChild(tab);
+    });
+    const headerEl=appBody.querySelector('header');
+    appBody.insertBefore(tabBar,headerEl?headerEl.nextSibling:appBody.firstChild);
+    // Open dashboard, close everything else
+    TABS.forEach(x=>{
+      try{
+        const b=document.getElementById('pg-'+x);
+        const h=b?b.previousElementSibling:null;
+        if(b) b.classList.remove('open');
+        if(h) h.classList.remove('open');
+      }catch(e){}
+    });
+    try{
+      const dashBody=document.getElementById('pg-dash');
+      const dashHdr=dashBody?dashBody.previousElementSibling:null;
+      if(dashBody) dashBody.classList.add('open');
+      if(dashHdr) dashHdr.classList.add('open');
+    }catch(e){}
+    // Set dates
+    try{ document.getElementById('fd').valueAsDate=new Date(); }catch(e){}
+    try{ document.getElementById('hd').valueAsDate=new Date(); }catch(e){}
+    try{ document.getElementById('dsd').valueAsDate=new Date(); }catch(e){}
+    try{ document.getElementById('ind').valueAsDate=new Date(); }catch(e){}
+    // Render data
+    try{ updateVehicleSelects(); }catch(e){}
+    try{ renderVehicles(); }catch(e){}
+    try{ renderDash(); }catch(e){}
+    try{ renderFarmAll(); }catch(e){}
+    try{ renderHomeAll(); }catch(e){}
+    try{ renderIncomeAll(); }catch(e){}
+    try{ calcPTR(); }catch(e){}
+    try{ renderPendingReminders(); }catch(e){}
   } else {
-    document.getElementById('cr-plant-date').valueAsDate=new Date();
-    renderCropsAll();
+    // Show crops screen FIRST
     show('crops-screen');
+    window.scrollTo(0,0);
+    try{ document.getElementById('cr-plant-date').valueAsDate=new Date(); }catch(e){}
+    try{ renderCropsAll(); }catch(e){}
   }
 }
 

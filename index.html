@@ -931,6 +931,7 @@ body.dark .dark-toggle{background:#3A3025;color:#C8B89A;border-color:#4A4035;}
           <div class="field"><label>Vehicle</label><select id="fv"><option value="">-- Select --</option></select></div>
         </div>
         <div class="field"><label>Work Done / Customer Name</label><input type="text" id="fw" placeholder="e.g. Ploughing for Ramesh garu…"/></div>
+        <div class="field"><label>Customer Phone Number</label><input type="tel" id="fph" placeholder="e.g. 9876543210" inputmode="tel"/></div>
         <div class="gr2">
           <div class="field"><label>Start Time</label><input type="time" id="fst" oninput="liveCalc()"/></div>
           <div class="field"><label>End Time</label><input type="time" id="fet" oninput="liveCalc()"/></div>
@@ -1920,6 +1921,7 @@ function editFarm(id){
   document.getElementById('fd').value=e.date;
   document.getElementById('fv').value=e.vid||'';
   document.getElementById('fw').value=e.work;
+  document.getElementById('fph').value=e.phone||'';
   document.getElementById('fst').value=e.st||'';
   document.getElementById('fet').value=e.et||'';
   document.getElementById('fac').value=e.acres||'';
@@ -1945,6 +1947,7 @@ async function addFarm(){
   const date=document.getElementById('fd').value;
   const work=document.getElementById('fw').value.trim();
   if(!date||!work){toast('⚠️ Fill in date and work done.');return;}
+  const phone=document.getElementById('fph').value.trim();
   const vid=document.getElementById('fv').value;
   const vehicles=getVehicles();
   const veh=vehicles.find(v=>String(v.id)===String(vid));
@@ -1965,10 +1968,9 @@ async function addFarm(){
   if(editingFarmId!==null){
     const idx=arr.findIndex(x=>x.id===editingFarmId);
     if(idx!==-1){
-      // Upload any new photos for edit
       const newPhotos=await uploadFarmPhotos();
       const existingPhotos=arr[idx].photos||[];
-      arr[idx]={...arr[idx],date,work,
+      arr[idx]={...arr[idx],date,work,phone,
         vid:vid||'',vname:veh?veh.name:'',vtype:veh?veh.type:'',
         st:document.getElementById('fst').value,
         et:document.getElementById('fet').value,
@@ -1988,16 +1990,22 @@ async function addFarm(){
 
   const newId=Date.now();
   const photos=await uploadFarmPhotos();
-  arr.unshift({id:newId,date,work,
+  const entry={id:newId,date,work,phone,
     vid:vid||'',vname:veh?veh.name:'',vtype:veh?veh.type:'',
     st:document.getElementById('fst').value,
     et:document.getElementById('fet').value,
     hrs,acres,otherExp,total,received,pending,rph,rpa,profit,
     notes:document.getElementById('fn').value.trim(),
     photos
-  });
+  };
+  arr.unshift(entry);
   saveFarm(arr);clrFarm();renderFarmAll();renderDash();
   toast(pending>0?'✅ Added! Pending: '+inr(pending):'✅ Entry added! Fully paid.');
+
+  // Auto-send WhatsApp to customer if phone number provided
+  if(phone){
+    sendBillToCustomer(entry);
+  }
 }
 // pending photo files (before upload)
 let farmPhotoFiles=[];
@@ -2069,7 +2077,7 @@ async function uploadFarmPhotos(){
 }
 
 function clrFarm(){
-  ['fw','fst','fet','fac','fex','frh','fra','ftot','frec','fpen','fn'].forEach(id=>document.getElementById(id).value='');
+  ['fw','fph','fst','fet','fac','fex','frh','fra','ftot','frec','fpen','fn'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('fv').value='';document.getElementById('fd').valueAsDate=new Date();
   document.getElementById('live-preview').style.display='none';
   editingFarmId=null;
@@ -2111,6 +2119,7 @@ function renderFarm(){
       <div class="rmeta">
         <span class="chip cd">📅 ${fmtD(e.date)}</span>
         ${e.vname?`<span class="chip cv">${vIcon(e.vtype)} ${esc(e.vname)}</span>`:''}
+        ${e.phone?`<span class="chip cp">📞 ${esc(e.phone)}</span>`:''}
         ${st?`<span class="chip cd">▶ ${st}</span>`:''}
         ${et?`<span class="chip cd">⏹ ${et}</span>`:''}
         ${e.hrs>0?`<span class="chip cd">⏱ ${fmtH(e.hrs)}</span>`:''}
@@ -2124,7 +2133,10 @@ function renderFarm(){
       ${e.total>0?`<div class="rprofit ${profit>=0?'pos':'neg'}">Profit: ${profit>=0?'':'-'}${inr(Math.abs(profit))}</div>`:''}
       ${photosHtml}
       ${e.notes?`<div class="rnotes">📝 ${esc(e.notes)}</div>`:''}
-      <button class="wa-share-btn" onclick="shareFarmEntryWA(${e.id})">📤 WhatsApp</button>
+      <div style="display:flex;gap:6px;margin-top:6px;">
+        ${e.phone?`<button class="wa-share-btn" onclick="sendBillToCustomer(getFarm().find(x=>x.id===${e.id}))">📲 Send Bill</button>`:''}
+        <button class="wa-share-btn" onclick="shareFarmEntryWA(${e.id})">📤 WhatsApp</button>
+      </div>
     </div>`;
   }).join('');
 }
@@ -2471,12 +2483,47 @@ function shareFarmEntryWA(id){
   window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
 }
 
+// ── SEND BILL TO CUSTOMER VIA WHATSAPP ────────────────
+function sendBillToCustomer(e){
+  if(!e.phone) return;
+  // Clean phone number: remove spaces, dashes, +91, 91 prefix
+  let phone=e.phone.replace(/[\s\-\(\)]/g,'');
+  if(phone.startsWith('+91')) phone=phone.slice(3);
+  else if(phone.startsWith('91')&&phone.length>10) phone=phone.slice(2);
+  if(phone.length!==10){toast('⚠️ Invalid phone number.');return;}
+
+  const customerName=e.work||'Customer';
+  const msg=currentLang==='te'
+    ?`🌾 *ఖేత్ డైరీ — బిల్లు*\n\n`+
+      `👨‍🌾 కస్టమర్: ${customerName}\n`+
+      `📅 తేదీ: ${fmtD(e.date)}\n`+
+      `${e.vname?`🚛 వాహనం: ${e.vname}\n`:''}`+
+      `${e.hrs>0?`⏱ సమయం: ${fmtH(e.hrs)}\n`:''}`+
+      `${e.acres>0?`📏 భూమి: ${e.acres} ఎకరాలు\n`:''}`+
+      `\n💰 *మొత్తం: ${inr(e.total||0)}*\n`+
+      `✅ చెల్లించింది: ${inr(e.received||0)}\n`+
+      `${e.pending>0?`⏳ మిగిలింది: ${inr(e.pending)}\n`:''}`+
+      `\n_ఖేత్ డైరీ ద్వారా_`
+    :`🌾 *Khet Diary — Bill*\n\n`+
+      `👨‍🌾 Customer: ${customerName}\n`+
+      `📅 Date: ${fmtD(e.date)}\n`+
+      `${e.vname?`🚛 Vehicle: ${e.vname}\n`:''}`+
+      `${e.hrs>0?`⏱ Time: ${fmtH(e.hrs)}\n`:''}`+
+      `${e.acres>0?`📏 Land: ${e.acres} acres\n`:''}`+
+      `\n💰 *Total: ${inr(e.total||0)}*\n`+
+      `✅ Paid: ${inr(e.received||0)}\n`+
+      `${e.pending>0?`⏳ Pending: ${inr(e.pending)}\n`:''}`+
+      `\n_via Khet Diary_`;
+
+  window.open('https://wa.me/91'+phone+'?text='+encodeURIComponent(msg),'_blank');
+}
+
 // ── EXPORT ────────────────────────────────────────────
 function exportCSV(type){
   let rows,fn;
   if(type==='farm'){
-    rows=[['Date','Vehicle','Work','Start','End','Hours','Acres','Other Exp','Total','Received','Pending','Profit','Notes']];
-    getFarm().forEach(e=>rows.push([e.date,e.vname||'',e.work,e.st||'',e.et||'',e.hrs?.toFixed(2)||'',e.acres||0,e.otherExp||0,e.total||0,e.received||0,e.pending||0,e.profit||0,e.notes||'']));
+    rows=[['Date','Vehicle','Work','Phone','Start','End','Hours','Acres','Other Exp','Total','Received','Pending','Profit','Notes']];
+    getFarm().forEach(e=>rows.push([e.date,e.vname||'',e.work,e.phone||'',e.st||'',e.et||'',e.hrs?.toFixed(2)||'',e.acres||0,e.otherExp||0,e.total||0,e.received||0,e.pending||0,e.profit||0,e.notes||'']));
     fn='khet-farm.csv';
   }else if(type==='diesel'){
     rows=[['Date','Vehicle','Litres','Price/L','Total Cost','Pump','Notes']];

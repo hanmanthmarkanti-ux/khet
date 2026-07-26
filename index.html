@@ -109,15 +109,16 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
 .acc-body.open{display:block;}
 
 /* ── BUSINESS TAB BAR ── */
-.business-tab-bar{display:flex;flex-wrap:wrap;gap:6px;padding:10px 14px 8px;position:sticky;top:52px;z-index:50;background:var(--soil2);border-bottom:1px solid rgba(255,255,255,0.06);}
+.business-tab-bar{display:flex;gap:6px;padding:10px 14px 8px;position:sticky;top:52px;z-index:50;background:var(--soil2);border-bottom:1px solid rgba(255,255,255,0.06);overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
 .business-tab-bar::-webkit-scrollbar{display:none;}
 .business-tab{flex:0 0 auto;padding:7px 12px;border-radius:18px;font-size:0.74rem;font-weight:700;cursor:pointer;background:rgba(255,255,255,0.08);color:#C8B89A;border:1px solid rgba(255,255,255,0.06);white-space:nowrap;transition:all 0.2s;user-select:none;-webkit-tap-highlight-color:transparent;display:flex;align-items:center;gap:4px;}
 .business-tab:active{background:rgba(255,255,255,0.18);}
-.business-tab.active{background:var(--leaf);color:#fff;border-color:var(--leaf);}
+.business-tab.active{background:var(--leaf);color:#fff;border-color:var(--leaf);box-shadow:0 2px 8px rgba(58,107,48,0.35);}
 .business-mode .acc-header{display:none;}
 .business-mode .acc-section{margin:0;border-radius:0;box-shadow:none;}
 .business-mode .acc-body{padding:16px 14px 80px;}
 .business-mode .recsec{margin:10px 0 0;}
+.business-mode .acc-body:not(.open){display:none!important;}
 
 
 
@@ -1237,32 +1238,25 @@ function toggleSection(sid){
   // If it was closed, open it now
   if(!wasOpen){
     body.classList.add('open');
-    hdr.classList.add('open');
+    if(hdr) hdr.classList.add('open');
     // Trigger data loading for sections that need it
     if(sid==='diesel') renderDieselPage();
     if(sid==='debt') calcPTR();
     if(sid==='report') renderReport();
     if(sid==='customers') renderCustomers();
-    // Update tab bar active state
-    try{
-      const bar=document.getElementById('app-body');
-      if(bar&&bar.classList.contains('business-mode')){
-        bar.querySelectorAll('.business-tab').forEach(t=>t.classList.remove('active'));
-        const at=bar.querySelector('.business-tab[data-section="'+sid+'"]');
-        if(at) at.classList.add('active');
-      }
-    }catch(e){}
-    // Scroll section into view (skip in business mode)
-    setTimeout(()=>{
-      try{
-        const ab=document.getElementById('app-body');
-        if(ab&&!ab.classList.contains('business-mode')){
-          const sec=document.getElementById('sec-'+sid);
-          if(sec) sec.scrollIntoView({behavior:'smooth',block:'start'});
-        }
-      }catch(e){}
-    },80);
+    if(sid==='market') renderMarket();
   }
+  // Always update tab bar active state (works in both modes)
+  try{
+    const bar=document.getElementById('app-body');
+    if(bar&&bar.classList.contains('business-mode')){
+      bar.querySelectorAll('.business-tab').forEach(t=>t.classList.remove('active'));
+      const at=bar.querySelector('.business-tab[data-section="'+sid+'"]');
+      if(at) at.classList.add('active');
+      // Scroll to top when switching tabs in business mode
+      bar.scrollTop=0;
+    }
+  }catch(e){}
 }
 
 // Keep switchTab as alias for backward compat (called in some places)
@@ -1475,7 +1469,7 @@ function enterSection(section){
     });
     const headerEl=appBody.querySelector('header');
     appBody.insertBefore(tabBar,headerEl?headerEl.nextSibling:appBody.firstChild);
-    // Open dashboard, close everything else
+    // Close ALL sections first, then open only dashboard
     TABS.forEach(x=>{
       try{
         const b=document.getElementById('pg-'+x);
@@ -1495,6 +1489,7 @@ function enterSection(section){
     try{ document.getElementById('hd').valueAsDate=new Date(); }catch(e){}
     try{ document.getElementById('dsd').valueAsDate=new Date(); }catch(e){}
     try{ document.getElementById('ind').valueAsDate=new Date(); }catch(e){}
+    try{ document.getElementById('mk-date').valueAsDate=new Date(); }catch(e){}
     // Render data
     try{ updateVehicleSelects(); }catch(e){}
     try{ renderVehicles(); }catch(e){}
@@ -1504,6 +1499,7 @@ function enterSection(section){
     try{ renderIncomeAll(); }catch(e){}
     try{ calcPTR(); }catch(e){}
     try{ renderPendingReminders(); }catch(e){}
+    try{ renderMarket(); }catch(e){}
   } else {
     // Show crops screen FIRST
     show('crops-screen');

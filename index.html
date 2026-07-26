@@ -309,6 +309,166 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
 .share-btn{width:calc(100% - 28px);margin:12px 14px 0;padding:13px;border-radius:9px;font-size:0.97rem;font-weight:700;border:none;cursor:pointer;background:#25D366;color:#fff;}
 .share-btn:active{opacity:0.8;}
 
+/* ── DARK MODE ── */
+body.dark{--soil:#E8DDD0;--soil2:#D4C4B0;--cream:#1A1410;--muted:#9A8A77;--border:#3A3025;--white:#252018;--sh:0 2px 14px rgba(0,0,0,0.35);}
+body.dark{background:#1A1410;color:#E8DDD0;}
+body.dark header{background:#2A2018;box-shadow:0 2px 10px rgba(0,0,0,0.5);}
+body.dark .auth-box{background:#252018;}
+body.dark .auth-tab.active{background:#E8DDD0;color:#1A1410;}
+body.dark .auth-tab{color:#9A8A77;}
+body.dark .afield input{background:#1A1410;color:#E8DDD0;border-color:#3A3025;}
+body.dark .field input,body.dark .field select,body.dark .field textarea{background:#1A1410;color:#E8DDD0;border-color:#3A3025;}
+body.dark .box{background:#252018;}
+body.dark .boxhdr{background:#2A2018;}
+body.dark .boxbody{background:#252018;}
+body.dark .recsec{background:#252018;}
+body.dark .rc{border-bottom-color:#3A3025;}
+body.dark .filbox{background:#252018;}
+body.dark .filrow input,body.dark .filrow select{background:#1A1410;color:#E8DDD0;border-color:#3A3025;}
+body.dark .scard{background:#252018;}
+body.dark .dash-card{background:#252018;}
+body.dark .acc-header{background:#2A2018;color:#E8DDD0;}
+body.dark .acc-body{background:#252018;}
+body.dark .tabs{background:#2A2018;}
+body.dark .business-tab-bar{background:#2A2018;border-bottom-color:#3A3025;}
+body.dark .business-tab{background:#3A3025;color:#C8B89A;border-color:#3A3025;}
+body.dark .customer-card{background:#252018;}
+body.dark .customer-entry{background:#1A1410;}
+body.dark .report-section{background:#252018;}
+body.dark .report-section-title{background:#2A2018;}
+body.dark .report-row{border-bottom-color:#3A3025;}
+body.dark .debt-card{background:#252018;}
+body.dark .pending-alert{background:#2A1A0E;border-color:var(--orange);}
+body.dark .live-box{background:#1A2A1A;border-color:var(--leaf);}
+body.dark #toast{background:#E8DDD0;color:#1A1410;}
+body.dark .v-item{background:#1A1410;border-color:#3A3025;}
+body.dark .dv-card{background:#252018;}
+body.dark .dv-stat{background:#1A1410;}
+body.dark .debt-net{background:#2A2018;}
+body.dark .photo-upload-area{border-color:#3A3025;}
+body.dark .lang-btn{background:#3A3025;color:#C8B89A;border-color:#4A4035;}
+body.dark .pending-old{background:#2A1A0E!important;}
+body.dark .share-btn{background:#25D366;}
+body.dark #initial-loading{background:#1A1410;}
+body.dark #auth-loading{background:#1A1410;}
+body.dark .home-card{background:#2A2018;border-color:#3A3025;}
+body.dark .report-month-select input{background:#1A1410;color:#E8DDD0;border-color:#3A3025;}
+body.dark .customer-search-bar input{background:#1A1410;color:#E8DDD0;border-color:#3A3025;}
+body.dark .vtab{background:#3A3025;color:#C8B89A;}
+body.dark .chip{background:#3A3025;color:#C8B89A;}
+body.dark .chip.cv{background:#1A2A3A;color:#5BA8D4;}
+body.dark .chip.cs{background:#3A1A1A;color:#FF9B8A;}
+body.dark .chip.ce{background:#1A2A1A;color:#7FD992;}
+body.dark .chip.cf{background:#2A2018;color:var(--orange);}
+body.dark .crop-status{background:#1A2A1A;color:#7FD992;}
+body.dark .crop-status.Harvested{background:#2A2018;color:var(--orange);}
+body.dark .crop-status.Sold{background:#1A2A3A;color:#5BA8D4;}
+body.dark .crop-status.Failed{background:#3A1A1A;color:#FF9B8A;}
+body.dark .rprofit.pos{background:#1A2A1A;color:#7FD992;}
+body.dark .rprofit.neg{background:#3A1A1A;color:#FF9B8A;}
+body.dark .rpending{background:#2A2018;color:var(--orange);}
+body.dark .settled-badge{background:#3A3025;color:#C8B89A;}
+body.dark .overdue-badge{background:var(--orange);color:#fff;}
+body.dark .wa-share-btn{background:#25D366;}
+body.dark .debt-summary .debt-card.owed-to-you{background:#1A2A1A;}
+body.dark .debt-summary .debt-card.you-owe{background:#3A1A1A;}
+body.dark .sscroll .scards .scard{background:#252018;}
+body.dark .weather-card{background:#252018;}
+body.dark .weather-stat{background:#1A1410;}
+body.dark .weather-day{background:#1A1410;}
+body.dark .market-card{background:#252018;}
+body.dark .market-row{border-bottom-color:#3A3025;}
+body.dark .calendar-day.other-month{color:#555;}
+body.dark .calendar-event{background:#1A1410;}
+body.dark .reminder-item{background:#1A1410;}
+body.dark .cal-nav-btn{background:#1A1410;color:#E8DDD0;border-color:#3A3025;}
+/* Dark mode toggle button */
+.dark-toggle{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);border-radius:14px;padding:4px 10px;font-size:0.72rem;font-weight:700;color:#C8B89A;cursor:pointer;white-space:nowrap;}
+.dark-toggle:active{background:rgba(255,255,255,0.25);}
+body.dark .dark-toggle{background:#3A3025;color:#C8B89A;border-color:#4A4035;}
+
+/* ── WEATHER ── */
+.weather-card{margin:10px 14px 0;background:var(--white);border-radius:14px;box-shadow:var(--sh);overflow:hidden;}
+.weather-header{padding:14px;display:flex;align-items:center;gap:10px;cursor:pointer;}
+.weather-header .wh-icon{font-size:2rem;}
+.weather-header .wh-info{flex:1;}
+.weather-header .wh-temp{font-size:1.8rem;font-weight:800;}
+.weather-header .wh-desc{font-size:0.78rem;color:var(--muted);}
+.weather-header .wh-loc{font-size:0.72rem;color:var(--muted);margin-top:2px;}
+.weather-header .wh-arrow{font-size:0.8rem;color:var(--muted);transition:transform 0.3s;}
+.weather-header.open .wh-arrow{transform:rotate(180deg);}
+.weather-body{display:none;padding:0 14px 14px;}
+.weather-body.open{display:block;}
+.weather-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+.weather-stat{background:var(--cream);border-radius:10px;padding:10px;text-align:center;}
+.weather-stat-val{font-size:1.1rem;font-weight:800;color:var(--soil);}
+.weather-stat-label{font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;font-weight:600;}
+.weather-forecast{display:flex;gap:8px;overflow-x:auto;padding:8px 0;scrollbar-width:none;}
+.weather-forecast::-webkit-scrollbar{display:none;}
+.weather-day{flex:0 0 auto;min-width:70px;text-align:center;background:var(--cream);border-radius:10px;padding:10px 6px;}
+.weather-day-name{font-size:0.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;}
+.weather-day-icon{font-size:1.4rem;margin:4px 0;}
+.weather-day-temp{font-size:0.85rem;font-weight:800;}
+.weather-day-range{font-size:0.68rem;color:var(--muted);}
+.weather-loading{text-align:center;padding:20px;color:var(--muted);font-size:0.85rem;}
+.weather-refresh{background:none;border:none;color:var(--blue);font-size:0.75rem;font-weight:700;cursor:pointer;margin-top:6px;}
+.weather-error{text-align:center;padding:16px;color:var(--red);font-size:0.82rem;}
+
+/* ── MARKET PRICES ── */
+.market-card{margin:10px 14px 0;background:var(--white);border-radius:14px;box-shadow:var(--sh);overflow:hidden;}
+.market-header{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.market-header h2{font-size:0.88rem;font-weight:700;}
+.market-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid #F0E8DA;position:relative;}
+.market-row:last-child{border-bottom:none;}
+.market-crop{display:flex;align-items:center;gap:8px;font-weight:700;font-size:0.9rem;}
+.market-price{font-weight:800;font-size:0.95rem;}
+.market-add-form{padding:14px;}
+.market-add-row{display:flex;gap:8px;align-items:flex-end;}
+.market-add-row .field{flex:1;margin-bottom:0;}
+.market-add-row .btn{width:auto;padding:10px 16px;margin-top:0;flex-shrink:0;}
+.market-trend{font-size:0.68rem;font-weight:700;padding:2px 6px;border-radius:8px;margin-left:6px;}
+.market-trend.up{background:#E5F2E5;color:var(--leaf);}
+.market-trend.down{background:#FDECEA;color:var(--red);}
+.market-trend.same{background:#FEF3E2;color:var(--orange);}
+
+/* ── CROP CALENDAR ── */
+.calendar-header{display:flex;align-items:center;justify-content:space-between;padding:14px;}
+.calendar-header h2{font-size:0.95rem;font-weight:800;}
+.calendar-nav{display:flex;gap:8px;}
+.calendar-nav button{background:var(--cream);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:0.82rem;font-weight:700;color:var(--soil);cursor:pointer;}
+.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;padding:0 14px 14px;}
+.calendar-day-header{text-align:center;font-size:0.65rem;font-weight:700;color:var(--muted);text-transform:uppercase;padding:6px 0;}
+.calendar-day{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:8px;font-size:0.78rem;font-weight:600;cursor:pointer;position:relative;}
+.calendar-day.today{background:var(--wheat);color:#fff;border-radius:50%;}
+.calendar-day.has-event{background:var(--leaf);color:#fff;border-radius:50%;}
+.calendar-day.has-harvest{background:var(--orange);color:#fff;border-radius:50%;}
+.calendar-day.other-month{color:#ccc;}
+.calendar-day .dot{position:absolute;bottom:3px;width:4px;height:4px;border-radius:50%;background:var(--red);}
+.calendar-events{padding:0 14px 14px;}
+.calendar-event{display:flex;align-items:center;gap:10px;padding:10px;background:var(--cream);border-radius:10px;margin-bottom:6px;border-left:3px solid var(--leaf);}
+.calendar-event.harvest{border-left-color:var(--orange);}
+.calendar-event-icon{font-size:1.3rem;}
+.calendar-event-info{flex:1;}
+.calendar-event-title{font-weight:700;font-size:0.85rem;}
+.calendar-event-date{font-size:0.72rem;color:var(--muted);}
+.calendar-event-days{font-size:0.68rem;font-weight:700;padding:3px 8px;border-radius:8px;background:var(--leaf);color:#fff;}
+.calendar-event-days.overdue{background:var(--red);}
+.calendar-event-days.soon{background:var(--orange);}
+
+/* ── REMINDERS ── */
+.reminder-toggle{display:flex;align-items:center;gap:8px;padding:10px 14px;}
+.reminder-toggle label{font-size:0.82rem;font-weight:600;color:var(--muted);cursor:pointer;}
+.reminder-switch{position:relative;width:44px;height:24px;background:var(--border);border-radius:12px;cursor:pointer;transition:background 0.3s;}
+.reminder-switch.on{background:var(--leaf);}
+.reminder-switch::after{content:'';position:absolute;top:2px;left:2px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform 0.3s;}
+.reminder-switch.on::after{transform:translateX(20px);}
+.reminder-list{padding:0 14px 14px;}
+.reminder-item{display:flex;align-items:center;gap:10px;padding:10px;background:var(--cream);border-radius:10px;margin-bottom:6px;}
+.reminder-item-icon{font-size:1.1rem;}
+.reminder-item-info{flex:1;}
+.reminder-item-title{font-weight:700;font-size:0.82rem;}
+.reminder-item-date{font-size:0.7rem;color:var(--muted);}
+
 /* CUSTOMER VIEW */
 .customer-search-bar{padding:14px 14px 0;}
 .customer-search-bar input{width:100%;border:1.5px solid var(--border);border-radius:9px;padding:11px 12px;font-size:0.95rem;font-family:'Inter',sans-serif;color:var(--soil);background:var(--white);outline:none;}
@@ -428,6 +588,29 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
     <div class="uchip">👤 <span id="crops-uname"></span></div>
   </header>
 
+  <!-- WEATHER CARD -->
+  <div class="weather-card" id="weather-card">
+    <div class="weather-header" onclick="toggleWeather()">
+      <div class="wh-icon" id="w-icon">🌤️</div>
+      <div class="wh-info">
+        <div class="wh-temp" id="w-temp">--°C</div>
+        <div class="wh-desc" id="w-desc">Tap to load weather</div>
+        <div class="wh-loc" id="w-loc"></div>
+      </div>
+      <div class="wh-arrow">▼</div>
+    </div>
+    <div class="weather-body" id="weather-body">
+      <div class="weather-loading" id="w-loading">Loading weather…</div>
+      <div id="w-content" style="display:none;">
+        <div class="weather-grid" id="w-grid"></div>
+        <div style="font-size:0.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:6px;">7-Day Forecast</div>
+        <div class="weather-forecast" id="w-forecast"></div>
+        <button class="weather-refresh" onclick="loadWeather()">🔄 Refresh</button>
+      </div>
+      <div class="weather-error" id="w-error" style="display:none;"></div>
+    </div>
+  </div>
+
   <!-- CROPS SUMMARY -->
   <div class="sscroll"><div class="scards" id="crops-summary-cards">
     <div class="scard"><label>Total Crops</label><div class="sv" id="cr-total">0</div></div>
@@ -530,6 +713,28 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
     <div id="cr-empty" class="empty"><div class="ei">🌱</div><p>No crops added yet.<br>Add your first crop above!</p></div>
   </div>
 
+  <!-- CROP CALENDAR -->
+  <div class="box" style="margin-top:12px;">
+    <div class="boxhdr" onclick="tog('crop-cal-body',this)"><span>📅</span> Crop Calendar & Reminders <span class="arr">▼</span></div>
+    <div class="boxbody" id="crop-cal-body">
+      <div class="calendar-header">
+        <button class="calendar-nav-btn" onclick="calNav(-1)" style="background:var(--cream);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:0.82rem;font-weight:700;color:var(--soil);cursor:pointer;">◀</button>
+        <h2 id="cal-month-label">July 2026</h2>
+        <button class="calendar-nav-btn" onclick="calNav(1)" style="background:var(--cream);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:0.82rem;font-weight:700;color:var(--soil);cursor:pointer;">▶</button>
+      </div>
+      <div class="calendar-grid" id="cal-grid"></div>
+      <div style="padding:0 14px 6px;">
+        <div style="font-size:0.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:6px;">Upcoming Events</div>
+      </div>
+      <div class="calendar-events" id="cal-events"></div>
+      <div class="reminder-toggle">
+        <div class="reminder-switch" id="reminder-switch" onclick="toggleReminders()"></div>
+        <label onclick="toggleReminders()">Enable crop reminders (browser notifications)</label>
+      </div>
+      <div class="reminder-list" id="reminder-list"></div>
+    </div>
+  </div>
+
 </div><!-- crops-body -->
 <div class="tabs">
   <div class="tab" onclick="goHome()" style="color:#9A8A77;"><span class="ti">🏠</span>Home</div>
@@ -545,6 +750,7 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
     <button onclick="goHome()" style="background:none;border:none;color:var(--cream);font-size:1.2rem;cursor:pointer;padding:0 8px 0 0;">🏠</button>
     <h1 id="app-title">Business</h1>
     <button class="lang-btn" onclick="cycleLang()" id="lang-btn">తెలుగు</button>
+    <button class="dark-toggle" onclick="toggleDark()" id="dark-btn">🌙</button>
     <div class="uchip">👤 <span id="uname"></span></div>
     <button class="lbtn" onclick="doLogout()" id="logout-text">🚪</button>
   </header>
@@ -944,6 +1150,50 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
   </div><!-- /acc-body-customers -->
   </div><!-- /sec-customers -->
 
+  <!-- MARKET PRICES -->
+  <div class="acc-section" id="sec-market">
+    <div class="acc-header" onclick="toggleSection('market')">
+      <span class="acc-icon">📊</span>
+      <span class="acc-title" data-key="tab_market">Market Prices</span>
+      <span class="arr">▼</span>
+    </div>
+    <div class="acc-body" id="pg-market">
+      <div class="market-card" style="margin-top:0;border-radius:0;box-shadow:none;">
+        <div class="market-header">
+          <h2>📊 Crop Market Prices</h2>
+          <button class="expbtn" onclick="exportCSV('market')">⬇ CSV</button>
+        </div>
+        <div id="market-list"></div>
+        <div id="market-empty" class="empty" style="padding:20px;"><div class="ei">📊</div><p>No prices tracked yet.<br>Add your first crop price below!</p></div>
+        <div class="market-add-form">
+          <div class="gr2" style="margin-bottom:8px;">
+            <div class="field"><label>Crop</label>
+              <select id="mk-crop">
+                <option value="Rice">🌾 Rice</option>
+                <option value="Cotton">🌿 Cotton</option>
+                <option value="Chilli">🌶️ Chilli</option>
+                <option value="Groundnut">🥜 Groundnut</option>
+                <option value="Maize">🌽 Maize</option>
+                <option value="Sugarcane">🎋 Sugarcane</option>
+                <option value="Turmeric">🟡 Turmeric</option>
+                <option value="Onion">🧅 Onion</option>
+                <option value="Tomato">🍅 Tomato</option>
+                <option value="Other">🌿 Other</option>
+              </select>
+            </div>
+            <div class="field"><label>Custom Name</label><input type="text" id="mk-custom" placeholder="If Other…"/></div>
+          </div>
+          <div class="gr2">
+            <div class="field"><label>Price ₹ / Quintal</label><input type="number" id="mk-price" placeholder="e.g. 2500" min="0" inputmode="numeric"/></div>
+            <div class="field"><label>Market / Location</label><input type="text" id="mk-market" placeholder="e.g. Rythu Bazaar…"/></div>
+          </div>
+          <div class="field"><label>Date</label><input type="date" id="mk-date"/></div>
+          <button class="btn bo" onclick="addMarketPrice()">＋ Add Price</button>
+        </div>
+      </div>
+    </div>
+  </div><!-- /sec-market -->
+
 </div><!-- app-body -->
 
 
@@ -952,6 +1202,7 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
   <button onclick="goHome()" style="flex:1;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:10px;color:#C8B89A;font-size:0.76rem;font-weight:700;padding:8px 4px;cursor:pointer;">🏠<br>Home</button>
   <button onclick="enterSection('crops')" style="flex:2;background:var(--leaf);border:none;border-radius:10px;color:#fff;font-size:0.76rem;font-weight:700;padding:8px 4px;cursor:pointer;">🌱<br>Switch to Crops</button>
   <button onclick="cycleLang()" id="lang-btn2" style="flex:1;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:10px;color:#C8B89A;font-size:0.72rem;font-weight:700;padding:8px 4px;cursor:pointer;">🌐<br>తెలుగు</button>
+  <button onclick="toggleDark()" id="dark-btn2" style="flex:1;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:10px;color:#C8B89A;font-size:0.72rem;font-weight:700;padding:8px 4px;cursor:pointer;">🌙<br>Dark</button>
   <button onclick="doLogout()" style="flex:1;background:rgba(220,80,60,0.18);border:1px solid rgba(220,80,60,0.35);border-radius:10px;color:#ffb0a0;font-size:0.72rem;font-weight:700;padding:8px 4px;cursor:pointer;">🚪<br>Logout</button>
 </div>
 </div><!-- app-screen -->
@@ -968,7 +1219,7 @@ function showAuthTab(t){
 }
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 function tog(id,hdr){const b=document.getElementById(id);const open=b.classList.toggle('open');hdr.classList.toggle('open',open);}
-const TABS=['dash','vehicles','farm','diesel','home','report','customers','debt'];
+const TABS=['dash','vehicles','farm','diesel','home','report','customers','debt','market'];
 
 function toggleSection(sid){
   const body=document.getElementById('pg-'+sid);
@@ -1022,7 +1273,7 @@ function switchTab(t){toggleSection(t);}
 // All getXxx()/saveXxx() functions below read/write this cache instantly (sync, no UI rewrite needed),
 // while saveXxx() also pushes the change to Firestore in the background so it syncs across devices.
 let currentUID=null;
-let cloudData={veh:[],farm:[],diesel:[],home:[],income:[]};
+let cloudData={veh:[],farm:[],diesel:[],home:[],income:[],crops:[],market:[]};
 
 
 async function loadCloudData(uid){
@@ -1033,10 +1284,10 @@ async function loadCloudData(uid){
       const d=snap.data();
       cloudData={
         veh:d.veh||[], farm:d.farm||[], diesel:d.diesel||[],
-        home:d.home||[], income:d.income||[], crops:d.crops||[]
+        home:d.home||[], income:d.income||[], crops:d.crops||[], market:d.market||[]
       };
     } else {
-      cloudData={veh:[],farm:[],diesel:[],home:[],income:[],crops:[]};
+      cloudData={veh:[],farm:[],diesel:[],home:[],income:[],crops:[],market:[]};
       await ref.set(cloudData);
     }
   }catch(err){
@@ -1162,7 +1413,7 @@ window.fbAuth.onAuthStateChanged(async(user)=>{
       if(authLoad) authLoad.style.display='none';
     } else {
       currentUID=null;
-      cloudData={veh:[],farm:[],diesel:[],home:[],income:[],crops:[]};
+      cloudData={veh:[],farm:[],diesel:[],home:[],income:[],crops:[],market:[]};
       ['lu','lp','rn','ru','rp','rp2','fpu'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
       document.getElementById('lerr').textContent='';
       document.getElementById('rerr').textContent='';
@@ -2148,6 +2399,10 @@ function exportCSV(type){
     rows=[['Crop','Field','Acres','Planting Date','Harvest Date','Seed Cost','Fertilizer Cost','Labour Cost','Other Cost','Total Expense','Qty','Price/unit','Revenue','Profit','Status','Notes']];
     getCrops().forEach(e=>rows.push([e.cropName,e.field||'',e.acres||0,e.plantDate||'',e.harvestDate||'',e.seed||0,e.fert||0,e.labour||0,e.otherCost||0,e.totalExp||0,e.qty||0,e.price||0,e.rev||0,e.profit||0,e.status||'',e.notes||'']));
     fn='khet-crops.csv';
+  }else if(type==='market'){
+    rows=[['Crop','Price/Qintal','Market','Date']];
+    getMarket().forEach(e=>rows.push([e.cropName,e.price||0,e.market||'',e.date||'']));
+    fn='khet-market.csv';
   }else{
     rows=[['Date','Item','Category','Amount','Paid By','Notes']];
     getHome().forEach(e=>rows.push([e.date,e.item,e.cat,e.amt,e.paid||'',e.notes||'']));
@@ -2165,7 +2420,7 @@ const T = {
     app_title:'Khet Diary', logout:'🚪 Logout', lang_btn:'తెలుగు',
     tab_dash:'Dashboard', tab_vehicles:'Vehicles', tab_farm:'Farm',
     tab_diesel:'Diesel', tab_home:'Home', tab_report:'Report',
-    tab_customers:'Customers', tab_interest:'Interest',
+    tab_customers:'Customers', tab_interest:'Interest', tab_market:'Market Prices',
     // Dashboard
     total_received:'Total Received', pending_receive:'Pending to Receive',
     farm_costs:'Farm + Diesel Costs', net_profit:'Net Profit',
@@ -2198,7 +2453,7 @@ const T = {
     app_title:'ఖేత్ డైరీ', logout:'🚪 లాగ్అవుట్', lang_btn:'English',
     tab_dash:'డాష్‌బోర్డ్', tab_vehicles:'వాహనాలు', tab_farm:'పొలం',
     tab_diesel:'డీజిల్', tab_home:'ఇల్లు', tab_report:'నివేదిక',
-    tab_customers:'కస్టమర్లు', tab_interest:'వడ్డీ',
+    tab_customers:'కస్టమర్లు', tab_interest:'వడ్డీ', tab_market:'మార్కెట్ ధరలు',
     // Dashboard
     total_received:'మొత్తం వచ్చింది', pending_receive:'రావలసింది',
     farm_costs:'పొలం + డీజిల్ ఖర్చు', net_profit:'నికర లాభం',
@@ -2455,6 +2710,456 @@ document.addEventListener('keydown',e=>{
   else if(document.getElementById('reg-panel').style.display!=='none')doRegister();
   else if(document.getElementById('forgot-panel').style.display!=='none')doForgotPassword();
 });
+
+// ── DARK MODE ─────────────────────────────────────────
+let darkMode = localStorage.getItem('KD_dark') === 'true';
+
+function applyDark(){
+  document.body.classList.toggle('dark', darkMode);
+  const btn = document.getElementById('dark-btn');
+  const btn2 = document.getElementById('dark-btn2');
+  if(btn) btn.textContent = darkMode ? '☀️' : '🌙';
+  if(btn2) btn2.innerHTML = (darkMode ? '☀️<br>Light' : '🌙<br>Dark');
+}
+
+function toggleDark(){
+  darkMode = !darkMode;
+  localStorage.setItem('KD_dark', darkMode);
+  applyDark();
+}
+
+applyDark();
+
+// ── WEATHER ───────────────────────────────────────────
+let weatherOpen = false;
+let weatherData = null;
+let weatherLat = null, weatherLon = null;
+
+function toggleWeather(){
+  weatherOpen = !weatherOpen;
+  const hdr = document.querySelector('.weather-header');
+  const body = document.getElementById('weather-body');
+  hdr.classList.toggle('open', weatherOpen);
+  body.classList.toggle('open', weatherOpen);
+  if(weatherOpen && !weatherData) loadWeather();
+}
+
+function loadWeather(){
+  const loading = document.getElementById('w-loading');
+  const content = document.getElementById('w-content');
+  const error = document.getElementById('w-error');
+  loading.style.display = 'block';
+  content.style.display = 'none';
+  error.style.display = 'none';
+
+  if(!navigator.geolocation){
+    loading.style.display = 'none';
+    error.style.display = 'block';
+    error.textContent = '⚠️ Location access is needed for weather. Please enable location in your browser.';
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(async pos=>{
+    weatherLat = pos.coords.latitude;
+    weatherLon = pos.coords.longitude;
+    try{
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${weatherLat}&longitude=${weatherLon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,precipitation&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max&timezone=auto&forecast_days=7`;
+      const resp = await fetch(url);
+      weatherData = await resp.json();
+      renderWeather();
+      loading.style.display = 'none';
+      content.style.display = 'block';
+    }catch(e){
+      loading.style.display = 'none';
+      error.style.display = 'block';
+      error.textContent = '⚠️ Could not load weather. Check your internet.';
+    }
+  }, ()=>{
+    loading.style.display = 'none';
+    error.style.display = 'block';
+    error.textContent = '⚠️ Location access denied. Please allow location to see weather.';
+  }, {timeout:10000});
+}
+
+function weatherIcon(code){
+  if(code===0) return '☀️';
+  if(code<=3) return '⛅';
+  if(code<=49) return '🌫️';
+  if(code<=59) return '🌧️';
+  if(code<=69) return '🌨️';
+  if(code<=79) return '❄️';
+  if(code<=82) return '🌦️';
+  if(code<=86) return '🌨️';
+  if(code<=99) return '⛈️';
+  return '🌤️';
+}
+
+function weatherDesc(code){
+  if(code===0) return 'Clear sky';
+  if(code<=3) return 'Partly cloudy';
+  if(code<=49) return 'Foggy';
+  if(code<=59) return 'Drizzle';
+  if(code<=69) return 'Rain';
+  if(code<=79) return 'Snow';
+  if(code<=82) return 'Rain showers';
+  if(code<=86) return 'Snow showers';
+  if(code<=99) return 'Thunderstorm';
+  return 'Clear';
+}
+
+function renderWeather(){
+  if(!weatherData) return;
+  const c = weatherData.current;
+  const d = weatherData.daily;
+  document.getElementById('w-icon').textContent = weatherIcon(c.weather_code);
+  document.getElementById('w-temp').textContent = Math.round(c.temperature_2m) + '°C';
+  document.getElementById('w-desc').textContent = weatherDesc(c.weather_code);
+  document.getElementById('w-loc').textContent = `📍 ${weatherLat.toFixed(2)}°N, ${weatherLon.toFixed(2)}°E`;
+
+  const grid = document.getElementById('w-grid');
+  grid.innerHTML = `
+    <div class="weather-stat"><div class="weather-stat-val">${Math.round(c.apparent_temperature)}°C</div><div class="weather-stat-label">Feels Like</div></div>
+    <div class="weather-stat"><div class="weather-stat-val">${c.relative_humidity_2m}%</div><div class="weather-stat-label">Humidity</div></div>
+    <div class="weather-stat"><div class="weather-stat-val">${c.wind_speed_10m} km/h</div><div class="weather-stat-label">Wind</div></div>
+    <div class="weather-stat"><div class="weather-stat-val">${c.precipitation} mm</div><div class="weather-stat-label">Rain Now</div></div>
+  `;
+
+  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const forecast = document.getElementById('w-forecast');
+  forecast.innerHTML = d.time.slice(0,7).map((date,i)=>{
+    const dt = new Date(date+'T00:00:00');
+    return `<div class="weather-day">
+      <div class="weather-day-name">${i===0?'Today':days[dt.getDay()]}</div>
+      <div class="weather-day-icon">${weatherIcon(d.weather_code[i])}</div>
+      <div class="weather-day-temp">${Math.round(d.temperature_2m_max[i])}°</div>
+      <div class="weather-day-range">${Math.round(d.temperature_2m_min[i])}°</div>
+    </div>`;
+  }).join('');
+}
+
+// Auto-load weather when crops screen is opened
+function tryLoadWeather(){
+  if(weatherLat && weatherData) return;
+  loadWeather();
+}
+
+// ── MARKET PRICES ─────────────────────────────────────
+let editingMarketId = null;
+
+function getMarket(){ return cloudData.market || []; }
+function saveMarket(d){ cloudData.market = d; pushCloudData(); }
+
+function addMarketPrice(){
+  const cropVal = document.getElementById('mk-crop').value;
+  const custom = document.getElementById('mk-custom').value.trim();
+  const cropName = cropVal === 'Other' && custom ? custom : cropVal;
+  const price = parseFloat(document.getElementById('mk-price').value) || 0;
+  const market = document.getElementById('mk-market').value.trim();
+  const date = document.getElementById('mk-date').value;
+  if(!cropName || !price){ toast('⚠️ Fill in crop and price.'); return; }
+
+  const arr = getMarket();
+  if(editingMarketId){
+    const idx = arr.findIndex(x=>x.id===editingMarketId);
+    if(idx!==-1) arr[idx] = {id:editingMarketId, cropName, price, market, date};
+    editingMarketId = null;
+    toast('✅ Price updated!');
+  } else {
+    arr.unshift({id:Date.now(), cropName, price, market, date});
+    toast('✅ Market price added!');
+  }
+  saveMarket(arr);
+  clrMarketForm();
+  renderMarket();
+}
+
+function clrMarketForm(){
+  document.getElementById('mk-custom').value = '';
+  document.getElementById('mk-price').value = '';
+  document.getElementById('mk-market').value = '';
+  document.getElementById('mk-date').valueAsDate = new Date();
+  editingMarketId = null;
+  const btn = document.querySelector('#pg-market .market-add-form .btn.bo');
+  if(btn) btn.textContent = '＋ Add Price';
+}
+
+function editMarket(id){
+  const arr = getMarket();
+  const e = arr.find(x=>x.id===id);
+  if(!e) return;
+  editingMarketId = id;
+  const nameOpts = ['Rice','Cotton','Chilli','Groundnut','Maize','Sugarcane','Turmeric','Onion','Tomato'];
+  if(nameOpts.includes(e.cropName)){
+    document.getElementById('mk-crop').value = e.cropName;
+    document.getElementById('mk-custom').value = '';
+  } else {
+    document.getElementById('mk-crop').value = 'Other';
+    document.getElementById('mk-custom').value = e.cropName;
+  }
+  document.getElementById('mk-price').value = e.price;
+  document.getElementById('mk-market').value = e.market || '';
+  document.getElementById('mk-date').value = e.date || '';
+  const btn = document.querySelector('#pg-market .market-add-form .btn.bo');
+  if(btn) btn.textContent = '💾 Save';
+  toast('✏️ Editing price — update and save.');
+}
+
+function delMarket(id){
+  if(!confirm('Delete this price entry?')) return;
+  saveMarket(getMarket().filter(x=>x.id!==id));
+  renderMarket();
+  toast('🗑 Deleted.');
+}
+
+function renderMarket(){
+  const arr = getMarket();
+  const list = document.getElementById('market-list');
+  const empty = document.getElementById('market-empty');
+  if(!arr.length){ list.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+
+  const cropIcons = {'Rice':'🌾','Cotton':'🌿','Chilli':'🌶️','Groundnut':'🥜','Maize':'🌽','Sugarcane':'🎋','Turmeric':'🟡','Onion':'🧅','Tomato':'🍅'};
+
+  list.innerHTML = arr.map((e,i)=>{
+    const prev = arr.slice(i+1).find(x=>x.cropName===e.cropName);
+    let trend = '';
+    if(prev){
+      if(e.price > prev.price) trend = '<span class="market-trend up">▲</span>';
+      else if(e.price < prev.price) trend = '<span class="market-trend down">▼</span>';
+      else trend = '<span class="market-trend same">●</span>';
+    }
+    return `<div class="market-row">
+      <div style="position:absolute;right:12px;display:flex;gap:4px;">
+        <button class="delbtn" onclick="editMarket(${e.id})" style="position:static;">✏️</button>
+        <button class="delbtn" onclick="delMarket(${e.id})" style="position:static;">🗑</button>
+      </div>
+      <div class="market-crop">${cropIcons[e.cropName]||'🌿'} ${esc(e.cropName)}${trend}</div>
+      <div style="text-align:right;">
+        <div class="market-price" style="color:var(--soil);">${inr(e.price)}<span style="font-size:0.7rem;font-weight:600;color:var(--muted);">/Q</span></div>
+        <div style="font-size:0.68rem;color:var(--muted);">${e.market?'📍 '+esc(e.market):''} ${e.date?'📅 '+fmtD(e.date):''}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── CROP CALENDAR ─────────────────────────────────────
+let calYear, calMonth;
+
+function initCalendar(){
+  const now = new Date();
+  calYear = now.getFullYear();
+  calMonth = now.getMonth();
+  renderCalendar();
+}
+
+function calNav(dir){
+  calMonth += dir;
+  if(calMonth > 11){ calMonth = 0; calYear++; }
+  if(calMonth < 0){ calMonth = 11; calYear--; }
+  renderCalendar();
+}
+
+function renderCalendar(){
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('cal-month-label').textContent = months[calMonth] + ' ' + calYear;
+
+  const crops = getCrops();
+  const firstDay = new Date(calYear, calMonth, 1).getDay();
+  const daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  const dayNames = ['S','M','T','W','T','F','S'];
+  let html = dayNames.map(d=>`<div class="calendar-day-header">${d}</div>`).join('');
+
+  // Previous month padding
+  const prevDays = new Date(calYear, calMonth, 0).getDate();
+  for(let i = firstDay-1; i >= 0; i--){
+    html += `<div class="calendar-day other-month">${prevDays-i}</div>`;
+  }
+
+  // Current month days
+  for(let d=1; d<=daysInMonth; d++){
+    const dateStr = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const dt = new Date(calYear, calMonth, d);
+    const isToday = dt.getTime() === today.getTime();
+
+    let hasEvent = false, hasHarvest = false;
+    crops.forEach(c=>{
+      if(c.plantDate === dateStr) hasEvent = true;
+      if(c.harvestDate === dateStr) hasHarvest = true;
+    });
+
+    let cls = 'calendar-day';
+    if(isToday) cls += ' today';
+    else if(hasHarvest) cls += ' has-harvest';
+    else if(hasEvent) cls += ' has-event';
+
+    html += `<div class="${cls}" onclick="showDayEvents('${dateStr}')">${d}</div>`;
+  }
+
+  // Next month padding
+  const totalCells = firstDay + daysInMonth;
+  const remaining = (7 - (totalCells % 7)) % 7;
+  for(let i=1; i<=remaining; i++){
+    html += `<div class="calendar-day other-month">${i}</div>`;
+  }
+
+  document.getElementById('cal-grid').innerHTML = html;
+  renderCalEvents();
+}
+
+function showDayEvents(dateStr){
+  const crops = getCrops();
+  const events = [];
+  crops.forEach(c=>{
+    if(c.plantDate === dateStr) events.push({type:'plant', crop:c});
+    if(c.harvestDate === dateStr) events.push({type:'harvest', crop:c});
+  });
+  if(events.length){
+    const msg = events.map(e=>`${e.type==='plant'?'🌱 Planted':'🌾 Harvest'}: ${e.crop.cropName}`).join('\n');
+    alert(msg);
+  }
+}
+
+function renderCalEvents(){
+  const crops = getCrops();
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  const events = [];
+
+  crops.forEach(c=>{
+    if(c.harvestDate){
+      const hDate = new Date(c.harvestDate+'T00:00:00');
+      const daysUntil = Math.ceil((hDate - today)/(1000*60*60*24));
+      events.push({type:'harvest', crop:c, date:c.harvestDate, daysUntil});
+    }
+    if(c.plantDate){
+      const pDate = new Date(c.plantDate+'T00:00:00');
+      const daysSince = Math.floor((today - pDate)/(1000*60*60*24));
+      if(daysSince >= 0){
+        events.push({type:'planted', crop:c, date:c.plantDate, daysSince});
+      }
+    }
+  });
+
+  // Sort: upcoming harvests first, then past plantings
+  events.sort((a,b)=>{
+    if(a.type==='harvest' && b.type==='harvest') return a.daysUntil - b.daysUntil;
+    if(a.type==='harvest') return -1;
+    if(b.type==='harvest') return 1;
+    return b.daysSince - a.daysSince;
+  });
+
+  const el = document.getElementById('cal-events');
+  if(!events.length){
+    el.innerHTML = '<div style="text-align:center;padding:16px;color:var(--muted);font-size:0.82rem;">No upcoming crop events.<br>Add crops with planting/harvest dates to see them here.</div>';
+    return;
+  }
+
+  el.innerHTML = events.slice(0,10).map(e=>{
+    const icon = e.type==='harvest' ? '🌾' : '🌱';
+    const title = e.type==='harvest' ? `Harvest: ${e.crop.cropName}` : `Planted: ${e.crop.cropName}`;
+    let daysText, daysCls = '';
+    if(e.type==='harvest'){
+      if(e.daysUntil < 0){ daysText = `${Math.abs(e.daysUntil)}d overdue`; daysCls = 'overdue'; }
+      else if(e.daysUntil <= 7){ daysText = `${e.daysUntil}d left`; daysCls = 'soon'; }
+      else { daysText = `${e.daysUntil}d left`; }
+    } else {
+      daysText = `${e.daysSince}d ago`;
+    }
+    return `<div class="calendar-event ${e.type==='harvest'?'harvest':''}">
+      <div class="calendar-event-icon">${icon}</div>
+      <div class="calendar-event-info">
+        <div class="calendar-event-title">${title}</div>
+        <div class="calendar-event-date">${e.crop.field?'📍 '+esc(e.crop.field):''} · ${e.crop.acres?e.crop.acres+' acres':''}</div>
+      </div>
+      <div class="calendar-event-days ${daysCls}">${daysText}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── REMINDERS ─────────────────────────────────────────
+let remindersEnabled = localStorage.getItem('KD_reminders') === 'true';
+
+function toggleReminders(){
+  if(!('Notification' in window)){
+    toast('⚠️ Browser notifications not supported.');
+    return;
+  }
+  if(!remindersEnabled){
+    Notification.requestPermission().then(perm=>{
+      if(perm === 'granted'){
+        remindersEnabled = true;
+        localStorage.setItem('KD_reminders', 'true');
+        updateReminderUI();
+        toast('✅ Reminders enabled!');
+        checkReminders();
+      } else {
+        toast('⚠️ Notification permission denied.');
+      }
+    });
+  } else {
+    remindersEnabled = false;
+    localStorage.setItem('KD_reminders', 'false');
+    updateReminderUI();
+    toast('🔕 Reminders disabled.');
+  }
+}
+
+function updateReminderUI(){
+  const sw = document.getElementById('reminder-switch');
+  if(sw) sw.classList.toggle('on', remindersEnabled);
+}
+
+function checkReminders(){
+  if(!remindersEnabled || !('Notification' in window) || Notification.permission !== 'granted') return;
+  const crops = getCrops();
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  crops.forEach(c=>{
+    if(c.harvestDate){
+      const hDate = new Date(c.harvestDate+'T00:00:00');
+      const daysUntil = Math.ceil((hDate - today)/(1000*60*60*24));
+      if(daysUntil === 0){
+        new Notification('🌾 Harvest Today!', {body:`${c.cropName} is ready for harvest today!`, icon:'icon-192.png'});
+      } else if(daysUntil === 3){
+        new Notification('⏰ Harvest in 3 Days', {body:`${c.cropName} harvest is in 3 days.`, icon:'icon-192.png'});
+      } else if(daysUntil === 7){
+        new Notification('📅 Harvest in 1 Week', {body:`${c.cropName} harvest is in 1 week.`, icon:'icon-192.png'});
+      }
+    }
+  });
+}
+
+// Check reminders periodically (every 6 hours)
+setInterval(checkReminders, 6*60*60*1000);
+
+// ── INIT NEW FEATURES ────────────────────────────────
+// Add market to cloudData if missing
+const origLoadCloudData = loadCloudData;
+if(!cloudData.market) cloudData.market = [];
+
+// Patch openApp to init new features
+const origOpenApp = openApp;
+openApp = function(name){
+  origOpenApp(name);
+  try{ renderMarket(); }catch(e){}
+  try{ initCalendar(); }catch(e){}
+  try{ updateReminderUI(); }catch(e){}
+  try{ loadWeather(); }catch(e){}
+};
+
+// Patch enterSection for crops to load weather
+const origEnterSection = enterSection;
+enterSection = function(section){
+  origEnterSection(section);
+  if(section === 'crops'){
+    setTimeout(tryLoadWeather, 500);
+    setTimeout(()=>{ try{ initCalendar(); }catch(e){} }, 300);
+  }
+};
 </script>
 </body>
 </html>

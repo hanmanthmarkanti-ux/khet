@@ -2133,7 +2133,8 @@ function renderFarm(){
       ${e.total>0?`<div class="rprofit ${profit>=0?'pos':'neg'}">Profit: ${profit>=0?'':'-'}${inr(Math.abs(profit))}</div>`:''}
       ${photosHtml}
       ${e.notes?`<div class="rnotes">📝 ${esc(e.notes)}</div>`:''}
-      <div style="display:flex;gap:6px;margin-top:6px;">
+      <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
+        ${e.phone?`<button class="wa-share-btn" onclick="sendBillSMS(getFarm().find(x=>x.id===${e.id}))" style="background:#1A5F8A;">💬 SMS</button>`:''}
         ${e.phone?`<button class="wa-share-btn" onclick="sendBillToCustomer(getFarm().find(x=>x.id===${e.id}))">📲 Send Bill</button>`:''}
         <button class="wa-share-btn" onclick="shareFarmEntryWA(${e.id})">📤 WhatsApp</button>
       </div>
@@ -2516,6 +2517,40 @@ function sendBillToCustomer(e){
       `\n_via Khet Diary_`;
 
   window.open('https://wa.me/91'+phone+'?text='+encodeURIComponent(msg),'_blank');
+}
+
+// ── SEND BILL TO CUSTOMER VIA SMS ─────────────────────
+function sendBillSMS(e){
+  if(!e.phone) return;
+  let phone=e.phone.replace(/[\s\-\(\)]/g,'');
+  if(phone.startsWith('+91')) phone=phone.slice(3);
+  else if(phone.startsWith('91')&&phone.length>10) phone=phone.slice(2);
+  if(phone.length!==10){toast('⚠️ Invalid phone number.');return;}
+
+  const customerName=e.work||'Customer';
+  const msg=currentLang==='te'
+    ?`🌾 Khet Diary Bill\n\n`+
+      `Customer: ${customerName}\n`+
+      `Date: ${fmtD(e.date)}\n`+
+      `${e.vname?`Vehicle: ${e.vname}\n`:''}`+
+      `${e.hrs>0?`Time: ${fmtH(e.hrs)}\n`:''}`+
+      `${e.acres>0?`Land: ${e.acres} acres\n`:''}`+
+      `\nTotal: ${inr(e.total||0)}\n`+
+      `Paid: ${inr(e.received||0)}\n`+
+      `${e.pending>0?`Pending: ${inr(e.pending)}\n`:''}`+
+      `\nKhet Diary`
+    :`🌾 Khet Diary Bill\n\n`+
+      `Customer: ${customerName}\n`+
+      `Date: ${fmtD(e.date)}\n`+
+      `${e.vname?`Vehicle: ${e.vname}\n`:''}`+
+      `${e.hrs>0?`Time: ${fmtH(e.hrs)}\n`:''}`+
+      `${e.acres>0?`Land: ${e.acres} acres\n`:''}`+
+      `\nTotal: ${inr(e.total||0)}\n`+
+      `Paid: ${inr(e.received||0)}\n`+
+      `${e.pending>0?`Pending: ${inr(e.pending)}\n`:''}`+
+      `\nKhet Diary`;
+
+  window.open('sms:+91'+phone+'?body='+encodeURIComponent(msg),'_blank');
 }
 
 // ── EXPORT ────────────────────────────────────────────

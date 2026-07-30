@@ -595,7 +595,66 @@ body{overflow-x:hidden;}
 .business-card:active,.home-card:active{transform:scale(0.97);transition:transform 0.1s;}
 .btn:active,.auth-btn:active{transform:scale(0.98);transition:transform 0.1s;}
 /* Print */
-@media print{.tabs,.bottom-bar,.biz-back-btn,.delbtn,.wa-share-btn,.expbtn,.filbox,.boxhdr,.lbtn{display:none!important;}}
+@media print{.tabs,.bottom-bar,.biz-back-btn,.delbtn,.wa-share-btn,.expbtn,.filbox,.boxhdr,.lbtn,.acc-header{display:none!important;}body{background:#fff!important;}}
+
+/* ── CHARTS ── */
+.chart-section{margin:10px 14px 0;background:var(--white);border-radius:14px;box-shadow:var(--sh);overflow:hidden;}
+.chart-title{padding:12px 14px;font-size:0.88rem;font-weight:700;border-bottom:1px solid var(--border);background:#F5EFE4;}
+.chart-body{padding:14px;}
+.chart-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.chart-bar-label{font-size:0.72rem;font-weight:700;color:var(--muted);min-width:60px;text-align:right;}
+.chart-bar-track{flex:1;height:22px;background:var(--cream);border-radius:6px;overflow:hidden;position:relative;}
+.chart-bar-fill{height:100%;border-radius:6px;display:flex;align-items:center;padding-left:6px;font-size:0.65rem;font-weight:700;color:#fff;min-width:fit-content;transition:width 0.4s;}
+.chart-bar-fill.green{background:var(--leaf);}
+.chart-bar-fill.red{background:var(--red);}
+.chart-bar-fill.blue{background:var(--blue);}
+.chart-bar-fill.orange{background:var(--orange);}
+.chart-bar-fill.purple{background:var(--purple);}
+.chart-bar-fill.wheat{background:var(--wheat);}
+.chart-bar-val{font-size:0.72rem;font-weight:800;color:var(--soil);white-space:nowrap;}
+
+/* ── RAINFALL CHART ── */
+.rf-chart-bar-row{display:flex;align-items:flex-end;gap:2px;margin-bottom:4px;}
+.rf-chart-col{display:flex;flex-direction:column;align-items:center;flex:1;min-width:0;}
+.rf-chart-bar{width:100%;border-radius:3px 3px 0 0;background:var(--blue);transition:height 0.3s;}
+.rf-chart-date{font-size:0.5rem;color:var(--muted);margin-top:2px;white-space:nowrap;}
+.rf-chart-val{font-size:0.5rem;font-weight:700;color:var(--blue);margin-bottom:1px;}
+
+/* ── BILL PRINT ── */
+.bill-print{display:none;}
+.bill-container{max-width:400px;margin:0 auto;padding:20px;font-family:'Inter',sans-serif;color:#000;}
+.bill-header{text-align:center;border-bottom:2px solid #000;padding-bottom:12px;margin-bottom:16px;}
+.bill-header h1{font-size:1.3rem;margin:0;}
+.bill-header p{font-size:0.8rem;color:#555;margin:4px 0 0;}
+.bill-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed #ddd;font-size:0.85rem;}
+.bill-row.total{border-bottom:2px solid #000;border-top:2px solid #000;margin-top:8px;padding-top:8px;font-weight:800;font-size:1rem;}
+.bill-row.pending{color:var(--orange);font-weight:700;}
+
+/* ── ROTATION ── */
+.rotation-card{margin:10px 14px 0;background:var(--white);border-radius:14px;box-shadow:var(--sh);overflow:hidden;}
+.rotation-header{padding:14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.rotation-header h2{font-size:0.92rem;font-weight:800;}
+.rotation-body{padding:14px;}
+.rotation-current{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
+.rotation-crop-tag{display:flex;align-items:center;gap:4px;background:var(--cream);border:1.5px solid var(--border);border-radius:10px;padding:6px 10px;font-size:0.82rem;font-weight:700;}
+.rotation-suggest{background:#F0F7F0;border:1.5px solid var(--leaf);border-radius:12px;padding:14px;margin-bottom:10px;}
+.rotation-suggest-title{font-size:0.78rem;font-weight:800;color:var(--leaf);margin-bottom:6px;}
+.rotation-suggest-list{display:flex;flex-wrap:wrap;gap:6px;}
+.rotation-suggest-item{background:#fff;border:1px solid var(--leaf);border-radius:8px;padding:5px 10px;font-size:0.78rem;font-weight:700;color:var(--leaf);}
+
+/* Dark mode additions */
+body.dark .chart-section{background:#252018;}
+body.dark .chart-title{background:#2A2018;}
+body.dark .chart-bar-track{background:#1A1410;}
+body.dark .rotation-card{background:#252018;}
+body.dark .rotation-header{background:#252018;}
+body.dark .rotation-crop-tag{background:#1A1410;border-color:#3A3025;}
+body.dark .rotation-suggest{background:#1A2A1A;border-color:var(--leaf);}
+body.dark .rotation-suggest-item{background:#1A2A1A;border-color:#3A3025;color:#7FD992;}
+body.dark .bill-container{color:#E8DDD0;}
+body.dark .bill-header{border-bottom-color:#E8DDD0;}
+body.dark .bill-row{border-bottom-color:#3A3025;}
+body.dark .bill-row.total{border-top-color:#E8DDD0;border-bottom-color:#E8DDD0;}
 
 /* CUSTOMER VIEW */
 .customer-search-bar{padding:14px 14px 0;}
@@ -954,6 +1013,70 @@ body{overflow-x:hidden;}
       <div class="business-card-content">
         <div class="business-card-title">Market Prices</div>
         <div class="business-card-sub">Crop prices · Trends · Per quintal</div>
+      </div>
+      <div class="business-card-arrow">›</div>
+    </div>
+    <div class="business-card" onclick="openBizSection('backup')">
+      <div class="business-card-icon">💾</div>
+      <div class="business-card-content">
+        <div class="business-card-title">Data Backup</div>
+        <div class="business-card-sub">Download & restore all data</div>
+      </div>
+      <div class="business-card-arrow">›</div>
+    </div>
+    <div class="business-card" onclick="openBizSection('loans')">
+      <div class="business-card-icon">💳</div>
+      <div class="business-card-content">
+        <div class="business-card-title">Loans & Debts</div>
+        <div class="business-card-sub">Track money lent & borrowed</div>
+      </div>
+      <div class="business-card-arrow">›</div>
+    </div>
+    <div class="business-card" onclick="openBizSection('labour')">
+      <div class="business-card-icon">👷</div>
+      <div class="business-card-content">
+        <div class="business-card-title">Labour</div>
+        <div class="business-card-sub">Workers, wages & attendance</div>
+      </div>
+      <div class="business-card-arrow">›</div>
+    </div>
+    <div class="business-card" onclick="openBizSection('charts')">
+      <div class="business-card-icon">📈</div>
+      <div class="business-card-content">
+        <div class="business-card-title">Analytics</div>
+        <div class="business-card-sub">Visual charts & insights</div>
+      </div>
+      <div class="business-card-arrow">›</div>
+    </div>
+    <div class="business-card" onclick="openBizSection('inputs')">
+      <div class="business-card-icon">🧪</div>
+      <div class="business-card-content">
+        <div class="business-card-title">Farm Inputs</div>
+        <div class="business-card-sub">Fertilizer, pesticide & seeds</div>
+      </div>
+      <div class="business-card-arrow">›</div>
+    </div>
+    <div class="business-card" onclick="openBizSection('rainfall')">
+      <div class="business-card-icon">🌧️</div>
+      <div class="business-card-content">
+        <div class="business-card-title">Rainfall</div>
+        <div class="business-card-sub">Track daily rainfall data</div>
+      </div>
+      <div class="business-card-arrow">›</div>
+    </div>
+    <div class="business-card" onclick="openBizSection('pdfbills')">
+      <div class="business-card-icon">📄</div>
+      <div class="business-card-content">
+        <div class="business-card-title">PDF Bills</div>
+        <div class="business-card-sub">Generate printable bills</div>
+      </div>
+      <div class="business-card-arrow">›</div>
+    </div>
+    <div class="business-card" onclick="openBizSection('rotation')">
+      <div class="business-card-icon">🔄</div>
+      <div class="business-card-content">
+        <div class="business-card-title">Crop Rotation</div>
+        <div class="business-card-sub">Plan next crops wisely</div>
       </div>
       <div class="business-card-arrow">›</div>
     </div>
@@ -1408,6 +1531,315 @@ body{overflow-x:hidden;}
     </div>
   </div><!-- /sec-market -->
 
+  <!-- DATA BACKUP -->
+  <div class="acc-section" id="sec-backup">
+    <div class="acc-header" onclick="toggleSection('backup')">
+      <span class="acc-icon">💾</span>
+      <span class="acc-title" data-key="tab_backup">Data Backup</span>
+      <span class="acc-arrow">▼</span>
+    </div>
+    <div class="acc-body" id="pg-backup">
+    <div class="biz-back-btn" onclick="showBizMenu()">‹ Back to Menu</div>
+    <div class="box">
+      <div class="boxhdr open"><span>💾</span> Data Backup & Restore</div>
+      <div class="boxbody open">
+        <div style="text-align:center;padding:20px 0;">
+          <div style="font-size:2.5rem;margin-bottom:10px;">💾</div>
+          <div style="font-size:0.85rem;color:var(--muted);margin-bottom:20px;line-height:1.5;">
+            Download all your data as a JSON file to keep a backup.<br>
+            You can restore it anytime from a backup file.
+          </div>
+          <button class="btn bg" onclick="downloadBackup()" style="margin-bottom:12px;">⬇ Download Backup</button>
+          <div style="font-size:0.75rem;color:var(--muted);margin-bottom:12px;">— OR —</div>
+          <div class="photo-upload-area" onclick="document.getElementById('restore-file-input').click()" style="margin-bottom:0;">
+            <input type="file" id="restore-file-input" accept=".json" onchange="restoreBackup(this)" style="display:none;"/>
+            <div class="photo-upload-label">⬆ Tap to restore from backup file<br><span style="font-size:0.7rem;color:#bbb;">Select a .json backup file</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="padding:14px;">
+      <div style="font-size:0.72rem;color:var(--muted);background:var(--cream);border-radius:8px;padding:9px 11px;line-height:1.5;">
+        ℹ️ <strong>Backup includes:</strong> Vehicles, Farm Work, Diesel, Home Expenses, Income, Crops, Market Prices, Loans, Labour, Inputs, Rainfall data.
+      </div>
+    </div>
+  </div>
+  </div><!-- /sec-backup -->
+
+  <!-- LOANS & DEBTS -->
+  <div class="acc-section" id="sec-loans">
+    <div class="acc-header" onclick="toggleSection('loans')">
+      <span class="acc-icon">💳</span>
+      <span class="acc-title" data-key="tab_loans">Loans & Debts</span>
+      <span class="acc-arrow">▼</span>
+    </div>
+    <div class="acc-body" id="pg-loans">
+    <div class="biz-back-btn" onclick="showBizMenu()">‹ Back to Menu</div>
+    <div class="sscroll"><div class="scards" id="loans-summary">
+      <div class="scard g"><label>Total Lent</label><div class="sv" id="lo-total-lent">₹0</div></div>
+      <div class="scard r"><label>Total Borrowed</label><div class="sv" id="lo-total-borrowed">₹0</div></div>
+      <div class="scard b"><label>Net Balance</label><div class="sv" id="lo-net">₹0</div></div>
+      <div class="scard"><label>Active Loans</label><div class="sv" id="lo-active">0</div></div>
+    </div></div>
+    <div class="box">
+      <div class="boxhdr" onclick="tog('loans-body',this)"><span>💳</span> Add Loan / Debt <span class="arr">▼</span></div>
+      <div class="boxbody" id="loans-body">
+        <div class="gr2">
+          <div class="field"><label>Person Name</label><input type="text" id="lo-name" placeholder="e.g. Ramesh…"/></div>
+          <div class="field"><label>Phone Number</label><input type="tel" id="lo-phone" placeholder="e.g. 9876543210" inputmode="tel"/></div>
+        </div>
+        <div class="gr2">
+          <div class="field"><label>Amount ₹</label><input type="number" id="lo-amount" placeholder="0" min="0" inputmode="numeric"/></div>
+          <div class="field"><label>Type</label>
+            <select id="lo-type">
+              <option value="lent">🤝 I Lent (they owe me)</option>
+              <option value="borrowed">📋 I Borrowed (I owe them)</option>
+            </select>
+          </div>
+        </div>
+        <div class="gr2">
+          <div class="field"><label>Interest % per month</label><input type="number" id="lo-interest" placeholder="0" min="0" step="0.5" inputmode="decimal"/></div>
+          <div class="field"><label>Date</label><input type="date" id="lo-date"/></div>
+        </div>
+        <div class="field"><label>Notes</label><textarea id="lo-notes" placeholder="Optional details…"></textarea></div>
+        <button class="btn bg" onclick="addLoan()">＋ Add Loan</button>
+        <button class="btn bgr" onclick="clrLoanForm()">Clear</button>
+      </div>
+    </div>
+    <div class="recsec">
+      <div class="rechdr"><h2>💳 Loan Records</h2></div>
+      <div id="lo-list"></div>
+      <div id="lo-empty" class="empty"><div class="ei">💳</div><p>No loans or debts yet.<br>Add your first one above!</p></div>
+    </div>
+  </div>
+  </div><!-- /sec-loans -->
+
+  <!-- LABOUR MANAGEMENT -->
+  <div class="acc-section" id="sec-labour">
+    <div class="acc-header" onclick="toggleSection('labour')">
+      <span class="acc-icon">👷</span>
+      <span class="acc-title" data-key="tab_labour">Labour</span>
+      <span class="acc-arrow">▼</span>
+    </div>
+    <div class="acc-body" id="pg-labour">
+    <div class="biz-back-btn" onclick="showBizMenu()">‹ Back to Menu</div>
+    <div class="sscroll"><div class="scards" id="labour-summary">
+      <div class="scard"><label>Total Workers</label><div class="sv" id="lb-total-workers">0</div></div>
+      <div class="scard g"><label>Paid This Month</label><div class="sv" id="lb-paid-month">₹0</div></div>
+      <div class="scard b"><label>Total Days Worked</label><div class="sv" id="lb-days-worked">0</div></div>
+    </div></div>
+    <div class="box">
+      <div class="boxhdr" onclick="tog('labour-worker-body',this)"><span>👷</span> Add Worker <span class="arr">▼</span></div>
+      <div class="boxbody" id="labour-worker-body">
+        <div class="gr2">
+          <div class="field"><label>Worker Name</label><input type="text" id="lb-wname" placeholder="e.g. Srinu…"/></div>
+          <div class="field"><label>Phone Number</label><input type="tel" id="lb-wphone" placeholder="e.g. 9876543210" inputmode="tel"/></div>
+        </div>
+        <div class="field"><label>Daily Wage ₹</label><input type="number" id="lb-wage" placeholder="e.g. 500" min="0" inputmode="numeric"/></div>
+        <button class="btn bg" onclick="addWorker()">＋ Add Worker</button>
+      </div>
+    </div>
+    <div class="box" style="margin-top:12px;">
+      <div class="boxhdr open"><span>👷</span> My Workers</div>
+      <div class="boxbody open">
+        <div id="lb-worker-list"><p style="color:var(--muted);font-size:0.85rem;text-align:center;padding:16px 0;">No workers added yet.</p></div>
+      </div>
+    </div>
+    <div class="box" style="margin-top:12px;">
+      <div class="boxhdr" onclick="tog('labour-att-body',this)"><span>📋</span> Mark Attendance <span class="arr">▼</span></div>
+      <div class="boxbody" id="labour-att-body">
+        <div class="gr2">
+          <div class="field"><label>Date</label><input type="date" id="lb-att-date"/></div>
+          <div class="field"><label>Worker</label><select id="lb-att-worker"><option value="">-- Select --</option></select></div>
+        </div>
+        <div class="gr2">
+          <div class="field"><label>Hours Worked</label><input type="number" id="lb-att-hours" placeholder="e.g. 8" min="0" step="0.5" inputmode="decimal"/></div>
+          <div class="field"><label>Present?</label>
+            <select id="lb-att-present">
+              <option value="true">✅ Present</option>
+              <option value="false">❌ Absent</option>
+            </select>
+          </div>
+        </div>
+        <div class="field"><label>Notes</label><input type="text" id="lb-att-notes" placeholder="Optional…"/></div>
+        <button class="btn bb" onclick="markAttendance()">＋ Mark Attendance</button>
+      </div>
+    </div>
+    <div class="recsec">
+      <div class="rechdr"><h2>📋 Attendance Records</h2></div>
+      <div id="lb-att-list"></div>
+      <div id="lb-att-empty" class="empty"><div class="ei">📋</div><p>No attendance records yet.</p></div>
+    </div>
+  </div>
+  </div><!-- /sec-labour -->
+
+  <!-- CHARTS & ANALYTICS -->
+  <div class="acc-section" id="sec-charts">
+    <div class="acc-header" onclick="toggleSection('charts')">
+      <span class="acc-icon">📈</span>
+      <span class="acc-title" data-key="tab_charts">Analytics</span>
+      <span class="acc-arrow">▼</span>
+    </div>
+    <div class="acc-body" id="pg-charts">
+    <div class="biz-back-btn" onclick="showBizMenu()">‹ Back to Menu</div>
+    <div id="charts-content"></div>
+  </div>
+  </div><!-- /sec-charts -->
+
+  <!-- FARM INPUTS TRACKER -->
+  <div class="acc-section" id="sec-inputs">
+    <div class="acc-header" onclick="toggleSection('inputs')">
+      <span class="acc-icon">🧪</span>
+      <span class="acc-title" data-key="tab_inputs">Farm Inputs</span>
+      <span class="acc-arrow">▼</span>
+    </div>
+    <div class="acc-body" id="pg-inputs">
+    <div class="biz-back-btn" onclick="showBizMenu()">‹ Back to Menu</div>
+    <div class="sscroll"><div class="scards" id="inputs-summary">
+      <div class="scard"><label>Total Entries</label><div class="sv" id="inp-total">0</div></div>
+      <div class="scard r"><label>Total Spent</label><div class="sv" id="inp-spent">₹0</div></div>
+      <div class="scard o"><label>Fertilizer</label><div class="sv" id="inp-fert">₹0</div></div>
+      <div class="scard p"><label>Pesticide</label><div class="sv" id="inp-pest">₹0</div></div>
+      <div class="scard g"><label>Seeds</label><div class="sv" id="inp-seed">₹0</div></div>
+    </div></div>
+    <div class="box">
+      <div class="boxhdr" onclick="tog('inputs-body',this)"><span>🧪</span> Add Farm Input <span class="arr">▼</span></div>
+      <div class="boxbody" id="inputs-body">
+        <div class="gr2">
+          <div class="field"><label>Date</label><input type="date" id="inp-date"/></div>
+          <div class="field"><label>Crop / Field</label><input type="text" id="inp-crop" placeholder="e.g. Rice field…"/></div>
+        </div>
+        <div class="gr2">
+          <div class="field"><label>Input Type</label>
+            <select id="inp-type">
+              <option value="Fertilizer">🧪 Fertilizer</option>
+              <option value="Pesticide">🧴 Pesticide</option>
+              <option value="Seed">🌱 Seed</option>
+              <option value="Other">📦 Other</option>
+            </select>
+          </div>
+          <div class="field"><label>Brand / Name</label><input type="text" id="inp-brand" placeholder="e.g. Urea, NPK…"/></div>
+        </div>
+        <div class="gr3">
+          <div class="field"><label>Quantity</label><input type="number" id="inp-qty" placeholder="0" min="0" inputmode="decimal"/></div>
+          <div class="field"><label>Unit</label>
+            <select id="inp-unit">
+              <option value="kg">kg</option>
+              <option value="litre">litre</option>
+              <option value="bags">bags</option>
+              <option value="packets">packets</option>
+              <option value="other">other</option>
+            </select>
+          </div>
+          <div class="field"><label>Cost ₹</label><input type="number" id="inp-cost" placeholder="0" min="0" inputmode="numeric"/></div>
+        </div>
+        <div class="field"><label>Notes</label><textarea id="inp-notes" placeholder="Optional details…"></textarea></div>
+        <button class="btn bg" onclick="addInput()">＋ Add Input</button>
+        <button class="btn bgr" onclick="clrInputForm()">Clear</button>
+      </div>
+    </div>
+    <div class="filbox">
+      <h3>🔍 Filter</h3>
+      <div class="filrow">
+        <select id="inp-filter-type" onchange="renderInputs()">
+          <option value="all">All Types</option>
+          <option value="Fertilizer">Fertilizer</option>
+          <option value="Pesticide">Pesticide</option>
+          <option value="Seed">Seed</option>
+          <option value="Other">Other</option>
+        </select>
+        <input type="text" id="inp-filter-search" placeholder="Search…" oninput="renderInputs()"/>
+        <button class="filclear" onclick="document.getElementById('inp-filter-type').value='all';document.getElementById('inp-filter-search').value='';renderInputs();">✕</button>
+      </div>
+    </div>
+    <div class="recsec">
+      <div class="rechdr"><h2>🧪 Input Records</h2></div>
+      <div id="inp-list"></div>
+      <div id="inp-empty" class="empty"><div class="ei">🧪</div><p>No farm inputs yet.<br>Add your first one above!</p></div>
+    </div>
+  </div>
+  </div><!-- /sec-inputs -->
+
+  <!-- RAINFALL TRACKER -->
+  <div class="acc-section" id="sec-rainfall">
+    <div class="acc-header" onclick="toggleSection('rainfall')">
+      <span class="acc-icon">🌧️</span>
+      <span class="acc-title" data-key="tab_rainfall">Rainfall</span>
+      <span class="acc-arrow">▼</span>
+    </div>
+    <div class="acc-body" id="pg-rainfall">
+    <div class="biz-back-btn" onclick="showBizMenu()">‹ Back to Menu</div>
+    <div class="sscroll"><div class="scards" id="rainfall-summary">
+      <div class="scard b"><label>This Month</label><div class="sv" id="rf-month">0 mm</div></div>
+      <div class="scard"><label>This Year</label><div class="sv" id="rf-year">0 mm</div></div>
+      <div class="scard g"><label>Avg / Day</label><div class="sv" id="rf-avg">0 mm</div></div>
+      <div class="scard o"><label>Total Records</label><div class="sv" id="rf-total">0</div></div>
+    </div></div>
+    <div class="box">
+      <div class="boxhdr" onclick="tog('rainfall-body',this)"><span>🌧️</span> Add Rainfall <span class="arr">▼</span></div>
+      <div class="boxbody" id="rainfall-body">
+        <div class="gr2">
+          <div class="field"><label>Date</label><input type="date" id="rf-date"/></div>
+          <div class="field"><label>Rainfall (mm)</label><input type="number" id="rf-mm" placeholder="e.g. 12.5" min="0" step="0.1" inputmode="decimal"/></div>
+        </div>
+        <div class="field"><label>Notes</label><textarea id="rf-notes" placeholder="e.g. Heavy rain in evening…"></textarea></div>
+        <button class="btn bb" onclick="addRainfall()">＋ Add Rainfall</button>
+        <button class="btn bgr" onclick="clrRainfallForm()">Clear</button>
+      </div>
+    </div>
+    <div class="box" style="margin-top:12px;">
+      <div class="boxhdr open" onclick="tog('rf-chart-body',this)"><span>📊</span> Last 30 Days Chart <span class="arr">▲</span></div>
+      <div class="boxbody open" id="rf-chart-body">
+        <div id="rf-chart"></div>
+      </div>
+    </div>
+    <div class="recsec">
+      <div class="rechdr"><h2>🌧️ Rainfall Records</h2></div>
+      <div id="rf-list"></div>
+      <div id="rf-empty" class="empty"><div class="ei">🌧️</div><p>No rainfall records yet.<br>Add your first one above!</p></div>
+    </div>
+  </div>
+  </div><!-- /sec-rainfall -->
+
+  <!-- PDF BILLS -->
+  <div class="acc-section" id="sec-pdfbills">
+    <div class="acc-header" onclick="toggleSection('pdfbills')">
+      <span class="acc-icon">📄</span>
+      <span class="acc-title" data-key="tab_pdfbills">PDF Bills</span>
+      <span class="acc-arrow">▼</span>
+    </div>
+    <div class="acc-body" id="pg-pdfbills">
+    <div class="biz-back-btn" onclick="showBizMenu()">‹ Back to Menu</div>
+    <div class="box">
+      <div class="boxhdr open"><span>📄</span> Generate Printable Bill</div>
+      <div class="boxbody open">
+        <div style="font-size:0.82rem;color:var(--muted);margin-bottom:12px;">Select a farm work entry to generate a formatted bill for printing.</div>
+        <div class="field"><label>Select Work Entry</label><select id="pdf-farm-select" onchange="previewPdfBill()"><option value="">-- Select Entry --</option></select></div>
+        <div id="pdf-preview" style="display:none;">
+          <div style="background:var(--cream);border-radius:10px;padding:14px;margin-bottom:12px;">
+            <div style="font-size:0.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:8px;">Bill Preview</div>
+            <div id="pdf-preview-content"></div>
+          </div>
+          <button class="btn bg" onclick="printPdfBill()">🖨️ Print Bill</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div><!-- /sec-pdfbills -->
+
+  <!-- CROP ROTATION PLANNER -->
+  <div class="acc-section" id="sec-rotation">
+    <div class="acc-header" onclick="toggleSection('rotation')">
+      <span class="acc-icon">🔄</span>
+      <span class="acc-title" data-key="tab_rotation">Crop Rotation</span>
+      <span class="acc-arrow">▼</span>
+    </div>
+    <div class="acc-body" id="pg-rotation">
+    <div class="biz-back-btn" onclick="showBizMenu()">‹ Back to Menu</div>
+    <div id="rotation-content"></div>
+  </div>
+  </div><!-- /sec-rotation -->
+
 </div><!-- app-body -->
 
 
@@ -1433,7 +1865,7 @@ function showAuthTab(t){
 }
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 function tog(id,hdr){const b=document.getElementById(id);const open=b.classList.toggle('open');hdr.classList.toggle('open',open);}
-const TABS=['dash','vehicles','farm','diesel','home','report','customers','debt','market'];
+const TABS=['dash','vehicles','farm','diesel','home','report','customers','debt','market','backup','loans','labour','charts','inputs','rainfall','pdfbills','rotation'];
 
 function toggleSection(sid){
   const body=document.getElementById('pg-'+sid);
@@ -1455,6 +1887,13 @@ function toggleSection(sid){
     if(sid==='report') renderReport();
     if(sid==='customers') renderCustomers();
     if(sid==='market') renderMarket();
+    if(sid==='loans') renderLoans();
+    if(sid==='labour'){renderWorkers();renderLabourSummary();renderAttendance();updateWorkerSelects();}
+    if(sid==='charts') renderCharts();
+    if(sid==='inputs') renderInputs();
+    if(sid==='rainfall') renderRainfall();
+    if(sid==='pdfbills') loadPdfBillSelect();
+    if(sid==='rotation') renderRotation();
   }
 }
 
@@ -1466,7 +1905,7 @@ function switchTab(t){toggleSection(t);}
 // All getXxx()/saveXxx() functions below read/write this cache instantly (sync, no UI rewrite needed),
 // while saveXxx() also pushes the change to Firestore in the background so it syncs across devices.
 let currentUID=null;
-let cloudData={veh:[],farm:[],diesel:[],home:[],income:[],crops:[],market:[]};
+let cloudData={veh:[],farm:[],diesel:[],home:[],income:[],crops:[],market:[],loans:[],labour:[],labour_attendance:[],inputs:[],rainfall:[]};
 
 
 async function loadCloudData(uid){
@@ -1477,10 +1916,13 @@ async function loadCloudData(uid){
       const d=snap.data();
       cloudData={
         veh:d.veh||[], farm:d.farm||[], diesel:d.diesel||[],
-        home:d.home||[], income:d.income||[], crops:d.crops||[], market:d.market||[]
+        home:d.home||[], income:d.income||[], crops:d.crops||[], market:d.market||[],
+        loans:d.loans||[], labour:d.labour||[], labour_attendance:d.labour_attendance||[],
+        inputs:d.inputs||[], rainfall:d.rainfall||[]
       };
     } else {
-      cloudData={veh:[],farm:[],diesel:[],home:[],income:[],crops:[],market:[]};
+      cloudData={veh:[],farm:[],diesel:[],home:[],income:[],crops:[],market:[],
+        loans:[],labour:[],labour_attendance:[],inputs:[],rainfall:[]};
       await ref.set(cloudData);
     }
   }catch(err){
@@ -1606,7 +2048,8 @@ window.fbAuth.onAuthStateChanged(async(user)=>{
       if(authLoad) authLoad.style.display='none';
     } else {
       currentUID=null;
-      cloudData={veh:[],farm:[],diesel:[],home:[],income:[],crops:[],market:[]};
+      cloudData={veh:[],farm:[],diesel:[],home:[],income:[],crops:[],market:[],
+        loans:[],labour:[],labour_attendance:[],inputs:[],rainfall:[]};
       ['lu','lp','rn','ru','rp','rp2','fpu'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
       document.getElementById('lerr').textContent='';
       document.getElementById('rerr').textContent='';
@@ -1664,6 +2107,10 @@ function enterSection(section){
     try{ document.getElementById('dsd').valueAsDate=new Date(); }catch(e){}
     try{ document.getElementById('ind').valueAsDate=new Date(); }catch(e){}
     try{ document.getElementById('mk-date').valueAsDate=new Date(); }catch(e){}
+    try{ document.getElementById('lo-date').valueAsDate=new Date(); }catch(e){}
+    try{ document.getElementById('inp-date').valueAsDate=new Date(); }catch(e){}
+    try{ document.getElementById('rf-date').valueAsDate=new Date(); }catch(e){}
+    try{ document.getElementById('lb-att-date').valueAsDate=new Date(); }catch(e){}
     // Render data
     try{ updateVehicleSelects(); }catch(e){}
     try{ renderVehicles(); }catch(e){}
@@ -1702,6 +2149,13 @@ function openBizSection(sid){
   if(sid==='report') renderReport();
   if(sid==='customers') renderCustomers();
   if(sid==='market') renderMarket();
+  if(sid==='loans') renderLoans();
+  if(sid==='labour'){renderWorkers();renderLabourSummary();renderAttendance();updateWorkerSelects();}
+  if(sid==='charts') renderCharts();
+  if(sid==='inputs') renderInputs();
+  if(sid==='rainfall') renderRainfall();
+  if(sid==='pdfbills') loadPdfBillSelect();
+  if(sid==='rotation') renderRotation();
   // Scroll to top
   try{ document.getElementById('app-body').scrollTop=0; }catch(e){}
 }
@@ -2664,6 +3118,9 @@ const T = {
     tab_dash:'Dashboard', tab_vehicles:'Vehicles', tab_farm:'Farm',
     tab_diesel:'Diesel', tab_home:'Home', tab_report:'Report',
     tab_customers:'Customers', tab_interest:'Interest', tab_market:'Market Prices',
+    tab_backup:'Data Backup', tab_loans:'Loans & Debts', tab_labour:'Labour',
+    tab_charts:'Analytics', tab_inputs:'Farm Inputs', tab_rainfall:'Rainfall',
+    tab_pdfbills:'PDF Bills', tab_rotation:'Crop Rotation',
     // Dashboard
     total_received:'Total Received', pending_receive:'Pending to Receive',
     farm_costs:'Farm + Diesel Costs', net_profit:'Net Profit',
@@ -2697,6 +3154,9 @@ const T = {
     tab_dash:'డాష్‌బోర్డ్', tab_vehicles:'వాహనాలు', tab_farm:'పొలం',
     tab_diesel:'డీజిల్', tab_home:'ఇల్లు', tab_report:'నివేదిక',
     tab_customers:'కస్టమర్లు', tab_interest:'వడ్డీ', tab_market:'మార్కెట్ ధరలు',
+    tab_backup:'డేటా బ్యాకప్', tab_loans:'రుణాలు & అప్పులు', tab_labour:'కూలీలు',
+    tab_charts:'విశ్లేషణలు', tab_inputs:'పొలం ఇన్‌పుట్స్', tab_rainfall:'వర్షపాతం',
+    tab_pdfbills:'PDF బిల్లులు', tab_rotation:'పంట మార్పిడి',
     // Dashboard
     total_received:'మొత్తం వచ్చింది', pending_receive:'రావలసింది',
     farm_costs:'పొలం + డీజిల్ ఖర్చు', net_profit:'నికర లాభం',
@@ -3402,6 +3862,641 @@ enterSection = function(section){
     setTimeout(tryLoadWeather, 500);
     setTimeout(()=>{ try{ initCalendar(); }catch(e){} }, 300);
   }
+};
+
+// ── HELPER: getters/setters for new cloud data arrays ──
+function getLoans(){ return cloudData.loans||[]; }
+function saveLoans(d){ cloudData.loans=d; pushCloudData(); }
+function getLabour(){ return cloudData.labour||[]; }
+function saveLabour(d){ cloudData.labour=d; pushCloudData(); }
+function getAttendance(){ return cloudData.labour_attendance||[]; }
+function saveAttendance(d){ cloudData.labour_attendance=d; pushCloudData(); }
+function getInputs(){ return cloudData.inputs||[]; }
+function saveInputs(d){ cloudData.inputs=d; pushCloudData(); }
+function getRainfall(){ return cloudData.rainfall||[]; }
+function saveRainfall(d){ cloudData.rainfall=d; pushCloudData(); }
+
+// ── DATA BACKUP / RESTORE ──────────────────────────────
+function downloadBackup(){
+  const data=JSON.stringify(cloudData,null,2);
+  const blob=new Blob([data],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  const d=new Date();
+  a.href=url;
+  a.download='khet-diary-backup-'+d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+'.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('✅ Backup downloaded!');
+}
+
+function restoreBackup(input){
+  const file=input.files[0];
+  if(!file){return;}
+  if(!confirm('This will replace ALL your current data with the backup. Continue?')){input.value='';return;}
+  const reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      const data=JSON.parse(e.target.result);
+      cloudData={
+        veh:data.veh||[],farm:data.farm||[],diesel:data.diesel||[],
+        home:data.home||[],income:data.income||[],crops:data.crops||[],market:data.market||[],
+        loans:data.loans||[],labour:data.labour||[],labour_attendance:data.labour_attendance||[],
+        inputs:data.inputs||[],rainfall:data.rainfall||[]
+      };
+      pushCloudData();
+      toast('✅ Data restored successfully!');
+      setTimeout(()=>location.reload(),500);
+    }catch(err){
+      toast('❌ Invalid backup file.');
+    }
+  };
+  reader.readAsText(file);
+  input.value='';
+}
+
+// ── LOANS / DEBTS ──────────────────────────────────────
+function addLoan(){
+  const name=document.getElementById('lo-name').value.trim();
+  const phone=document.getElementById('lo-phone').value.trim();
+  const amount=parseFloat(document.getElementById('lo-amount').value)||0;
+  const type=document.getElementById('lo-type').value;
+  const interestRate=parseFloat(document.getElementById('lo-interest').value)||0;
+  const date=document.getElementById('lo-date').value;
+  const notes=document.getElementById('lo-notes').value.trim();
+  if(!name||!amount){toast('⚠️ Fill in name and amount.');return;}
+  const arr=getLoans();
+  arr.unshift({id:Date.now(),name,phone,amount,type,interestRate,date,notes,settled:false,settledDate:null,paidAmount:0});
+  saveLoans(arr);clrLoanForm();renderLoans();toast('✅ Loan added!');
+}
+
+function clrLoanForm(){
+  ['lo-name','lo-phone','lo-amount','lo-interest','lo-notes'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('lo-type').value='lent';
+  document.getElementById('lo-date').valueAsDate=new Date();
+}
+
+function calcLoanInterest(loan){
+  if(!loan.interestRate||loan.settled)return 0;
+  const start=new Date(loan.date||Date.now());
+  const now=new Date();
+  const months=(now.getFullYear()-start.getFullYear())*12+(now.getMonth()-start.getMonth());
+  if(months<=0)return 0;
+  const outstanding=loan.amount-(loan.paidAmount||0);
+  return Math.round(outstanding*loan.interestRate*months/100);
+}
+
+function settleLoan(id){
+  const arr=getLoans();
+  const loan=arr.find(x=>x.id===id);
+  if(!loan)return;
+  const outstanding=loan.amount-(loan.paidAmount||0);
+  const amtStr=prompt('How much are they paying now?\n(Outstanding: '+inr(outstanding)+')',outstanding>0?outstanding:'');
+  if(amtStr===null)return;
+  const amt=parseFloat(amtStr);
+  if(isNaN(amt)||amt<=0){toast('⚠️ Enter a valid amount.');return;}
+  loan.paidAmount=(loan.paidAmount||0)+amt;
+  if(loan.paidAmount>=loan.amount){
+    loan.settled=true;
+    loan.settledDate=new Date().toISOString().split('T')[0];
+    toast('✅ Loan settled!');
+  } else {
+    toast('✅ Payment recorded. Remaining: '+inr(loan.amount-loan.paidAmount));
+  }
+  saveLoans(arr);renderLoans();
+}
+
+function delLoan(id){
+  if(!confirm('Delete this loan entry?'))return;
+  saveLoans(getLoans().filter(x=>x.id!==id));renderLoans();toast('🗑 Deleted.');
+}
+
+function renderLoans(){
+  const arr=getLoans();
+  const totalLent=arr.filter(x=>x.type==='lent'&&(!x.settled)).reduce((s,x)=>s+x.amount-(x.paidAmount||0),0);
+  const totalBorrowed=arr.filter(x=>x.type==='borrowed'&&(!x.settled)).reduce((s,x)=>s+x.amount-(x.paidAmount||0),0);
+  const activeCount=arr.filter(x=>!x.settled).length;
+  document.getElementById('lo-total-lent').textContent=inr(totalLent);
+  document.getElementById('lo-total-borrowed').textContent=inr(totalBorrowed);
+  const net=totalLent-totalBorrowed;
+  document.getElementById('lo-net').textContent=(net>=0?'+':'')+inr(Math.abs(net));
+  document.getElementById('lo-net').style.color=net>=0?'var(--leaf)':'var(--red)';
+  document.getElementById('lo-active').textContent=activeCount;
+  const list=document.getElementById('lo-list');
+  const empty=document.getElementById('lo-empty');
+  if(!arr.length){list.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  list.innerHTML=arr.map(x=>{
+    const interest=calcLoanInterest(x);
+    const outstanding=x.amount-(x.paidAmount||0);
+    return`<div class="rc" style="${x.settled?'opacity:0.6;':''}">
+      <button class="delbtn" onclick="delLoan(${x.id})">🗑</button>
+      <div class="rtop">
+        <div class="rwrk">${x.type==='lent'?'🤝':'📋'} ${esc(x.name)}</div>
+        <div class="ramt ${x.type==='lent'?'ag':'ar'}">${inr(outstanding)}</div>
+      </div>
+      <div class="rmeta">
+        <span class="chip ${x.type==='lent'?'ce':'cs'}">${x.type==='lent'?'I Lent':'I Borrowed'}</span>
+        ${x.phone?`<span class="chip cd">📞 ${esc(x.phone)}</span>`:''}
+        ${x.date?`<span class="chip cd">📅 ${fmtD(x.date)}</span>`:''}
+        ${x.interestRate>0?`<span class="chip cp">📈 ${x.interestRate}%/mo</span>`:''}
+      </div>
+      ${interest>0?`<div class="rmeta" style="margin-top:4px;"><span class="chip cp">Interest accrued: ${inr(interest)}</span></div>`:''}
+      ${x.paidAmount>0?`<div style="font-size:0.75rem;color:var(--leaf);font-weight:700;margin-top:4px;">✅ Paid: ${inr(x.paidAmount)}</div>`:''}
+      ${x.settled
+        ?`<div class="settled-badge" style="margin-top:6px;">✅ Settled on ${fmtD(x.settledDate)}</div>`
+        :`<button class="settle-btn" onclick="settleLoan(${x.id})">💰 Record Payment</button>`
+      }
+      ${x.notes?`<div class="rnotes">📝 ${esc(x.notes)}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+// ── LABOUR MANAGEMENT ──────────────────────────────────
+function addWorker(){
+  const name=document.getElementById('lb-wname').value.trim();
+  const phone=document.getElementById('lb-wphone').value.trim();
+  const wage=parseFloat(document.getElementById('lb-wage').value)||0;
+  if(!name||!wage){toast('⚠️ Fill in name and daily wage.');return;}
+  const arr=getLabour();
+  arr.push({id:Date.now(),name,phone,dailyWage:wage});
+  saveLabour(arr);
+  document.getElementById('lb-wname').value='';
+  document.getElementById('lb-wphone').value='';
+  document.getElementById('lb-wage').value='';
+  renderWorkers();updateWorkerSelects();toast('✅ Worker added!');
+}
+
+function delWorker(id){
+  if(!confirm('Delete this worker?'))return;
+  saveLabour(getLabour().filter(x=>x.id!==id));
+  saveAttendance(getAttendance().filter(x=>x.workerId!==id));
+  renderWorkers();renderAttendance();updateWorkerSelects();toast('🗑 Deleted.');
+}
+
+function updateWorkerSelects(){
+  const arr=getLabour();
+  const opts='<option value="">-- Select --</option>'+arr.map(w=>`<option value="${w.id}">${esc(w.name)} (${inr(w.dailyWage)}/day)</option>`).join('');
+  document.getElementById('lb-att-worker').innerHTML=opts;
+}
+
+function renderWorkers(){
+  const arr=getLabour();
+  const el=document.getElementById('lb-worker-list');
+  if(!arr.length){el.innerHTML='<p style="color:var(--muted);font-size:0.85rem;text-align:center;padding:16px 0;">No workers yet.</p>';return;}
+  el.innerHTML=arr.map(w=>`<div class="v-item">
+    <div class="v-info">
+      <div class="v-icon">👷</div>
+      <div><div class="v-name">${esc(w.name)}</div><div class="v-type">📞 ${esc(w.phone||'No phone')} · 💰 ${inr(w.dailyWage)}/day</div></div>
+    </div>
+    <button class="v-del" onclick="delWorker(${w.id})">🗑</button>
+  </div>`).join('');
+}
+
+function markAttendance(){
+  const workerId=document.getElementById('lb-att-worker').value;
+  const date=document.getElementById('lb-att-date').value;
+  const present=document.getElementById('lb-att-present').value==='true';
+  const hours=parseFloat(document.getElementById('lb-att-hours').value)||0;
+  const notes=document.getElementById('lb-att-notes').value.trim();
+  if(!workerId||!date){toast('⚠️ Select worker and date.');return;}
+  const arr=getAttendance();
+  arr.unshift({id:Date.now(),workerId,date,present,hours,notes,wagePaid:false});
+  saveAttendance(arr);
+  document.getElementById('lb-att-hours').value='';
+  document.getElementById('lb-att-notes').value='';
+  renderAttendance();renderLabourSummary();toast('✅ Attendance marked!');
+}
+
+function renderAttendance(){
+  const arr=getAttendance();
+  const workers=getLabour();
+  const list=document.getElementById('lb-att-list');
+  const empty=document.getElementById('lb-att-empty');
+  if(!arr.length){list.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  list.innerHTML=arr.slice(0,30).map(a=>{
+    const w=workers.find(x=>String(x.id)===String(a.workerId));
+    const wage=w?(a.present?w.dailyWage*((a.hours||8)/8):0):0;
+    return`<div class="rc">
+      <div class="rtop">
+        <div class="rwrk">👷 ${w?esc(w.name):'Unknown'}</div>
+        <div class="ramt ${a.present?'ag':'ar'}">${a.present?(wage>0?inr(wage):'Present'):'Absent'}</div>
+      </div>
+      <div class="rmeta">
+        <span class="chip cd">📅 ${fmtD(a.date)}</span>
+        <span class="chip ${a.present?'ce':'cs'}">${a.present?'✅ Present':'❌ Absent'}</span>
+        ${a.hours?`<span class="chip cd">⏱ ${a.hours}h</span>`:''}
+      </div>
+      ${a.notes?`<div class="rnotes">📝 ${esc(a.notes)}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function renderLabourSummary(){
+  const workers=getLabour();
+  const att=getAttendance();
+  const now=new Date();
+  const ym=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+  const monthAtt=att.filter(a=>a.date&&a.date.startsWith(ym));
+  const totalPaid=monthAtt.reduce((s,a)=>{
+    const w=workers.find(x=>String(x.id)===String(a.workerId));
+    return s+(a.present&&w?w.dailyWage*((a.hours||8)/8):0);
+  },0);
+  const totalDays=monthAtt.filter(a=>a.present).length;
+  document.getElementById('lb-total-workers').textContent=workers.length;
+  document.getElementById('lb-paid-month').textContent=inr(Math.round(totalPaid));
+  document.getElementById('lb-days-worked').textContent=totalDays;
+}
+
+// ── CHARTS & ANALYTICS ─────────────────────────────────
+function renderCharts(){
+  const farm=getFarm(),diesel=getDiesel(),home=getHome(),crops=getCrops(),vehicles=getVehicles();
+  const container=document.getElementById('charts-content');
+  let html='';
+
+  const months=[];const now=new Date();
+  for(let i=5;i>=0;i--){
+    const d=new Date(now.getFullYear(),now.getMonth()-i,1);
+    months.push({key:d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'),label:d.toLocaleString('en',{month:'short'})});
+  }
+  const monthlyData=months.map(m=>{
+    const mf=farm.filter(e=>e.date.startsWith(m.key));
+    const md=diesel.filter(e=>e.date.startsWith(m.key));
+    const mh=home.filter(e=>e.date.startsWith(m.key));
+    const earned=mf.reduce((s,e)=>s+(e.received||0),0);
+    const costs=mf.reduce((s,e)=>s+(e.otherExp||0),0)+md.reduce((s,e)=>s+(e.cost||0),0)+mh.reduce((s,e)=>s+(e.amt||0),0);
+    return{label:m.label,earned,costs,profit:earned-costs};
+  });
+  const maxMonthly=Math.max(1,...monthlyData.map(m=>Math.max(m.earned,m.costs)));
+  html+=`<div class="chart-section"><div class="chart-title">📊 Monthly Earnings vs Expenses (Last 6 Months)</div><div class="chart-body">`;
+  monthlyData.forEach(m=>{
+    const ew=Math.round((m.earned/maxMonthly)*100);
+    const cw=Math.round((m.costs/maxMonthly)*100);
+    html+=`<div style="margin-bottom:10px;">
+      <div style="font-size:0.72rem;font-weight:700;margin-bottom:3px;">${m.label}</div>
+      <div class="chart-bar-row"><div class="chart-bar-label">Earned</div><div class="chart-bar-track"><div class="chart-bar-fill green" style="width:${ew}%"></div></div><div class="chart-bar-val">${inr(m.earned)}</div></div>
+      <div class="chart-bar-row"><div class="chart-bar-label">Spent</div><div class="chart-bar-track"><div class="chart-bar-fill red" style="width:${cw}%"></div></div><div class="chart-bar-val">${inr(m.costs)}</div></div>
+      <div style="font-size:0.7rem;font-weight:700;color:${m.profit>=0?'var(--leaf)':'var(--red)'};margin-left:68px;">Profit: ${m.profit>=0?'+':''}${inr(Math.abs(m.profit))}</div>
+    </div>`;
+  });
+  html+=`</div></div>`;
+
+  if(crops.length){
+    const cropProfits={};
+    crops.forEach(c=>{cropProfits[c.cropName]=(cropProfits[c.cropName]||0)+(c.profit||0);});
+    const cpArr=Object.entries(cropProfits).sort((a,b)=>b[1]-a[1]);
+    const maxCP=Math.max(1,...cpArr.map(x=>Math.abs(x[1])));
+    html+=`<div class="chart-section"><div class="chart-title">🌱 Crop Profit Comparison</div><div class="chart-body">`;
+    cpArr.forEach(([name,profit])=>{
+      const w=Math.round((Math.abs(profit)/maxCP)*100);
+      html+=`<div class="chart-bar-row"><div class="chart-bar-label">${cropIcon(name)} ${name}</div><div class="chart-bar-track"><div class="chart-bar-fill ${profit>=0?'green':'red'}" style="width:${w}%"></div></div><div class="chart-bar-val" style="color:${profit>=0?'var(--leaf)':'var(--red)'}">${inr(profit)}</div></div>`;
+    });
+    html+=`</div></div>`;
+  }
+
+  const catTotals={};
+  home.forEach(e=>{catTotals[e.cat]=(catTotals[e.cat]||0)+(e.amt||0);});
+  const catArr=Object.entries(catTotals).sort((a,b)=>b[1]-a[1]);
+  if(catArr.length){
+    const maxCat=Math.max(1,...catArr.map(x=>x[1]));
+    html+=`<div class="chart-section"><div class="chart-title">🏠 Expense Categories</div><div class="chart-body">`;
+    catArr.forEach(([cat,amt])=>{
+      const w=Math.round((amt/maxCat)*100);
+      html+=`<div class="chart-bar-row"><div class="chart-bar-label" style="min-width:80px;">${cat}</div><div class="chart-bar-track"><div class="chart-bar-fill orange" style="width:${w}%"></div></div><div class="chart-bar-val">${inr(amt)}</div></div>`;
+    });
+    html+=`</div></div>`;
+  }
+
+  if(vehicles.length){
+    html+=`<div class="chart-section"><div class="chart-title">🚛 Vehicle Usage Summary</div><div class="chart-body">`;
+    vehicles.forEach(v=>{
+      const vf=farm.filter(e=>String(e.vid)===String(v.id));
+      const vd=diesel.filter(e=>String(e.vid)===String(v.id));
+      const entries=vf.length;
+      const dieselL=vd.reduce((s,e)=>s+(e.litres||0),0);
+      const earned=vf.reduce((s,e)=>s+(e.received||0),0);
+      const cost=vd.reduce((s,e)=>s+(e.cost||0),0);
+      const maxEntries=Math.max(...vehicles.map(veh=>farm.filter(e=>String(e.vid)===String(veh.id)).length),1);
+      const maxDiesel=Math.max(...vehicles.map(veh=>diesel.filter(e=>String(e.vid)===String(veh.id)).reduce((s,x)=>s+(x.litres||0),0)),1);
+      html+=`<div style="margin-bottom:10px;">
+        <div style="font-size:0.82rem;font-weight:700;margin-bottom:4px;">${vIcon(v.type)} ${esc(v.name)}</div>
+        <div class="chart-bar-row"><div class="chart-bar-label" style="min-width:50px;">Work</div><div class="chart-bar-track"><div class="chart-bar-fill wheat" style="width:${Math.round(entries/maxEntries)*100}%"></div></div><div class="chart-bar-val">${entries} entries</div></div>
+        <div class="chart-bar-row"><div class="chart-bar-label" style="min-width:50px;">Diesel</div><div class="chart-bar-track"><div class="chart-bar-fill blue" style="width:${Math.round(dieselL/maxDiesel)*100}%"></div></div><div class="chart-bar-val">${dieselL.toFixed(1)}L</div></div>
+        <div style="font-size:0.7rem;color:var(--muted);margin-left:56px;">Earned: ${inr(earned)} · Cost: ${inr(cost)}</div>
+      </div>`;
+    });
+    html+=`</div></div>`;
+  }
+
+  if(!html) html=`<div class="empty" style="padding:40px 16px;"><div class="ei">📈</div><p>Add some data to see charts and analytics!</p></div>`;
+  container.innerHTML=html;
+}
+
+// ── FARM INPUTS TRACKER ────────────────────────────────
+function addInput(){
+  const date=document.getElementById('inp-date').value;
+  const crop=document.getElementById('inp-crop').value.trim();
+  const inputType=document.getElementById('inp-type').value;
+  const brand=document.getElementById('inp-brand').value.trim();
+  const quantity=parseFloat(document.getElementById('inp-qty').value)||0;
+  const unit=document.getElementById('inp-unit').value;
+  const cost=parseFloat(document.getElementById('inp-cost').value)||0;
+  const notes=document.getElementById('inp-notes').value.trim();
+  if(!date||!brand){toast('⚠️ Fill in date and brand/name.');return;}
+  const arr=getInputs();
+  arr.unshift({id:Date.now(),date,crop,inputType,brand,quantity,unit,cost,notes});
+  saveInputs(arr);clrInputForm();renderInputs();toast('✅ Input added!');
+}
+
+function clrInputForm(){
+  ['inp-crop','inp-brand','inp-qty','inp-cost','inp-notes'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('inp-type').value='Fertilizer';
+  document.getElementById('inp-unit').value='kg';
+  document.getElementById('inp-date').valueAsDate=new Date();
+}
+
+function delInput(id){
+  if(!confirm('Delete this input?'))return;
+  saveInputs(getInputs().filter(x=>x.id!==id));renderInputs();toast('🗑 Deleted.');
+}
+
+function renderInputs(){
+  const arr=getInputs();
+  const ft=document.getElementById('inp-filter-type').value;
+  const search=(document.getElementById('inp-filter-search').value||'').toLowerCase();
+  const filtered=arr.filter(x=>(ft==='all'||x.inputType===ft)&&(!search||x.brand.toLowerCase().includes(search)||(x.crop||'').toLowerCase().includes(search)));
+  const totalSpent=arr.reduce((s,x)=>s+(x.cost||0),0);
+  const fertSpent=arr.filter(x=>x.inputType==='Fertilizer').reduce((s,x)=>s+(x.cost||0),0);
+  const pestSpent=arr.filter(x=>x.inputType==='Pesticide').reduce((s,x)=>s+(x.cost||0),0);
+  const seedSpent=arr.filter(x=>x.inputType==='Seed').reduce((s,x)=>s+(x.cost||0),0);
+  document.getElementById('inp-total').textContent=arr.length;
+  document.getElementById('inp-spent').textContent=inr(totalSpent);
+  document.getElementById('inp-fert').textContent=inr(fertSpent);
+  document.getElementById('inp-pest').textContent=inr(pestSpent);
+  document.getElementById('inp-seed').textContent=inr(seedSpent);
+  const list=document.getElementById('inp-list');
+  const empty=document.getElementById('inp-empty');
+  if(!filtered.length){list.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  const typeIcon={Fertilizer:'🧪',Pesticide:'🧴',Seed:'🌱',Other:'📦'};
+  list.innerHTML=filtered.map(x=>`<div class="rc">
+    <button class="delbtn" onclick="delInput(${x.id})">🗑</button>
+    <div class="rtop">
+      <div class="rwrk">${typeIcon[x.inputType]||'📦'} ${esc(x.brand)}</div>
+      <div class="ramt ar">${x.cost>0?inr(x.cost):''}</div>
+    </div>
+    <div class="rmeta">
+      <span class="chip cd">📅 ${fmtD(x.date)}</span>
+      <span class="chip ce">${esc(x.inputType)}</span>
+      ${x.crop?`<span class="chip cv">🌾 ${esc(x.crop)}</span>`:''}
+      ${x.quantity>0?`<span class="chip cd">📏 ${x.quantity} ${x.unit}</span>`:''}
+    </div>
+    ${x.notes?`<div class="rnotes">📝 ${esc(x.notes)}</div>`:''}
+  </div>`).join('');
+}
+
+// ── RAINFALL TRACKER ───────────────────────────────────
+function addRainfall(){
+  const date=document.getElementById('rf-date').value;
+  const mm=parseFloat(document.getElementById('rf-mm').value)||0;
+  const notes=document.getElementById('rf-notes').value.trim();
+  if(!date||mm<=0){toast('⚠️ Fill in date and rainfall amount.');return;}
+  const arr=getRainfall();
+  arr.unshift({id:Date.now(),date,mm,notes});
+  saveRainfall(arr);clrRainfallForm();renderRainfall();toast('✅ Rainfall recorded!');
+}
+
+function clrRainfallForm(){
+  document.getElementById('rf-mm').value='';
+  document.getElementById('rf-notes').value='';
+  document.getElementById('rf-date').valueAsDate=new Date();
+}
+
+function delRainfall(id){
+  if(!confirm('Delete this rainfall record?'))return;
+  saveRainfall(getRainfall().filter(x=>x.id!==id));renderRainfall();toast('🗑 Deleted.');
+}
+
+function renderRainfall(){
+  const arr=getRainfall();
+  const now=new Date();
+  const ym=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+  const yStr=String(now.getFullYear());
+  const monthTotal=arr.filter(x=>x.date&&x.date.startsWith(ym)).reduce((s,x)=>s+x.mm,0);
+  const yearTotal=arr.filter(x=>x.date&&x.date.startsWith(yStr)).reduce((s,x)=>s+x.mm,0);
+  const totalDays=arr.filter(x=>x.date&&x.date.startsWith(yStr)).length;
+  document.getElementById('rf-month').textContent=monthTotal.toFixed(1)+' mm';
+  document.getElementById('rf-year').textContent=yearTotal.toFixed(1)+' mm';
+  document.getElementById('rf-avg').textContent=(totalDays>0?(yearTotal/totalDays).toFixed(1):'0')+' mm';
+  document.getElementById('rf-total').textContent=arr.length;
+  const chartEl=document.getElementById('rf-chart');
+  const today=new Date();today.setHours(0,0,0,0);
+  const last30=[];
+  for(let i=29;i>=0;i--){
+    const d=new Date(today);d.setDate(d.getDate()-i);
+    const key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    const entry=arr.find(x=>x.date===key);
+    last30.push({date:key,mm:entry?entry.mm:0,day:d.getDate()});
+  }
+  const maxMM=Math.max(1,...last30.map(x=>x.mm));
+  const chartHeight=80;
+  chartEl.innerHTML=`<div class="rf-chart-bar-row" style="height:${chartHeight+30}px;align-items:flex-end;">`+
+    last30.map(x=>{
+      const h=Math.round((x.mm/maxMM)*chartHeight);
+      return`<div class="rf-chart-col"><div class="rf-chart-val">${x.mm>0?x.mm:''}</div><div class="rf-chart-bar" style="height:${Math.max(h,x.mm>0?4:0)}px;background:${x.mm>0?'var(--blue)':'var(--border)'};"></div><div class="rf-chart-date">${x.day}</div></div>`;
+    }).join('')+`</div>`;
+  const list=document.getElementById('rf-list');
+  const empty=document.getElementById('rf-empty');
+  if(!arr.length){list.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  list.innerHTML=arr.map(x=>`<div class="rc">
+    <button class="delbtn" onclick="delRainfall(${x.id})">🗑</button>
+    <div class="rtop">
+      <div class="rwrk">🌧️ Rainfall</div>
+      <div class="ramt b">${x.mm} mm</div>
+    </div>
+    <div class="rmeta">
+      <span class="chip cd">📅 ${fmtD(x.date)}</span>
+      <span class="chip cv">💧 ${x.mm} mm</span>
+    </div>
+    ${x.notes?`<div class="rnotes">📝 ${esc(x.notes)}</div>`:''}
+  </div>`).join('');
+}
+
+// ── PDF BILLS ──────────────────────────────────────────
+function loadPdfBillSelect(){
+  const arr=getFarm();
+  const sel=document.getElementById('pdf-farm-select');
+  sel.innerHTML='<option value="">-- Select Entry --</option>'+arr.map(e=>`<option value="${e.id}">📅 ${fmtD(e.date)} — ${esc(e.work)}${e.total?' ('+inr(e.total)+')':''}</option>`).join('');
+}
+
+function previewPdfBill(){
+  const id=parseInt(document.getElementById('pdf-farm-select').value);
+  const preview=document.getElementById('pdf-preview');
+  const content=document.getElementById('pdf-preview-content');
+  if(!id){preview.style.display='none';return;}
+  const e=getFarm().find(x=>x.id===id);
+  if(!e){preview.style.display='none';return;}
+  content.innerHTML=`
+    <div style="font-size:0.88rem;font-weight:800;margin-bottom:8px;">🌾 Khet Diary — Work Bill</div>
+    <div class="bill-row"><span>Customer</span><span style="font-weight:700;">${esc(e.work)}</span></div>
+    ${e.phone?`<div class="bill-row"><span>Phone</span><span>${esc(e.phone)}</span></div>`:''}
+    <div class="bill-row"><span>Date</span><span>${fmtD(e.date)}</span></div>
+    ${e.vname?`<div class="bill-row"><span>Vehicle</span><span>${esc(e.vname)}</span></div>`:''}
+    ${e.hrs>0?`<div class="bill-row"><span>Hours</span><span>${fmtH(e.hrs)}</span></div>`:''}
+    ${e.acres>0?`<div class="bill-row"><span>Acres</span><span>${e.acres} acres</span></div>`:''}
+    <div class="bill-row total"><span>Total Amount</span><span>${inr(e.total||0)}</span></div>
+    <div class="bill-row"><span>Paid</span><span style="color:var(--leaf);font-weight:700;">${inr(e.received||0)}</span></div>
+    ${e.pending>0?`<div class="bill-row pending"><span>Pending</span><span>${inr(e.pending)}</span></div>`:''}
+  `;
+  preview.style.display='block';
+}
+
+function printPdfBill(){
+  const id=parseInt(document.getElementById('pdf-farm-select').value);
+  const e=getFarm().find(x=>x.id===id);
+  if(!e){toast('⚠️ Select an entry first.');return;}
+  const printWindow=window.open('','_blank');
+  printWindow.document.write(`<!DOCTYPE html><html><head><title>Khet Diary Bill</title>
+    <style>
+      body{font-family:Arial,sans-serif;padding:20px;max-width:400px;margin:0 auto;}
+      .header{text-align:center;border-bottom:2px solid #000;padding-bottom:10px;margin-bottom:16px;}
+      .header h1{font-size:1.3rem;margin:0;}
+      .header p{font-size:0.8rem;color:#555;margin:4px 0 0;}
+      .row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed #ddd;font-size:0.85rem;}
+      .total{border-bottom:2px solid #000;border-top:2px solid #000;margin-top:8px;padding-top:8px;font-weight:bold;font-size:1rem;}
+      .pending{color:orange;font-weight:bold;}
+      .footer{text-align:center;margin-top:20px;font-size:0.7rem;color:#999;}
+    </style>
+  </head><body>
+    <div class="header">
+      <h1>🌾 Khet Diary</h1>
+      <p>Farm Work Bill</p>
+    </div>
+    <div class="row"><span>Customer:</span><span><b>${esc(e.work)}</b></span></div>
+    ${e.phone?`<div class="row"><span>Phone:</span><span>${esc(e.phone)}</span></div>`:''}
+    <div class="row"><span>Date:</span><span>${fmtD(e.date)}</span></div>
+    ${e.vname?`<div class="row"><span>Vehicle:</span><span>${esc(e.vname)}</span></div>`:''}
+    ${e.hrs>0?`<div class="row"><span>Hours:</span><span>${fmtH(e.hrs)}</span></div>`:''}
+    ${e.acres>0?`<div class="row"><span>Acres:</span><span>${e.acres} acres</span></div>`:''}
+    ${e.rph?`<div class="row"><span>Rate/Hour:</span><span>₹${e.rph}</span></div>`:''}
+    ${e.rpa?`<div class="row"><span>Rate/Acre:</span><span>₹${e.rpa}</span></div>`:''}
+    <div class="total"><span>Total Amount:</span><span>${inr(e.total||0)}</span></div>
+    <div class="row"><span>Paid:</span><span style="color:green;font-weight:bold;">${inr(e.received||0)}</span></div>
+    ${e.pending>0?`<div class="row pending"><span>Pending:</span><span>${inr(e.pending)}</span></div>`:''}
+    <div class="footer">Generated by Khet Diary App</div>
+  </body></html>`);
+  printWindow.document.close();
+  printWindow.print();
+}
+
+// ── CROP ROTATION PLANNER ──────────────────────────────
+const ROTATION_MAP={
+  'Rice':['Cotton','Chilli','Groundnut'],
+  'Cotton':['Rice','Maize'],
+  'Chilli':['Rice','Cotton'],
+  'Groundnut':['Rice','Cotton'],
+  'Maize':['Cotton','Groundnut'],
+  'Sugarcane':['Turmeric','Rice'],
+  'Turmeric':['Rice','Cotton'],
+  'Onion':['Rice','Maize'],
+  'Tomato':['Rice','Cotton']
+};
+
+function renderRotation(){
+  const crops=getCrops();
+  const container=document.getElementById('rotation-content');
+  let html='';
+
+  const active=crops.filter(c=>c.status==='Growing');
+  const harvested=crops.filter(c=>c.status==='Harvested'||c.status==='Sold');
+
+  html+=`<div class="rotation-card"><div class="rotation-header"><h2>🌱 Current Crops</h2></div><div class="rotation-body">`;
+  if(active.length){
+    html+=`<div class="rotation-current">`;
+    active.forEach(c=>{
+      html+=`<div class="rotation-crop-tag">${cropIcon(c.cropName)} ${esc(c.cropName)}${c.field?' ('+esc(c.field)+')':''}</div>`;
+    });
+    html+=`</div>`;
+  } else {
+    html+=`<div style="text-align:center;padding:16px;color:var(--muted);font-size:0.85rem;">No active crops. Add crops in the Crops section.</div>`;
+  }
+  html+=`</div></div>`;
+
+  html+=`<div class="rotation-card"><div class="rotation-header"><h2>🔄 Suggested Next Crops</h2></div><div class="rotation-body">`;
+  const recentCrops=[...new Set(harvested.map(c=>c.cropName))];
+  if(recentCrops.length){
+    recentCrops.forEach(cropName=>{
+      const suggestions=ROTATION_MAP[cropName];
+      if(suggestions){
+        html+=`<div class="rotation-suggest">
+          <div class="rotation-suggest-title">After ${cropIcon(cropName)} ${cropName}, try:</div>
+          <div class="rotation-suggest-list">`;
+        suggestions.forEach(s=>{
+          html+=`<div class="rotation-suggest-item">${cropIcon(s)} ${s}</div>`;
+        });
+        html+=`</div></div>`;
+      }
+    });
+  } else {
+    html+=`<div style="text-align:center;padding:16px;color:var(--muted);font-size:0.85rem;">
+      Complete some crops (Harvested/Sold) to get rotation suggestions.<br>
+      <div style="margin-top:12px;font-size:0.75rem;text-align:left;line-height:1.8;">
+        <strong>General rotation tips:</strong><br>
+        🌾 Rice → 🌿 Cotton / 🌶️ Chilli / 🥜 Groundnut<br>
+        🌿 Cotton → 🌾 Rice / 🌽 Maize<br>
+        🌶️ Chilli → 🌾 Rice / 🌿 Cotton<br>
+        🥜 Groundnut → 🌾 Rice / 🌿 Cotton<br>
+        🌽 Maize → 🌿 Cotton / 🥜 Groundnut<br>
+        🎋 Sugarcane → 🟡 Turmeric / 🌾 Rice<br>
+        🟡 Turmeric → 🌾 Rice / 🌿 Cotton<br>
+        🧅 Onion → 🌾 Rice / 🌽 Maize<br>
+        🍅 Tomato → 🌾 Rice / 🌿 Cotton
+      </div>
+    </div>`;
+  }
+  html+=`</div></div>`;
+
+  if(crops.length){
+    const cropCounts={};
+    crops.forEach(c=>{cropCounts[c.cropName]=(cropCounts[c.cropName]||0)+1;});
+    html+=`<div class="rotation-card"><div class="rotation-header"><h2>📊 Crop History</h2></div><div class="rotation-body">`;
+    Object.entries(cropCounts).sort((a,b)=>b[1]-a[1]).forEach(([name,count])=>{
+      html+=`<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
+        <div style="display:flex;align-items:center;gap:6px;font-weight:700;">${cropIcon(name)} ${esc(name)}</div>
+        <div style="font-size:0.82rem;color:var(--muted);">${count} ${count===1?'crop':'crops'}</div>
+      </div>`;
+    });
+    html+=`</div></div>`;
+  }
+
+  container.innerHTML=html;
+}
+
+// ── INIT NEW FEATURES ──────────────────────────────────
+if(!cloudData.loans) cloudData.loans = [];
+if(!cloudData.labour) cloudData.labour = [];
+if(!cloudData.labour_attendance) cloudData.labour_attendance = [];
+if(!cloudData.inputs) cloudData.inputs = [];
+if(!cloudData.rainfall) cloudData.rainfall = [];
+
+// Patch openApp to init new features
+const origOpenApp = openApp;
+openApp = function(name){
+  origOpenApp(name);
+  try{ renderMarket(); }catch(e){}
+  try{ initCalendar(); }catch(e){}
+  try{ updateReminderUI(); }catch(e){}
+  try{ loadWeather(); }catch(e){}
+  try{ renderLoans(); }catch(e){}
+  try{ renderWorkers(); }catch(e){}
+  try{ renderLabourSummary(); }catch(e){}
+  try{ renderInputs(); }catch(e){}
+  try{ renderRainfall(); }catch(e){}
+  try{ loadPdfBillSelect(); }catch(e){}
+  try{ renderRotation(); }catch(e){}
+  try{ renderCharts(); }catch(e){}
 };
 </script>
 </body>

@@ -1482,8 +1482,6 @@ body.dark .bill-row.total{border-top-color:#E8DDD0;border-bottom-color:#E8DDD0;}
         <p id="cust-empty-text">No farm work entries yet</p>
       </div>
     </div>
-  </div>
-  </div><!-- /acc-body-customers -->
   </div><!-- /sec-customers -->
 
   <!-- MARKET PRICES -->
@@ -3843,16 +3841,6 @@ setInterval(checkReminders, 6*60*60*1000);
 // Add market to cloudData if missing
 const origLoadCloudData = loadCloudData;
 if(!cloudData.market) cloudData.market = [];
-
-// Patch openApp to init new features
-const origOpenApp = openApp;
-openApp = function(name){
-  origOpenApp(name);
-  try{ renderMarket(); }catch(e){}
-  try{ initCalendar(); }catch(e){}
-  try{ updateReminderUI(); }catch(e){}
-  try{ loadWeather(); }catch(e){}
-};
 
 // Patch enterSection for crops to load weather
 const origEnterSection = enterSection;

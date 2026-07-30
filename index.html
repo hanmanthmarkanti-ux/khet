@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
 <title>Khet Diary</title>
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"/>
 <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png"/>
@@ -64,11 +64,11 @@ body{background:var(--cream);font-family:'Inter',sans-serif;color:var(--soil);mi
 #app-screen{flex-direction:column;}
 #app-body{flex:1;padding-bottom:76px;overflow-y:auto;-webkit-overflow-scrolling:touch;}
 #crops-body{flex:1;padding-bottom:76px;overflow-y:auto;-webkit-overflow-scrolling:touch;}
-header{background:var(--soil);color:var(--cream);padding:11px 14px;display:flex;align-items:center;gap:9px;position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(0,0,0,0.35);}
-.hlogo{font-size:1.5rem;line-height:1;}
-header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
-.uchip{background:rgba(255,255,255,0.10);border-radius:16px;padding:4px 10px;font-size:0.72rem;font-weight:600;color:#C8B89A;white-space:nowrap;}
-.lbtn{background:rgba(220,80,60,0.18);border:1px solid rgba(220,80,60,0.35);border-radius:16px;padding:5px 11px;font-size:0.72rem;font-weight:700;color:#ffb0a0;cursor:pointer;}
+header{background:var(--soil);color:var(--cream);padding:10px 14px;display:flex;align-items:center;gap:8px;position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(0,0,0,0.35);min-height:48px;}
+.hlogo{font-size:1.4rem;line-height:1;}
+header h1{font-size:1rem;font-weight:800;letter-spacing:-0.01em;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.uchip{background:rgba(255,255,255,0.10);border-radius:14px;padding:3px 8px;font-size:0.68rem;font-weight:600;color:#C8B89A;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:90px;}
+.lbtn{background:rgba(220,80,60,0.18);border:1px solid rgba(220,80,60,0.35);border-radius:14px;padding:4px 9px;font-size:0.68rem;font-weight:700;color:#ffb0a0;cursor:pointer;}
 
 /* HOME SCREEN CARDS */
 .home-card{background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:18px;padding:22px 18px;display:flex;align-items:center;gap:16px;cursor:pointer;transition:all 0.2s;-webkit-tap-highlight-color:transparent;}
@@ -119,8 +119,8 @@ header h1{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;flex:1;}
 .business-card-sub{font-size:0.75rem;color:var(--muted);line-height:1.4;}
 .business-card-arrow{color:var(--wheat);font-size:1.8rem;font-weight:300;flex-shrink:0;}
 /* Back button inside sections */
-.biz-back-btn{display:flex;align-items:center;gap:6px;padding:10px 14px;cursor:pointer;color:var(--blue);font-size:0.85rem;font-weight:700;background:var(--cream);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:60;}
-.biz-back-btn:active{opacity:0.7;}
+.biz-back-btn{display:flex;align-items:center;gap:6px;padding:12px 14px;cursor:pointer;color:var(--blue);font-size:0.88rem;font-weight:700;background:var(--cream);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:60;min-height:44px;}
+.biz-back-btn:active{opacity:0.7;background:var(--border);}
 .biz-back-btn.hidden{display:none;}
 .business-mode .acc-header{display:none;}
 .business-mode .acc-section{margin:0;border-radius:0;box-shadow:none;}
@@ -480,6 +480,122 @@ body.dark .dark-toggle{background:#3A3025;color:#C8B89A;border-color:#4A4035;}
 .reminder-item-info{flex:1;}
 .reminder-item-title{font-weight:700;font-size:0.82rem;}
 .reminder-item-date{font-size:0.7rem;color:var(--muted);}
+
+/* ── MOBILE OPTIMIZATIONS ── */
+@supports(padding:env(safe-area-inset-bottom)){
+  .tabs{padding-bottom:calc(8px + env(safe-area-inset-bottom));}
+  #app-body{padding-bottom:calc(76px + env(safe-area-inset-bottom));}
+  #crops-body{padding-bottom:calc(80px + env(safe-area-inset-bottom));}
+  .business-menu{padding-bottom:calc(90px + env(safe-area-inset-bottom));}
+}
+/* Better touch targets */
+.btn,.auth-btn,.lbtn,.expbtn,.filclear,.v-del,.delbtn,.wa-share-btn,.business-card,.home-card,.settle-btn,.reminder-switch{
+  min-height:44px;
+}
+/* Auth screen */
+#auth-screen{padding:24px 16px;justify-content:center;}
+.auth-box{width:100%;max-width:400px;margin:0 auto;}
+.auth-btn{font-size:1rem;padding:14px;border-radius:12px;}
+.afield input{font-size:16px !important;padding:13px 14px;} /* Prevent iOS zoom */
+/* Header */
+header{padding:12px 14px;gap:8px;}
+header h1{font-size:1rem;}
+.uchip{font-size:0.7rem;padding:4px 8px;}
+/* Bottom bar */
+.bottom-bar{padding:10px 12px calc(10px + env(safe-area-inset-bottom)) 12px;gap:6px;}
+.bottom-bar button{font-size:0.7rem;padding:8px 2px;border-radius:10px;}
+/* Business cards */
+.business-menu{padding:14px 16px calc(90px + env(safe-area-inset-bottom)) 16px;gap:12px;}
+.business-card{padding:16px 14px;border-radius:16px;}
+.business-card-icon{font-size:2rem;}
+.business-card-title{font-size:1rem;}
+.business-card-sub{font-size:0.73rem;}
+/* Home cards */
+.home-card{padding:20px 16px;border-radius:16px;gap:14px;}
+.home-card-icon{font-size:2.4rem;}
+.home-card-title{font-size:1.1rem;}
+/* Form fields */
+.field{margin-bottom:14px;}
+.field label{font-size:0.7rem;margin-bottom:5px;}
+.field input,.field select,.field textarea{padding:12px 13px;border-radius:10px;font-size:16px !important;}
+.gr2{gap:12px;}
+.btn{padding:14px;border-radius:12px;font-size:1rem;}
+/* Boxes */
+.box{margin:12px 12px 0;border-radius:14px;}
+.boxhdr{padding:13px 14px;font-size:0.9rem;}
+.boxbody{padding:14px;}
+/* Records */
+.rc{padding:14px;}
+.rwrk{font-size:0.9rem;}
+.ramt{font-size:0.95rem;}
+/* Filter */
+.filbox{margin:10px 12px 0;padding:12px;}
+.filrow{gap:8px;}
+.filrow input,.filrow select{padding:10px;font-size:0.88rem;min-width:0;}
+/* Summary cards */
+.sscroll{padding:12px 12px 0;}
+.scard{padding:12px;min-width:100px;border-radius:12px;}
+.scard label{font-size:0.6rem;}
+.scard .sv{font-size:1.05rem;}
+/* Sections */
+.acc-section{margin:10px 12px 0;}
+/* Rec sections */
+.recsec{margin:10px 12px 0;}
+.rechdr{padding:12px;}
+/* Business mode */
+.business-mode .acc-body{padding:14px 12px 80px;}
+/* Weather */
+.weather-card{margin:10px 12px 0;}
+.weather-header{padding:14px;}
+.weather-grid{gap:8px;}
+.weather-day{min-width:64px;padding:8px 4px;}
+/* Calendar */
+.calendar-grid{padding:0 12px 12px;gap:3px;}
+.calendar-day{font-size:0.75rem;}
+.calendar-events{padding:0 12px 12px;}
+/* Market */
+.market-card{margin:10px 12px 0;}
+.market-add-form{padding:12px;}
+/* Dashboard */
+.dash-grid{padding:12px;gap:8px;}
+.dash-card{padding:12px;border-radius:10px;}
+.dash-card .big{font-size:1.2rem;}
+/* Customer */
+.customer-card{margin:10px 12px 0;border-radius:14px;}
+.customer-card-header{padding:12px;}
+.customer-stats{padding:0 12px 12px;}
+/* Report */
+.report-section{margin:10px 12px 0;border-radius:12px;}
+.report-row{padding:10px 12px;}
+.report-total-row{margin:10px 12px 0;border-radius:10px;padding:12px;}
+.share-btn{width:calc(100% - 24px);margin:12px 12px 0;}
+/* Toast */
+#toast{font-size:0.88rem;padding:10px 20px;border-radius:28px;}
+/* Debt */
+.debt-summary{padding:12px;}
+.debt-net{margin:10px 12px 0;}
+/* Photo */
+.photo-thumb{width:72px;height:72px;}
+.photo-upload-area{padding:12px;}
+/* Dark mode toggle & lang */
+.dark-toggle,.lang-btn{padding:5px 10px;font-size:0.7rem;border-radius:12px;}
+/* Pending alert */
+.pending-alert{margin:10px 12px 0;padding:12px;}
+/* Live preview */
+.live-box{padding:12px;border-radius:10px;}
+/* Diesel cards */
+.dv-cards{padding:12px;}
+.dv-card{padding:12px;border-radius:10px;}
+/* Smooth scrolling */
+html{scroll-behavior:smooth;}
+body{overflow-x:hidden;}
+/* Prevent text overflow */
+.rwrk,.v-name,.customer-name,.market-crop{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;}
+/* Better active states */
+.business-card:active,.home-card:active{transform:scale(0.97);transition:transform 0.1s;}
+.btn:active,.auth-btn:active{transform:scale(0.98);transition:transform 0.1s;}
+/* Print */
+@media print{.tabs,.bottom-bar,.biz-back-btn,.delbtn,.wa-share-btn,.expbtn,.filbox,.boxhdr,.lbtn{display:none!important;}}
 
 /* CUSTOMER VIEW */
 .customer-search-bar{padding:14px 14px 0;}
@@ -1296,12 +1412,12 @@ body.dark .dark-toggle{background:#3A3025;color:#C8B89A;border-color:#4A4035;}
 
 
 <!-- Minimal sticky bottom bar -->
-<div style="position:fixed;bottom:0;left:0;right:0;background:var(--soil);display:flex;z-index:200;box-shadow:0 -2px 14px rgba(0,0,0,0.25);padding:10px 14px 14px;gap:8px;">
-  <button onclick="goHome()" style="flex:1;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:10px;color:#C8B89A;font-size:0.76rem;font-weight:700;padding:8px 4px;cursor:pointer;">🏠<br>Home</button>
-  <button onclick="enterSection('crops')" style="flex:2;background:var(--leaf);border:none;border-radius:10px;color:#fff;font-size:0.76rem;font-weight:700;padding:8px 4px;cursor:pointer;">🌱<br>Switch to Crops</button>
-  <button onclick="cycleLang()" id="lang-btn2" style="flex:1;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:10px;color:#C8B89A;font-size:0.72rem;font-weight:700;padding:8px 4px;cursor:pointer;">🌐<br>తెలుగు</button>
-  <button onclick="toggleDark()" id="dark-btn2" style="flex:1;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:10px;color:#C8B89A;font-size:0.72rem;font-weight:700;padding:8px 4px;cursor:pointer;">🌙<br>Dark</button>
-  <button onclick="doLogout()" style="flex:1;background:rgba(220,80,60,0.18);border:1px solid rgba(220,80,60,0.35);border-radius:10px;color:#ffb0a0;font-size:0.72rem;font-weight:700;padding:8px 4px;cursor:pointer;">🚪<br>Logout</button>
+<div class="bottom-bar" style="position:fixed;bottom:0;left:0;right:0;background:var(--soil);display:flex;z-index:200;box-shadow:0 -2px 14px rgba(0,0,0,0.25);padding:10px 14px 14px;gap:6px;">
+  <button onclick="goHome()" style="flex:1;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:10px;color:#C8B89A;font-size:0.68rem;font-weight:700;padding:8px 2px;cursor:pointer;">🏠<br>Home</button>
+  <button onclick="enterSection('crops')" style="flex:1.5;background:var(--leaf);border:none;border-radius:10px;color:#fff;font-size:0.68rem;font-weight:700;padding:8px 2px;cursor:pointer;">🌱<br>Crops</button>
+  <button onclick="enterSection('business')" style="flex:1.5;background:var(--wheat);border:none;border-radius:10px;color:#fff;font-size:0.68rem;font-weight:700;padding:8px 2px;cursor:pointer;">🏢<br>Business</button>
+  <button onclick="cycleLang()" id="lang-btn2" style="flex:1;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:10px;color:#C8B89A;font-size:0.68rem;font-weight:700;padding:8px 2px;cursor:pointer;">🌐<br>తెలుగు</button>
+  <button onclick="toggleDark()" id="dark-btn2" style="flex:1;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:10px;color:#C8B89A;font-size:0.68rem;font-weight:700;padding:8px 2px;cursor:pointer;">🌙</button>
 </div>
 </div><!-- app-screen -->
 <div id="toast"></div>

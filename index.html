@@ -13,7 +13,6 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-functions-compat.js"></script>
 <script>
   const firebaseConfig = {
     apiKey: "AIzaSyB4n2adhczkNsr4DUw7jR_EFL129SyRzgQ",
@@ -26,7 +25,6 @@
   firebase.initializeApp(firebaseConfig);
   window.fbAuth = firebase.auth();
   window.fbDb   = firebase.firestore();
-  window.fbFunc = firebase.functions();
 </script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
@@ -843,14 +841,6 @@ body.dark .dark-toggle{background:#3A3025;color:#C8B89A;border-color:#4A4035;}
       </div>
       <div class="business-card-arrow">›</div>
     </div>
-    <div class="business-card" onclick="openBizSection('sms')">
-      <div class="business-card-icon">⚙️</div>
-      <div class="business-card-content">
-        <div class="business-card-title">SMS Settings</div>
-        <div class="business-card-sub">Configure auto SMS · MSG91 API</div>
-      </div>
-      <div class="business-card-arrow">›</div>
-    </div>
   </div>
 
   <!-- DASHBOARD -->
@@ -1302,43 +1292,6 @@ body.dark .dark-toggle{background:#3A3025;color:#C8B89A;border-color:#4A4035;}
     </div>
   </div><!-- /sec-market -->
 
-  <!-- SMS SETTINGS -->
-  <div class="acc-section" id="sec-sms">
-    <div class="acc-header" onclick="toggleSection('sms')">
-      <span class="acc-icon">⚙️</span>
-      <span class="acc-title" data-key="tab_sms">SMS Settings</span>
-      <span class="arr">▼</span>
-    </div>
-    <div class="acc-body" id="pg-sms">
-    <div class="biz-back-btn" onclick="showBizMenu()">‹ Back to Menu</div>
-    <div class="box" style="margin-top:12px;">
-      <div class="boxhdr open"><span>⚙️</span> SMS API Configuration</div>
-      <div class="boxbody open">
-        <div style="font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:14px;">
-          To send SMS automatically, you need a <strong>MSG91</strong> account (free tier available).<br><br>
-          <strong>Steps:</strong><br>
-          1. Go to <a href="https://msg91.com" target="_blank" style="color:var(--blue);">msg91.com</a> and sign up free<br>
-          2. Get your API key from Settings → API Keys<br>
-          3. Choose a Sender ID (e.g. KHETDI)<br>
-          4. Enter them below and save
-        </div>
-        <div class="field"><label>MSG91 API Key</label><input type="text" id="sms-apikey" placeholder="Paste your MSG91 API key"/></div>
-        <div class="field"><label>Sender ID</label><input type="text" id="sms-sender" placeholder="e.g. KHETDI (6 chars max)" maxlength="6"/></div>
-        <button class="btn bg" onclick="saveSMSConfig()">💾 Save Settings</button>
-        <div id="sms-status" style="margin-top:8px;font-size:0.82rem;text-align:center;min-height:20px;"></div>
-      </div>
-    </div>
-    <div class="box" style="margin-top:12px;">
-      <div class="boxhdr open"><span>📱</span> Test SMS</div>
-      <div class="boxbody open">
-        <div class="field"><label>Your Phone Number</label><input type="tel" id="sms-test-phone" placeholder="e.g. 9876543210" inputmode="tel"/></div>
-        <button class="btn bb" onclick="testSMS()">📤 Send Test SMS</button>
-        <div id="sms-test-status" style="margin-top:8px;font-size:0.82rem;text-align:center;min-height:20px;"></div>
-      </div>
-    </div>
-  </div>
-  </div><!-- /sec-sms -->
-
 </div><!-- app-body -->
 
 
@@ -1364,7 +1317,7 @@ function showAuthTab(t){
 }
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 function tog(id,hdr){const b=document.getElementById(id);const open=b.classList.toggle('open');hdr.classList.toggle('open',open);}
-const TABS=['dash','vehicles','farm','diesel','home','report','customers','debt','market','sms'];
+const TABS=['dash','vehicles','farm','diesel','home','report','customers','debt','market'];
 
 function toggleSection(sid){
   const body=document.getElementById('pg-'+sid);
@@ -2566,8 +2519,8 @@ function sendBillToCustomer(e){
   window.open('https://wa.me/91'+phone+'?text='+encodeURIComponent(msg),'_blank');
 }
 
-// ── SEND BILL TO CUSTOMER VIA SMS (auto via Cloud Function) ──
-async function sendBillSMS(e){
+// ── SEND BILL TO CUSTOMER VIA SMS (free, opens native SMS app) ──
+function sendBillSMS(e){
   if(!e.phone) return;
   let phone=e.phone.replace(/[\s\-\(\)]/g,'');
   if(phone.startsWith('+91')) phone=phone.slice(3);
@@ -2586,56 +2539,9 @@ async function sendBillSMS(e){
     `${e.pending>0?`Pending: ${inr(e.pending)}\n`:''}`+
     `\nKhet Diary`;
 
-  toast('📤 Sending SMS...');
-  try{
-    const sendSMS=window.fbFunc.httpsCallable('sendSMS');
-    const result=await sendSMS({phone:phone,message:msg});
-    if(result.data.success){
-      toast('✅ SMS sent to '+phone+'!');
-    }
-  }catch(err){
-    console.error('SMS error:',err);
-    const msg2=err.message||err.code||'Unknown error';
-    if(msg2.includes('SMS not configured')){
-      toast('⚠️ SMS not configured. Go to SMS Settings.');
-    } else {
-      toast('❌ SMS failed: '+msg2);
-    }
-  }
-}
-
-// ── SMS CONFIG ────────────────────────────────────────
-async function saveSMSConfig(){
-  const apiKey=document.getElementById('sms-apikey').value.trim();
-  const senderId=document.getElementById('sms-sender').value.trim();
-  const status=document.getElementById('sms-status');
-  if(!apiKey){status.innerHTML='<span style="color:var(--red);">⚠️ Enter API key.</span>';return;}
-  status.innerHTML='<span style="color:var(--blue);">💾 Saving...</span>';
-  try{
-    const saveCfg=window.fbFunc.httpsCallable('saveSMSConfig');
-    await saveCfg({apiKey,senderId});
-    status.innerHTML='<span style="color:var(--leaf);">✅ Settings saved!</span>';
-    toast('✅ SMS settings saved!');
-  }catch(err){
-    status.innerHTML='<span style="color:var(--red);">❌ '+err.message+'</span>';
-  }
-}
-
-async function testSMS(){
-  const phone=document.getElementById('sms-test-phone').value.trim();
-  const status=document.getElementById('sms-test-status');
-  if(!phone){status.innerHTML='<span style="color:var(--red);">⚠️ Enter phone number.</span>';return;}
-  status.innerHTML='<span style="color:var(--blue);">📤 Sending test SMS...</span>';
-  try{
-    const sendSMS=window.fbFunc.httpsCallable('sendSMS');
-    const result=await sendSMS({phone,message:'🌾 Test SMS from Khet Diary! Your SMS is working correctly.'});
-    if(result.data.success){
-      status.innerHTML='<span style="color:var(--leaf);">✅ Test SMS sent!</span>';
-      toast('✅ Test SMS sent!');
-    }
-  }catch(err){
-    status.innerHTML='<span style="color:var(--red);">❌ '+err.message+'</span>';
-  }
+  // Opens native SMS app with number and message pre-filled — FREE, no API needed
+  window.open('sms:+91'+phone+'?body='+encodeURIComponent(msg),'_blank');
+  toast('📱 SMS app opened — tap Send!');
 }
 
 // ── EXPORT ────────────────────────────────────────────
@@ -2678,7 +2584,7 @@ const T = {
     app_title:'Khet Diary', logout:'🚪 Logout', lang_btn:'తెలుగు',
     tab_dash:'Dashboard', tab_vehicles:'Vehicles', tab_farm:'Farm',
     tab_diesel:'Diesel', tab_home:'Home', tab_report:'Report',
-    tab_customers:'Customers', tab_interest:'Interest', tab_market:'Market Prices', tab_sms:'SMS Settings',
+    tab_customers:'Customers', tab_interest:'Interest', tab_market:'Market Prices',
     // Dashboard
     total_received:'Total Received', pending_receive:'Pending to Receive',
     farm_costs:'Farm + Diesel Costs', net_profit:'Net Profit',
@@ -2711,7 +2617,7 @@ const T = {
     app_title:'ఖేత్ డైరీ', logout:'🚪 లాగ్అవుట్', lang_btn:'English',
     tab_dash:'డాష్‌బోర్డ్', tab_vehicles:'వాహనాలు', tab_farm:'పొలం',
     tab_diesel:'డీజిల్', tab_home:'ఇల్లు', tab_report:'నివేదిక',
-    tab_customers:'కస్టమర్లు', tab_interest:'వడ్డీ', tab_market:'మార్కెట్ ధరలు', tab_sms:'SMS సెట్టింగ్‌లు',
+    tab_customers:'కస్టమర్లు', tab_interest:'వడ్డీ', tab_market:'మార్కెట్ ధరలు',
     // Dashboard
     total_received:'మొత్తం వచ్చింది', pending_receive:'రావలసింది',
     farm_costs:'పొలం + డీజిల్ ఖర్చు', net_profit:'నికర లాభం',

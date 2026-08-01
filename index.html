@@ -861,34 +861,13 @@ body.dark .bill-row.total{border-top-color:#E8DDD0;border-bottom-color:#E8DDD0;}
 <div id="crops-screen" class="screen">
 <div id="crops-body" style="flex:1;padding-bottom:80px;">
   <header>
-    <button onclick="goHome()" style="background:none;border:none;color:var(--cream);font-size:1.3rem;cursor:pointer;padding:0 10px 0 0;">‹</button>
-    <div class="hlogo">🌱</div>
+    <button onclick="goHome()" style="background:none;border:none;color:var(--cream);font-size:1.2rem;cursor:pointer;padding:0 8px 0 0;">🏠</button>
     <h1>Crops</h1>
+    <button class="lang-btn" onclick="cycleLang()" id="lang-btn-crops">తెలుగు</button>
+    <button class="dark-toggle" onclick="toggleDark()" id="dark-btn-crops">🌙</button>
     <div class="uchip">👤 <span id="crops-uname"></span></div>
+    <button class="lbtn" onclick="doLogout()">🚪</button>
   </header>
-
-  <!-- WEATHER CARD -->
-  <div class="weather-card" id="weather-card">
-    <div class="weather-header" onclick="toggleWeather()">
-      <div class="wh-icon" id="w-icon">🌤️</div>
-      <div class="wh-info">
-        <div class="wh-temp" id="w-temp">--°C</div>
-        <div class="wh-desc" id="w-desc">Tap to load weather</div>
-        <div class="wh-loc" id="w-loc"></div>
-      </div>
-      <div class="wh-arrow">▼</div>
-    </div>
-    <div class="weather-body" id="weather-body">
-      <div class="weather-loading" id="w-loading">Loading weather…</div>
-      <div id="w-content" style="display:none;">
-        <div class="weather-grid" id="w-grid"></div>
-        <div style="font-size:0.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:6px;">7-Day Forecast</div>
-        <div class="weather-forecast" id="w-forecast"></div>
-        <button class="weather-refresh" onclick="loadWeather()">🔄 Refresh</button>
-      </div>
-      <div class="weather-error" id="w-error" style="display:none;"></div>
-    </div>
-  </div>
 
   <!-- CROPS SUMMARY -->
   <div class="sscroll"><div class="scards" id="crops-summary-cards">
@@ -899,10 +878,104 @@ body.dark .bill-row.total{border-top-color:#E8DDD0;border-bottom-color:#E8DDD0;}
     <div class="scard b"><label>Total Acres</label><div class="sv" id="cr-acres">0</div></div>
   </div></div>
 
-  <!-- ADD CROP -->
-  <div class="box">
-    <div class="boxhdr" onclick="tog('crop-form-body',this)"><span>🌱</span> Add New Crop <span class="arr">▼</span></div>
-    <div class="boxbody" id="crop-form-body">
+  <!-- CROPS MENU (cards like business) -->
+  <div class="business-menu" id="crops-menu">
+    <div class="business-card" onclick="openCropSection('weather')">
+      <div class="business-card-icon">🌤️</div>
+      <div class="business-card-content">
+        <div class="business-card-title">Weather</div>
+        <div class="business-card-sub">Current weather · 7-day forecast</div>
+      </div>
+      <div class="business-card-arrow">›</div>
+    </div>
+    <div class="business-card" onclick="openCropSection('addcrop')">
+      <div class="business-card-icon">🌱</div>
+      <div class="business-card-content">
+        <div class="business-card-title">Add Crop</div>
+        <div class="business-card-sub">Track new crop · Planting & harvest</div>
+      </div>
+      <div class="business-card-arrow">›</div>
+    </div>
+    <div class="business-card" onclick="openCropSection('records')">
+      <div class="business-card-icon">📋</div>
+      <div class="business-card-content">
+        <div class="business-card-title">Crop Records</div>
+        <div class="business-card-sub">All crops · Filter · Export CSV</div>
+      </div>
+      <div class="business-card-arrow">›</div>
+    </div>
+    <div class="business-card" onclick="openCropSection('market')">
+      <div class="business-card-icon">📊</div>
+      <div class="business-card-content">
+        <div class="business-card-title">Market Prices</div>
+        <div class="business-card-sub">Crop prices · Trends · Per quintal</div>
+      </div>
+      <div class="business-card-arrow">›</div>
+    </div>
+    <div class="business-card" onclick="openCropSection('inputs')">
+      <div class="business-card-icon">🧪</div>
+      <div class="business-card-content">
+        <div class="business-card-title">Farm Inputs</div>
+        <div class="business-card-sub">Fertilizer · Pesticide · Seeds</div>
+      </div>
+      <div class="business-card-arrow">›</div>
+    </div>
+    <div class="business-card" onclick="openCropSection('rainfall')">
+      <div class="business-card-icon">🌧️</div>
+      <div class="business-card-content">
+        <div class="business-card-title">Rainfall</div>
+        <div class="business-card-sub">Track daily rainfall data</div>
+      </div>
+      <div class="business-card-arrow">›</div>
+    </div>
+    <div class="business-card" onclick="openCropSection('calendar')">
+      <div class="business-card-icon">📅</div>
+      <div class="business-card-content">
+        <div class="business-card-title">Crop Calendar</div>
+        <div class="business-card-sub">Reminders · Planting schedule</div>
+      </div>
+      <div class="business-card-arrow">›</div>
+    </div>
+    <div class="business-card" onclick="openCropSection('rotation')">
+      <div class="business-card-icon">🔄</div>
+      <div class="business-card-content">
+        <div class="business-card-title">Crop Rotation</div>
+        <div class="business-card-sub">Plan next crops wisely</div>
+      </div>
+      <div class="business-card-arrow">›</div>
+    </div>
+  </div>
+
+  <!-- WEATHER SECTION -->
+  <div class="acc-section" id="sec-crop-weather" style="display:none;">
+    <div class="biz-back-btn" onclick="showCropsMenu()">‹ Back to Menu</div>
+    <div class="weather-card" id="weather-card" style="margin:0;border-radius:0;box-shadow:none;">
+      <div class="weather-header" onclick="toggleWeather()">
+        <div class="wh-icon" id="w-icon">🌤️</div>
+        <div class="wh-info">
+          <div class="wh-temp" id="w-temp">--°C</div>
+          <div class="wh-desc" id="w-desc">Tap to load weather</div>
+          <div class="wh-loc" id="w-loc"></div>
+        </div>
+        <div class="wh-arrow">▼</div>
+      </div>
+      <div class="weather-body" id="weather-body">
+        <div class="weather-loading" id="w-loading">Loading weather…</div>
+        <div id="w-content" style="display:none;">
+          <div class="weather-grid" id="w-grid"></div>
+          <div style="font-size:0.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:6px;">7-Day Forecast</div>
+          <div class="weather-forecast" id="w-forecast"></div>
+          <button class="weather-refresh" onclick="loadWeather()">🔄 Refresh</button>
+        </div>
+        <div class="weather-error" id="w-error" style="display:none;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD CROP SECTION -->
+  <div class="acc-section" id="sec-crop-addcrop" style="display:none;">
+    <div class="biz-back-btn" onclick="showCropsMenu()">‹ Back to Menu</div>
+    <div class="acc-body" style="padding:16px 14px 80px;">
       <div class="gr2">
         <div class="field"><label>Crop Name</label>
           <select id="cr-name">
@@ -921,7 +994,7 @@ body.dark .bill-row.total{border-top-color:#E8DDD0;border-bottom-color:#E8DDD0;}
         <div class="field"><label>Custom Name (if Other)</label><input type="text" id="cr-custom" placeholder="e.g. Bengalgram…"/></div>
       </div>
       <div class="gr2">
-        <div class="field"><label>Field / Land Name</label><input type="text" id="cr-field" placeholder="e.g. East field, Ramaiah land…"/></div>
+        <div class="field"><label>Field / Land Name</label><input type="text" id="cr-field" placeholder="e.g. East field…"/></div>
         <div class="field"><label>Acres</label><input type="number" id="cr-acres" placeholder="e.g. 2.5" min="0" step="0.5" inputmode="decimal"/></div>
       </div>
       <div class="gr2">
@@ -940,8 +1013,8 @@ body.dark .bill-row.total{border-top-color:#E8DDD0;border-bottom-color:#E8DDD0;}
         <div class="field"><label>Harvest Qty (kg/bags)</label><input type="number" id="cr-qty" placeholder="e.g. 500" min="0" inputmode="decimal"/></div>
         <div class="field"><label>Sell Price ₹ per unit</label><input type="number" id="cr-price" placeholder="e.g. 25" min="0" inputmode="decimal" oninput="calcCropProfit()"/></div>
       </div>
-      <div class="field"><label>Revenue ₹ <span style="font-size:0.65rem;color:var(--leaf);font-weight:700;">(auto calculated)</span></label>
-        <input type="number" id="cr-revenue-inp" placeholder="Auto fills from Qty × Price" min="0" inputmode="numeric"/>
+      <div class="field"><label>Revenue ₹ <span style="font-size:0.65rem;color:var(--leaf);font-weight:700;">(auto)</span></label>
+        <input type="number" id="cr-revenue-inp" placeholder="Auto fills" min="0" inputmode="numeric"/>
       </div>
       <div class="field"><label>Status</label>
         <select id="cr-status">
@@ -952,9 +1025,7 @@ body.dark .bill-row.total{border-top-color:#E8DDD0;border-bottom-color:#E8DDD0;}
         </select>
       </div>
       <div class="field"><label>Notes</label><textarea id="cr-notes" placeholder="Any extra details…" style="resize:none;height:65px;"></textarea></div>
-
-      <!-- LIVE CROP PROFIT PREVIEW -->
-      <div class="live-box" id="crop-preview" style="display:none;background:#F0F7F0;border-color:var(--leaf);">
+      <div class="live-box" id="crop-preview" style="display:none;">
         <h4 style="color:var(--leaf);">📊 Crop Profit Preview</h4>
         <div class="live-grid">
           <div class="live-label">Total Expenses</div><div class="live-val ar" id="crp-exp">₹0</div>
@@ -963,68 +1034,46 @@ body.dark .bill-row.total{border-top-color:#E8DDD0;border-bottom-color:#E8DDD0;}
           <div class="live-profit-val" id="crp-profit">₹0</div>
         </div>
       </div>
-
       <button class="btn bg" onclick="addCrop()">＋ Add Crop</button>
       <button class="btn bgr" onclick="clrCropForm()">Clear</button>
     </div>
   </div>
 
-  <!-- FILTER -->
-  <div class="filbox">
-    <h3>🔍 Filter</h3>
-    <div class="filrow">
-      <select id="cr-filter-status" onchange="renderCrops()">
-        <option value="all">All Status</option>
-        <option value="Growing">Growing</option>
-        <option value="Harvested">Harvested</option>
-        <option value="Sold">Sold</option>
-        <option value="Failed">Failed</option>
-      </select>
-      <input type="text" id="cr-filter-search" placeholder="Search crop…" oninput="renderCrops()"/>
-      <button class="filclear" onclick="clrCropFilter()">✕</button>
+  <!-- CROP RECORDS SECTION -->
+  <div class="acc-section" id="sec-crop-records" style="display:none;">
+    <div class="biz-back-btn" onclick="showCropsMenu()">‹ Back to Menu</div>
+    <div class="filbox" style="margin:0;border-radius:0;box-shadow:none;">
+      <h3>🔍 Filter</h3>
+      <div class="filrow">
+        <select id="cr-filter-status" onchange="renderCrops()">
+          <option value="all">All Status</option>
+          <option value="Growing">Growing</option>
+          <option value="Harvested">Harvested</option>
+          <option value="Sold">Sold</option>
+          <option value="Failed">Failed</option>
+        </select>
+        <input type="text" id="cr-filter-search" placeholder="Search crop…" oninput="renderCrops()"/>
+        <button class="filclear" onclick="clrCropFilter()">✕</button>
+      </div>
+    </div>
+    <div class="recsec" style="margin:0;border-radius:0;box-shadow:none;">
+      <div class="rechdr"><h2>🌱 Crop Records</h2><button class="expbtn" onclick="exportCSV('crops')">⬇ CSV</button></div>
+      <div id="cr-list"></div>
+      <div id="cr-empty" class="empty"><div class="ei">🌱</div><p>No crops added yet.<br>Add your first one from the menu!</p></div>
     </div>
   </div>
 
-  <!-- CROP RECORDS -->
-  <div class="recsec">
-    <div class="rechdr"><h2>🌱 Crop Records</h2><button class="expbtn" onclick="exportCSV('crops')">⬇ CSV</button></div>
-    <div id="cr-list"></div>
-    <div id="cr-empty" class="empty"><div class="ei">🌱</div><p>No crops added yet.<br>Add your first crop above!</p></div>
-  </div>
-
-  <!-- CROP CALENDAR -->
-  <div class="box" style="margin-top:12px;">
-    <div class="boxhdr" onclick="tog('crop-cal-body',this)"><span>📅</span> Crop Calendar & Reminders <span class="arr">▼</span></div>
-    <div class="boxbody" id="crop-cal-body">
-      <div class="calendar-header">
-        <button class="calendar-nav-btn" onclick="calNav(-1)" style="background:var(--cream);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:0.82rem;font-weight:700;color:var(--soil);cursor:pointer;">◀</button>
-        <h2 id="cal-month-label">July 2026</h2>
-        <button class="calendar-nav-btn" onclick="calNav(1)" style="background:var(--cream);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:0.82rem;font-weight:700;color:var(--soil);cursor:pointer;">▶</button>
-      </div>
-      <div class="calendar-grid" id="cal-grid"></div>
-      <div style="padding:0 14px 6px;">
-        <div style="font-size:0.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:6px;">Upcoming Events</div>
-      </div>
-      <div class="calendar-events" id="cal-events"></div>
-      <div class="reminder-toggle">
-        <div class="reminder-switch" id="reminder-switch" onclick="toggleReminders()"></div>
-        <label onclick="toggleReminders()">Enable crop reminders (browser notifications)</label>
-      </div>
-      <div class="reminder-list" id="reminder-list"></div>
-    </div>
-  </div>
-
-  <!-- MARKET PRICES -->
-  <div class="box" style="margin-top:12px;">
-    <div class="boxhdr" onclick="tog('crop-market-body',this)"><span>📊</span> Market Prices <span class="arr">▼</span></div>
-    <div class="boxbody" id="crop-market-body">
+  <!-- MARKET SECTION -->
+  <div class="acc-section" id="sec-crop-market" style="display:none;">
+    <div class="biz-back-btn" onclick="showCropsMenu()">‹ Back to Menu</div>
+    <div class="acc-body" style="padding:16px 14px 80px;">
       <div class="market-card" style="margin-top:0;border-radius:0;box-shadow:none;">
         <div class="market-header">
           <h2>📊 Crop Market Prices</h2>
           <button class="expbtn" onclick="exportCSV('market')">⬇ CSV</button>
         </div>
         <div id="market-list"></div>
-        <div id="market-empty" class="empty" style="padding:20px;"><div class="ei">📊</div><p>No prices tracked yet.<br>Add your first crop price below!</p></div>
+        <div id="market-empty" class="empty" style="padding:20px;"><div class="ei">📊</div><p>No prices tracked yet.</p></div>
         <div class="market-add-form">
           <div class="gr2" style="margin-bottom:8px;">
             <div class="field"><label>Crop</label>
@@ -1054,10 +1103,10 @@ body.dark .bill-row.total{border-top-color:#E8DDD0;border-bottom-color:#E8DDD0;}
     </div>
   </div>
 
-  <!-- FARM INPUTS -->
-  <div class="box" style="margin-top:12px;">
-    <div class="boxhdr" onclick="tog('crop-inputs-body',this)"><span>🧪</span> Farm Inputs <span class="arr">▼</span></div>
-    <div class="boxbody" id="crop-inputs-body">
+  <!-- INPUTS SECTION -->
+  <div class="acc-section" id="sec-crop-inputs" style="display:none;">
+    <div class="biz-back-btn" onclick="showCropsMenu()">‹ Back to Menu</div>
+    <div class="acc-body" style="padding:16px 14px 80px;">
       <div class="sscroll"><div class="scards" id="inputs-summary">
         <div class="scard"><label>Total Entries</label><div class="sv" id="inp-total">0</div></div>
         <div class="scard r"><label>Total Spent</label><div class="sv" id="inp-spent">₹0</div></div>
@@ -1099,10 +1148,10 @@ body.dark .bill-row.total{border-top-color:#E8DDD0;border-bottom-color:#E8DDD0;}
     </div>
   </div>
 
-  <!-- RAINFALL -->
-  <div class="box" style="margin-top:12px;">
-    <div class="boxhdr" onclick="tog('crop-rainfall-body',this)"><span>🌧️</span> Rainfall Tracker <span class="arr">▼</span></div>
-    <div class="boxbody" id="crop-rainfall-body">
+  <!-- RAINFALL SECTION -->
+  <div class="acc-section" id="sec-crop-rainfall" style="display:none;">
+    <div class="biz-back-btn" onclick="showCropsMenu()">‹ Back to Menu</div>
+    <div class="acc-body" style="padding:16px 14px 80px;">
       <div class="sscroll"><div class="scards" id="rainfall-summary">
         <div class="scard b"><label>This Month</label><div class="sv" id="rf-month">0 mm</div></div>
         <div class="scard"><label>This Year</label><div class="sv" id="rf-year">0 mm</div></div>
@@ -1113,21 +1162,43 @@ body.dark .bill-row.total{border-top-color:#E8DDD0;border-bottom-color:#E8DDD0;}
         <div class="field"><label>Date</label><input type="date" id="rf-date"/></div>
         <div class="field"><label>Rainfall (mm)</label><input type="number" id="rf-mm" placeholder="e.g. 12.5" min="0" step="0.1" inputmode="decimal"/></div>
       </div>
-      <div class="field"><label>Notes</label><textarea id="rf-notes" placeholder="e.g. Heavy rain in evening…"></textarea></div>
+      <div class="field"><label>Notes</label><textarea id="rf-notes" placeholder="e.g. Heavy rain…"></textarea></div>
       <button class="btn bb" onclick="addRainfall()">＋ Add Rainfall</button>
       <button class="btn bgr" onclick="clrRainfallForm()">Clear</button>
-      <div class="recsec" style="margin-top:12px;">
-        <div class="rechdr"><h2>🌧️ Rainfall Records</h2></div>
+      <div class="recsec" style="margin-top:12px;border-radius:0;box-shadow:none;">
+        <div class="rechdr"><h2>🌧️ Records</h2></div>
         <div id="rf-list"></div>
-        <div id="rf-empty" class="empty"><div class="ei">🌧️</div><p>No rainfall records yet.<br>Add your first one above!</p></div>
+        <div id="rf-empty" class="empty"><div class="ei">🌧️</div><p>No rainfall records yet.</p></div>
       </div>
     </div>
   </div>
 
-  <!-- CROP ROTATION -->
-  <div class="box" style="margin-top:12px;">
-    <div class="boxhdr" onclick="tog('crop-rotation-body',this)"><span>🔄</span> Crop Rotation Planner <span class="arr">▼</span></div>
-    <div class="boxbody" id="crop-rotation-body">
+  <!-- CALENDAR SECTION -->
+  <div class="acc-section" id="sec-crop-calendar" style="display:none;">
+    <div class="biz-back-btn" onclick="showCropsMenu()">‹ Back to Menu</div>
+    <div class="acc-body" style="padding:16px 14px 80px;">
+      <div class="calendar-header">
+        <button class="calendar-nav-btn" onclick="calNav(-1)" style="background:var(--cream);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:0.82rem;font-weight:700;color:var(--soil);cursor:pointer;">◀</button>
+        <h2 id="cal-month-label">July 2026</h2>
+        <button class="calendar-nav-btn" onclick="calNav(1)" style="background:var(--cream);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:0.82rem;font-weight:700;color:var(--soil);cursor:pointer;">▶</button>
+      </div>
+      <div class="calendar-grid" id="cal-grid"></div>
+      <div style="padding:0 14px 6px;">
+        <div style="font-size:0.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:6px;">Upcoming Events</div>
+      </div>
+      <div class="calendar-events" id="cal-events"></div>
+      <div class="reminder-toggle">
+        <div class="reminder-switch" id="reminder-switch" onclick="toggleReminders()"></div>
+        <label onclick="toggleReminders()">Enable crop reminders</label>
+      </div>
+      <div class="reminder-list" id="reminder-list"></div>
+    </div>
+  </div>
+
+  <!-- ROTATION SECTION -->
+  <div class="acc-section" id="sec-crop-rotation" style="display:none;">
+    <div class="biz-back-btn" onclick="showCropsMenu()">‹ Back to Menu</div>
+    <div class="acc-body" style="padding:16px 14px 80px;">
       <div id="rotation-content"></div>
     </div>
   </div>
@@ -2162,6 +2233,48 @@ function showBizMenu(){
   document.getElementById('business-menu').classList.remove('hidden');
   // Scroll to top
   try{ document.getElementById('app-body').scrollTop=0; }catch(e){}
+}
+
+// ── CROPS MENU (like business) ────────────────────────────
+const CROP_TABS = ['weather','addcrop','records','market','inputs','rainfall','calendar','rotation'];
+
+function openCropSection(section){
+  // Hide the menu
+  document.getElementById('crops-menu').style.display='none';
+  // Hide summary cards
+  document.getElementById('crops-summary-cards').parentElement.style.display='none';
+  // Hide all sections
+  CROP_TABS.forEach(x=>{
+    const el=document.getElementById('sec-crop-'+x);
+    if(el) el.style.display='none';
+  });
+  // Show selected section
+  const sec=document.getElementById('sec-crop-'+section);
+  if(sec) sec.style.display='block';
+  // Scroll to top
+  try{ document.getElementById('crops-body').scrollTop=0; }catch(e){}
+  // Render data for the section
+  if(section==='records') renderCrops();
+  if(section==='market') renderMarketPrices();
+  if(section==='inputs') renderInputs();
+  if(section==='rainfall') renderRainfall();
+  if(section==='calendar') try{ initCalendar(); }catch(e){}
+  if(section==='rotation') try{ renderRotation(); }catch(e){}
+  if(section==='weather') tryLoadWeather();
+}
+
+function showCropsMenu(){
+  // Hide all sections
+  CROP_TABS.forEach(x=>{
+    const el=document.getElementById('sec-crop-'+x);
+    if(el) el.style.display='none';
+  });
+  // Show the menu
+  document.getElementById('crops-menu').style.display='block';
+  // Show summary cards
+  document.getElementById('crops-summary-cards').parentElement.style.display='block';
+  // Scroll to top
+  try{ document.getElementById('crops-body').scrollTop=0; }catch(e){}
 }
 
 // ── CROPS ──────────────────────────────────────────────

@@ -998,6 +998,124 @@ body.dark .bill-row.total{border-top-color:#E8DDD0;border-bottom-color:#E8DDD0;}
     </div>
   </div>
 
+  <!-- MARKET PRICES -->
+  <div class="box" style="margin-top:12px;">
+    <div class="boxhdr" onclick="tog('crop-market-body',this)"><span>📊</span> Market Prices <span class="arr">▼</span></div>
+    <div class="boxbody" id="crop-market-body">
+      <div class="market-card" style="margin-top:0;border-radius:0;box-shadow:none;">
+        <div class="market-header">
+          <h2>📊 Crop Market Prices</h2>
+          <button class="expbtn" onclick="exportCSV('market')">⬇ CSV</button>
+        </div>
+        <div id="market-list"></div>
+        <div id="market-empty" class="empty" style="padding:20px;"><div class="ei">📊</div><p>No prices tracked yet.<br>Add your first crop price below!</p></div>
+        <div class="market-add-form">
+          <div class="gr2" style="margin-bottom:8px;">
+            <div class="field"><label>Crop</label>
+              <select id="mk-crop">
+                <option value="Rice">🌾 Rice</option>
+                <option value="Cotton">🌿 Cotton</option>
+                <option value="Chilli">🌶️ Chilli</option>
+                <option value="Groundnut">🥜 Groundnut</option>
+                <option value="Maize">🌽 Maize</option>
+                <option value="Sugarcane">🎋 Sugarcane</option>
+                <option value="Turmeric">🟡 Turmeric</option>
+                <option value="Onion">🧅 Onion</option>
+                <option value="Tomato">🍅 Tomato</option>
+                <option value="Other">🌿 Other</option>
+              </select>
+            </div>
+            <div class="field"><label>Custom Name</label><input type="text" id="mk-custom" placeholder="If Other…"/></div>
+          </div>
+          <div class="gr2">
+            <div class="field"><label>Price ₹ / Quintal</label><input type="number" id="mk-price" placeholder="e.g. 2500" min="0" inputmode="numeric"/></div>
+            <div class="field"><label>Market / Location</label><input type="text" id="mk-market" placeholder="e.g. Rythu Bazaar…"/></div>
+          </div>
+          <div class="field"><label>Date</label><input type="date" id="mk-date"/></div>
+          <button class="btn bo" onclick="addMarketPrice()">＋ Add Price</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FARM INPUTS -->
+  <div class="box" style="margin-top:12px;">
+    <div class="boxhdr" onclick="tog('crop-inputs-body',this)"><span>🧪</span> Farm Inputs <span class="arr">▼</span></div>
+    <div class="boxbody" id="crop-inputs-body">
+      <div class="sscroll"><div class="scards" id="inputs-summary">
+        <div class="scard"><label>Total Entries</label><div class="sv" id="inp-total">0</div></div>
+        <div class="scard r"><label>Total Spent</label><div class="sv" id="inp-spent">₹0</div></div>
+        <div class="scard o"><label>Fertilizer</label><div class="sv" id="inp-fert">₹0</div></div>
+        <div class="scard p"><label>Pesticide</label><div class="sv" id="inp-pest">₹0</div></div>
+        <div class="scard g"><label>Seeds</label><div class="sv" id="inp-seed">₹0</div></div>
+      </div></div>
+      <div class="gr2">
+        <div class="field"><label>Date</label><input type="date" id="inp-date"/></div>
+        <div class="field"><label>Crop / Field</label><input type="text" id="inp-crop" placeholder="e.g. Rice field…"/></div>
+      </div>
+      <div class="gr2">
+        <div class="field"><label>Input Type</label>
+          <select id="inp-type">
+            <option value="Fertilizer">🧪 Fertilizer</option>
+            <option value="Pesticide">🧴 Pesticide</option>
+            <option value="Seed">🌱 Seed</option>
+            <option value="Other">📦 Other</option>
+          </select>
+        </div>
+        <div class="field"><label>Brand / Name</label><input type="text" id="inp-brand" placeholder="e.g. Urea, NPK…"/></div>
+      </div>
+      <div class="gr3">
+        <div class="field"><label>Quantity</label><input type="number" id="inp-qty" placeholder="0" min="0" inputmode="decimal"/></div>
+        <div class="field"><label>Unit</label>
+          <select id="inp-unit">
+            <option value="kg">kg</option>
+            <option value="litre">litre</option>
+            <option value="bags">bags</option>
+            <option value="packets">packets</option>
+            <option value="other">other</option>
+          </select>
+        </div>
+        <div class="field"><label>Cost ₹</label><input type="number" id="inp-cost" placeholder="0" min="0" inputmode="numeric"/></div>
+      </div>
+      <div class="field"><label>Notes</label><textarea id="inp-notes" placeholder="Optional details…"></textarea></div>
+      <button class="btn bg" onclick="addInput()">＋ Add Input</button>
+      <button class="btn bgr" onclick="clrInputForm()">Clear</button>
+    </div>
+  </div>
+
+  <!-- RAINFALL -->
+  <div class="box" style="margin-top:12px;">
+    <div class="boxhdr" onclick="tog('crop-rainfall-body',this)"><span>🌧️</span> Rainfall Tracker <span class="arr">▼</span></div>
+    <div class="boxbody" id="crop-rainfall-body">
+      <div class="sscroll"><div class="scards" id="rainfall-summary">
+        <div class="scard b"><label>This Month</label><div class="sv" id="rf-month">0 mm</div></div>
+        <div class="scard"><label>This Year</label><div class="sv" id="rf-year">0 mm</div></div>
+        <div class="scard g"><label>Avg / Day</label><div class="sv" id="rf-avg">0 mm</div></div>
+        <div class="scard o"><label>Total Records</label><div class="sv" id="rf-total">0</div></div>
+      </div></div>
+      <div class="gr2">
+        <div class="field"><label>Date</label><input type="date" id="rf-date"/></div>
+        <div class="field"><label>Rainfall (mm)</label><input type="number" id="rf-mm" placeholder="e.g. 12.5" min="0" step="0.1" inputmode="decimal"/></div>
+      </div>
+      <div class="field"><label>Notes</label><textarea id="rf-notes" placeholder="e.g. Heavy rain in evening…"></textarea></div>
+      <button class="btn bb" onclick="addRainfall()">＋ Add Rainfall</button>
+      <button class="btn bgr" onclick="clrRainfallForm()">Clear</button>
+      <div class="recsec" style="margin-top:12px;">
+        <div class="rechdr"><h2>🌧️ Rainfall Records</h2></div>
+        <div id="rf-list"></div>
+        <div id="rf-empty" class="empty"><div class="ei">🌧️</div><p>No rainfall records yet.<br>Add your first one above!</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CROP ROTATION -->
+  <div class="box" style="margin-top:12px;">
+    <div class="boxhdr" onclick="tog('crop-rotation-body',this)"><span>🔄</span> Crop Rotation Planner <span class="arr">▼</span></div>
+    <div class="boxbody" id="crop-rotation-body">
+      <div id="rotation-content"></div>
+    </div>
+  </div>
+
 </div><!-- crops-body -->
 <div class="tabs">
   <div class="tab" onclick="goHome()" style="color:#9A8A77;"><span class="ti">🏠</span>Home</div>
@@ -1124,23 +1242,10 @@ body.dark .bill-row.total{border-top-color:#E8DDD0;border-bottom-color:#E8DDD0;}
       </div>
       <div class="business-card-arrow">›</div>
     </div>
-    <div class="business-card" onclick="openBizSection('inputs')">
-      <div class="business-card-icon">🧪</div>
-      <div class="business-card-content">
-        <div class="business-card-title">Farm Inputs</div>
-        <div class="business-card-sub">Fertilizer, pesticide & seeds</div>
-      </div>
-      <div class="business-card-arrow">›</div>
     </div>
-    <div class="business-card" onclick="openBizSection('rainfall')">
-      <div class="business-card-icon">🌧️</div>
-      <div class="business-card-content">
-        <div class="business-card-title">Rainfall</div>
-        <div class="business-card-sub">Track daily rainfall data</div>
-      </div>
-      <div class="business-card-arrow">›</div>
-    </div>
-    <div class="business-card" onclick="openBizSection('pdfbills')">
+  </div>
+
+  <!-- DATA BACKUP -->
       <div class="business-card-icon">📄</div>
       <div class="business-card-content">
         <div class="business-card-title">PDF Bills</div>
@@ -1148,13 +1253,6 @@ body.dark .bill-row.total{border-top-color:#E8DDD0;border-bottom-color:#E8DDD0;}
       </div>
       <div class="business-card-arrow">›</div>
     </div>
-    <div class="business-card" onclick="openBizSection('rotation')">
-      <div class="business-card-icon">🔄</div>
-      <div class="business-card-content">
-        <div class="business-card-title">Crop Rotation</div>
-        <div class="business-card-sub">Plan next crops wisely</div>
-      </div>
-      <div class="business-card-arrow">›</div>
     </div>
   </div>
 
@@ -1560,51 +1658,6 @@ body.dark .bill-row.total{border-top-color:#E8DDD0;border-bottom-color:#E8DDD0;}
     </div>
   </div><!-- /sec-customers -->
 
-  <!-- MARKET PRICES -->
-  <div class="acc-section" id="sec-market">
-    <div class="acc-header" onclick="toggleSection('market')">
-      <span class="acc-icon">📊</span>
-      <span class="acc-title" data-key="tab_market">Market Prices</span>
-      <span class="arr">▼</span>
-    </div>
-    <div class="acc-body" id="pg-market">
-    <div class="biz-back-btn" onclick="showBizMenu()">‹ Back to Menu</div>
-      <div class="market-card" style="margin-top:0;border-radius:0;box-shadow:none;">
-        <div class="market-header">
-          <h2>📊 Crop Market Prices</h2>
-          <button class="expbtn" onclick="exportCSV('market')">⬇ CSV</button>
-        </div>
-        <div id="market-list"></div>
-        <div id="market-empty" class="empty" style="padding:20px;"><div class="ei">📊</div><p>No prices tracked yet.<br>Add your first crop price below!</p></div>
-        <div class="market-add-form">
-          <div class="gr2" style="margin-bottom:8px;">
-            <div class="field"><label>Crop</label>
-              <select id="mk-crop">
-                <option value="Rice">🌾 Rice</option>
-                <option value="Cotton">🌿 Cotton</option>
-                <option value="Chilli">🌶️ Chilli</option>
-                <option value="Groundnut">🥜 Groundnut</option>
-                <option value="Maize">🌽 Maize</option>
-                <option value="Sugarcane">🎋 Sugarcane</option>
-                <option value="Turmeric">🟡 Turmeric</option>
-                <option value="Onion">🧅 Onion</option>
-                <option value="Tomato">🍅 Tomato</option>
-                <option value="Other">🌿 Other</option>
-              </select>
-            </div>
-            <div class="field"><label>Custom Name</label><input type="text" id="mk-custom" placeholder="If Other…"/></div>
-          </div>
-          <div class="gr2">
-            <div class="field"><label>Price ₹ / Quintal</label><input type="number" id="mk-price" placeholder="e.g. 2500" min="0" inputmode="numeric"/></div>
-            <div class="field"><label>Market / Location</label><input type="text" id="mk-market" placeholder="e.g. Rythu Bazaar…"/></div>
-          </div>
-          <div class="field"><label>Date</label><input type="date" id="mk-date"/></div>
-          <button class="btn bo" onclick="addMarketPrice()">＋ Add Price</button>
-        </div>
-      </div>
-    </div>
-  </div><!-- /sec-market -->
-
   <!-- DATA BACKUP -->
   <div class="acc-section" id="sec-backup">
     <div class="acc-header" onclick="toggleSection('backup')">
@@ -1759,160 +1812,6 @@ body.dark .bill-row.total{border-top-color:#E8DDD0;border-bottom-color:#E8DDD0;}
     <div id="charts-content"></div>
   </div>
   </div><!-- /sec-charts -->
-
-  <!-- FARM INPUTS TRACKER -->
-  <div class="acc-section" id="sec-inputs">
-    <div class="acc-header" onclick="toggleSection('inputs')">
-      <span class="acc-icon">🧪</span>
-      <span class="acc-title" data-key="tab_inputs">Farm Inputs</span>
-      <span class="acc-arrow">▼</span>
-    </div>
-    <div class="acc-body" id="pg-inputs">
-    <div class="biz-back-btn" onclick="showBizMenu()">‹ Back to Menu</div>
-    <div class="sscroll"><div class="scards" id="inputs-summary">
-      <div class="scard"><label>Total Entries</label><div class="sv" id="inp-total">0</div></div>
-      <div class="scard r"><label>Total Spent</label><div class="sv" id="inp-spent">₹0</div></div>
-      <div class="scard o"><label>Fertilizer</label><div class="sv" id="inp-fert">₹0</div></div>
-      <div class="scard p"><label>Pesticide</label><div class="sv" id="inp-pest">₹0</div></div>
-      <div class="scard g"><label>Seeds</label><div class="sv" id="inp-seed">₹0</div></div>
-    </div></div>
-    <div class="box">
-      <div class="boxhdr" onclick="tog('inputs-body',this)"><span>🧪</span> Add Farm Input <span class="arr">▼</span></div>
-      <div class="boxbody" id="inputs-body">
-        <div class="gr2">
-          <div class="field"><label>Date</label><input type="date" id="inp-date"/></div>
-          <div class="field"><label>Crop / Field</label><input type="text" id="inp-crop" placeholder="e.g. Rice field…"/></div>
-        </div>
-        <div class="gr2">
-          <div class="field"><label>Input Type</label>
-            <select id="inp-type">
-              <option value="Fertilizer">🧪 Fertilizer</option>
-              <option value="Pesticide">🧴 Pesticide</option>
-              <option value="Seed">🌱 Seed</option>
-              <option value="Other">📦 Other</option>
-            </select>
-          </div>
-          <div class="field"><label>Brand / Name</label><input type="text" id="inp-brand" placeholder="e.g. Urea, NPK…"/></div>
-        </div>
-        <div class="gr3">
-          <div class="field"><label>Quantity</label><input type="number" id="inp-qty" placeholder="0" min="0" inputmode="decimal"/></div>
-          <div class="field"><label>Unit</label>
-            <select id="inp-unit">
-              <option value="kg">kg</option>
-              <option value="litre">litre</option>
-              <option value="bags">bags</option>
-              <option value="packets">packets</option>
-              <option value="other">other</option>
-            </select>
-          </div>
-          <div class="field"><label>Cost ₹</label><input type="number" id="inp-cost" placeholder="0" min="0" inputmode="numeric"/></div>
-        </div>
-        <div class="field"><label>Notes</label><textarea id="inp-notes" placeholder="Optional details…"></textarea></div>
-        <button class="btn bg" onclick="addInput()">＋ Add Input</button>
-        <button class="btn bgr" onclick="clrInputForm()">Clear</button>
-      </div>
-    </div>
-    <div class="filbox">
-      <h3>🔍 Filter</h3>
-      <div class="filrow">
-        <select id="inp-filter-type" onchange="renderInputs()">
-          <option value="all">All Types</option>
-          <option value="Fertilizer">Fertilizer</option>
-          <option value="Pesticide">Pesticide</option>
-          <option value="Seed">Seed</option>
-          <option value="Other">Other</option>
-        </select>
-        <input type="text" id="inp-filter-search" placeholder="Search…" oninput="renderInputs()"/>
-        <button class="filclear" onclick="document.getElementById('inp-filter-type').value='all';document.getElementById('inp-filter-search').value='';renderInputs();">✕</button>
-      </div>
-    </div>
-    <div class="recsec">
-      <div class="rechdr"><h2>🧪 Input Records</h2></div>
-      <div id="inp-list"></div>
-      <div id="inp-empty" class="empty"><div class="ei">🧪</div><p>No farm inputs yet.<br>Add your first one above!</p></div>
-    </div>
-  </div>
-  </div><!-- /sec-inputs -->
-
-  <!-- RAINFALL TRACKER -->
-  <div class="acc-section" id="sec-rainfall">
-    <div class="acc-header" onclick="toggleSection('rainfall')">
-      <span class="acc-icon">🌧️</span>
-      <span class="acc-title" data-key="tab_rainfall">Rainfall</span>
-      <span class="acc-arrow">▼</span>
-    </div>
-    <div class="acc-body" id="pg-rainfall">
-    <div class="biz-back-btn" onclick="showBizMenu()">‹ Back to Menu</div>
-    <div class="sscroll"><div class="scards" id="rainfall-summary">
-      <div class="scard b"><label>This Month</label><div class="sv" id="rf-month">0 mm</div></div>
-      <div class="scard"><label>This Year</label><div class="sv" id="rf-year">0 mm</div></div>
-      <div class="scard g"><label>Avg / Day</label><div class="sv" id="rf-avg">0 mm</div></div>
-      <div class="scard o"><label>Total Records</label><div class="sv" id="rf-total">0</div></div>
-    </div></div>
-    <div class="box">
-      <div class="boxhdr" onclick="tog('rainfall-body',this)"><span>🌧️</span> Add Rainfall <span class="arr">▼</span></div>
-      <div class="boxbody" id="rainfall-body">
-        <div class="gr2">
-          <div class="field"><label>Date</label><input type="date" id="rf-date"/></div>
-          <div class="field"><label>Rainfall (mm)</label><input type="number" id="rf-mm" placeholder="e.g. 12.5" min="0" step="0.1" inputmode="decimal"/></div>
-        </div>
-        <div class="field"><label>Notes</label><textarea id="rf-notes" placeholder="e.g. Heavy rain in evening…"></textarea></div>
-        <button class="btn bb" onclick="addRainfall()">＋ Add Rainfall</button>
-        <button class="btn bgr" onclick="clrRainfallForm()">Clear</button>
-      </div>
-    </div>
-    <div class="box" style="margin-top:12px;">
-      <div class="boxhdr open" onclick="tog('rf-chart-body',this)"><span>📊</span> Last 30 Days Chart <span class="arr">▲</span></div>
-      <div class="boxbody open" id="rf-chart-body">
-        <div id="rf-chart"></div>
-      </div>
-    </div>
-    <div class="recsec">
-      <div class="rechdr"><h2>🌧️ Rainfall Records</h2></div>
-      <div id="rf-list"></div>
-      <div id="rf-empty" class="empty"><div class="ei">🌧️</div><p>No rainfall records yet.<br>Add your first one above!</p></div>
-    </div>
-  </div>
-  </div><!-- /sec-rainfall -->
-
-  <!-- PDF BILLS -->
-  <div class="acc-section" id="sec-pdfbills">
-    <div class="acc-header" onclick="toggleSection('pdfbills')">
-      <span class="acc-icon">📄</span>
-      <span class="acc-title" data-key="tab_pdfbills">PDF Bills</span>
-      <span class="acc-arrow">▼</span>
-    </div>
-    <div class="acc-body" id="pg-pdfbills">
-    <div class="biz-back-btn" onclick="showBizMenu()">‹ Back to Menu</div>
-    <div class="box">
-      <div class="boxhdr open"><span>📄</span> Generate Printable Bill</div>
-      <div class="boxbody open">
-        <div style="font-size:0.82rem;color:var(--muted);margin-bottom:12px;">Select a farm work entry to generate a formatted bill for printing.</div>
-        <div class="field"><label>Select Work Entry</label><select id="pdf-farm-select" onchange="previewPdfBill()"><option value="">-- Select Entry --</option></select></div>
-        <div id="pdf-preview" style="display:none;">
-          <div style="background:var(--cream);border-radius:10px;padding:14px;margin-bottom:12px;">
-            <div style="font-size:0.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:8px;">Bill Preview</div>
-            <div id="pdf-preview-content"></div>
-          </div>
-          <button class="btn bg" onclick="printPdfBill()">🖨️ Print Bill</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  </div><!-- /sec-pdfbills -->
-
-  <!-- CROP ROTATION PLANNER -->
-  <div class="acc-section" id="sec-rotation">
-    <div class="acc-header" onclick="toggleSection('rotation')">
-      <span class="acc-icon">🔄</span>
-      <span class="acc-title" data-key="tab_rotation">Crop Rotation</span>
-      <span class="acc-arrow">▼</span>
-    </div>
-    <div class="acc-body" id="pg-rotation">
-    <div class="biz-back-btn" onclick="showBizMenu()">‹ Back to Menu</div>
-    <div id="rotation-content"></div>
-  </div>
-  </div><!-- /sec-rotation -->
 
 </div><!-- app-body -->
 

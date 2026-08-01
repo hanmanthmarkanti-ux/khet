@@ -896,6 +896,10 @@ body.dark .bill-row.total{border-top-color:#E8DDD0;border-bottom-color:#E8DDD0;}
         <div style="font-size:0.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:6px;">7-Day Forecast</div>
         <div class="weather-forecast" id="w-forecast"></div>
         <button class="weather-refresh" onclick="loadWeather()">🔄 Refresh</button>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:10px;padding:8px 10px;background:var(--cream);border-radius:8px;">
+          <input type="checkbox" id="rain-alert-toggle" ${rainAlertEnabled?'checked':''} onchange="toggleRainAlert()" style="width:18px;height:18px;cursor:pointer;"/>
+          <label for="rain-alert-toggle" style="font-size:0.78rem;font-weight:600;color:var(--soil);cursor:pointer;">🌧️ Alert me when rain starts</label>
+        </div>
       </div>
       <div class="weather-error" id="w-error" style="display:none;"></div>
     </div>
@@ -3631,6 +3635,78 @@ function renderWeather(){
     </div>`;
   }).join('');
 }
+
+// ── RAIN ALERTS ──────────────────────────────────────
+let rainAlertEnabled = localStorage.getItem('rainAlertEnabled') !== 'false';
+let lastRainAlert = 0;
+const RAIN_CHECK_INTERVAL = 15 * 60 * 1000; // 15 minutes
+
+function checkRainAlert(){
+  if(!rainAlertEnabled || !weatherData) return;
+  const c = weatherData.current;
+  const now = Date.now();
+  
+  // Check if it's raining (precipitation > 0 or weather code indicates rain)
+  const isRaining = c.precipitation > 0 || (c.weather_code >= 51 && c.weather_code <= 99);
+  
+  if(isRaining && (now - lastRainAlert > RAIN_CHECK_INTERVAL)){
+    lastRainAlert = now;
+    const rainDesc = weatherDesc(c.weather_code);
+    const precip = c.precipitation;
+    
+    // Show in-app rain alert
+    showRainAlert(rainDesc, precip);
+    
+    // Show browser notification if permission granted
+    if(Notification.permission === 'granted'){
+      new Notification('🌧️ Rain Alert - Khet Diary', {
+        body: `${rainDesc} detected! ${precip > 0 ? precip + 'mm rainfall.' : 'Take precautions for your crops.'}`,
+        icon: '🌾',
+        tag: 'rain-alert'
+      });
+    }
+  }
+}
+
+function showRainAlert(desc, precip){
+  // Create rain alert banner
+  const existing = document.getElementById('rain-alert-banner');
+  if(existing) existing.remove();
+  
+  const banner = document.createElement('div');
+  banner.id = 'rain-alert-banner';
+  banner.style.cssText = 'position:fixed;top:0;left:0;right:0;background:linear-gradient(135deg,#1565C0,#42A5F5);color:#fff;padding:14px 16px;z-index:9999;box-shadow:0 4px 20px rgba(21,101,192,0.4);animation:slideDown 0.3s ease-out;';
+  banner.innerHTML = `
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div style="font-size:1.8rem;">🌧️</div>
+      <div style="flex:1;">
+        <div style="font-weight:800;font-size:0.95rem;">Rain Alert!</div>
+        <div style="font-size:0.82rem;opacity:0.9;">${desc}${precip > 0 ? ' • ' + precip + 'mm rainfall' : ''} — Protect your crops!</div>
+      </div>
+      <button onclick="this.parentElement.parentElement.remove()" style="background:rgba(255,255,255,0.2);border:none;color:#fff;font-size:1.1rem;padding:6px 10px;border-radius:8px;cursor:pointer;">✕</button>
+    </div>
+  `;
+  document.body.appendChild(banner);
+  
+  // Auto remove after 10 seconds
+  setTimeout(()=>{ if(banner.parentElement) banner.remove(); }, 10000);
+}
+
+function toggleRainAlert(){
+  rainAlertEnabled = !rainAlertEnabled;
+  localStorage.setItem('rainAlertEnabled', rainAlertEnabled);
+  const btn = document.getElementById('rain-alert-toggle');
+  if(btn) btn.checked = rainAlertEnabled;
+  toast(rainAlertEnabled ? '🌧️ Rain alerts enabled' : '🔕 Rain alerts disabled');
+  
+  // Request notification permission when enabling
+  if(rainAlertEnabled && Notification.permission === 'default'){
+    Notification.requestPermission();
+  }
+}
+
+// Check rain every 15 minutes
+setInterval(checkRainAlert, RAIN_CHECK_INTERVAL);
 
 // Auto-load weather when crops screen is opened
 function tryLoadWeather(){

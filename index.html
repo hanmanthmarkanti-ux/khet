@@ -710,6 +710,41 @@ body.dark .bill-row.total{border-top-color:#E8DDD0;border-bottom-color:#E8DDD0;}
 .customer-entries{padding:0 14px 14px;}
 .customer-entry{padding:8px 10px;background:var(--cream);border-radius:8px;margin-bottom:6px;}
 .customer-entry:last-child{margin-bottom:0;}
+
+/* AI CHATBOT */
+.ai-fab{position:fixed;bottom:90px;right:16px;width:56px;height:56px;border-radius:50%;background:var(--leaf);color:#fff;border:none;font-size:1.6rem;cursor:pointer;box-shadow:0 4px 20px rgba(58,107,48,0.4);z-index:300;display:flex;align-items:center;justify-content:center;transition:transform 0.2s;}
+.ai-fab:active{transform:scale(0.9);}
+.ai-panel{display:none;position:fixed;bottom:156px;right:14px;width:340px;max-width:calc(100vw - 28px);height:480px;max-height:60vh;background:var(--white);border-radius:18px;box-shadow:0 8px 40px rgba(0,0,0,0.25);z-index:301;flex-direction:column;overflow:hidden;}
+.ai-panel.open{display:flex;}
+.ai-header{background:var(--leaf);color:#fff;padding:13px 14px;display:flex;align-items:center;gap:10px;}
+.ai-header-avatar{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:1.2rem;}
+.ai-header-info{flex:1;}
+.ai-header-name{font-size:0.95rem;font-weight:700;}
+.ai-header-status{font-size:0.68rem;opacity:0.8;}
+.ai-close{background:none;border:none;color:#fff;font-size:1.2rem;cursor:pointer;padding:4px;}
+.ai-messages{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;}
+.ai-msg{max-width:85%;padding:10px 13px;border-radius:14px;font-size:0.85rem;line-height:1.5;word-wrap:break-word;}
+.ai-msg.bot{background:#E5F2E5;color:var(--soil);align-self:flex-start;border-bottom-left-radius:4px;}
+.ai-msg.user{background:var(--soil2);color:var(--cream);align-self:flex-end;border-bottom-right-radius:4px;}
+.ai-msg .bot-name{font-size:0.65rem;font-weight:700;color:var(--leaf);margin-bottom:3px;}
+.ai-typing{display:none;align-self:flex-start;padding:10px 13px;background:#E5F2E5;border-radius:14px;border-bottom-left-radius:4px;}
+.ai-typing span{display:inline-block;width:7px;height:7px;background:var(--leaf);border-radius:50%;margin:0 2px;animation:aiBounce 1.2s infinite;}
+.ai-typing span:nth-child(2){animation-delay:0.2s;}
+.ai-typing span:nth-child(3){animation-delay:0.4s;}
+@keyframes aiBounce{0%,80%,100%{transform:translateY(0);}40%{transform:translateY(-6px);}}
+.ai-input-area{display:flex;gap:6px;padding:10px;border-top:1px solid var(--border);background:var(--cream);}
+.ai-input{flex:1;border:1.5px solid var(--border);border-radius:20px;padding:9px 14px;font-size:0.88rem;font-family:'Inter',sans-serif;color:var(--soil);background:var(--white);outline:none;}
+.ai-input:focus{border-color:var(--leaf);}
+.ai-send{width:38px;height:38px;border-radius:50%;background:var(--leaf);color:#fff;border:none;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.ai-send:active{opacity:0.8;}
+.ai-voice{width:38px;height:38px;border-radius:50%;background:var(--blue);color:#fff;border:none;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;position:relative;}
+.ai-voice:active{opacity:0.8;}
+.ai-voice.listening{background:var(--red);animation:voicePulse 1s infinite;}
+@keyframes voicePulse{0%,100%{box-shadow:0 0 0 0 rgba(176,48,32,0.4);}50%{box-shadow:0 0 0 10px rgba(176,48,32,0);}}
+.ai-voice-lang{position:absolute;top:-22px;left:50%;transform:translateX(-50%);background:var(--soil);color:var(--cream);font-size:0.55rem;font-weight:700;padding:2px 6px;border-radius:6px;white-space:nowrap;pointer-events:none;}
+.ai-quick{display:flex;flex-wrap:wrap;gap:5px;padding:0 12px 8px;}
+.ai-quick-btn{padding:5px 10px;border-radius:14px;font-size:0.7rem;font-weight:600;border:1px solid var(--border);background:var(--white);color:var(--soil);cursor:pointer;}
+.ai-quick-btn:active{background:var(--cream);}
 </style>
 </head>
 <body>
@@ -4527,6 +4562,271 @@ openApp = function(name){
   try{ renderRotation(); }catch(e){}
   try{ renderCharts(); }catch(e){}
 };
+
+// ═══════════════════════════════════════════════════════
+// AI FARMING ASSISTANT - Rule-based smart chatbot
+// ═══════════════════════════════════════════════════════
+const AI_NAME = '🌾 Khet AI';
+let aiOpen = false;
+
+function toggleAI(){
+  aiOpen = !aiOpen;
+  document.getElementById('ai-panel').classList.toggle('open', aiOpen);
+  if(aiOpen){
+    const m = document.getElementById('ai-messages');
+    if(m.children.length === 0){
+      addBotMsg("Namaste! 🙏 I'm Khet AI — your farming assistant.\n\nAsk me about:\n• Crop advice & tips\n• Fertilizer & pesticide info\n• Expense tracking help\n• Weather & market tips\n• Profit calculation\n• मेरे पास Telugu में भी जवाब है!");
+    }
+  }
+}
+
+function sendAI(){
+  const inp = document.getElementById('ai-input');
+  const txt = inp.value.trim();
+  if(!txt) return;
+  addUserMsg(txt);
+  inp.value = '';
+  showTyping();
+  setTimeout(()=>{
+    hideTyping();
+    addBotMsg(getAIReply(txt));
+  }, 600 + Math.random()*800);
+}
+
+function addBotMsg(t){
+  const m = document.getElementById('ai-messages');
+  const d = document.createElement('div');
+  d.className = 'ai-msg bot';
+  d.innerHTML = '<div class="bot-name">'+AI_NAME+'</div>'+t.replace(/\n/g,'<br>');
+  m.appendChild(d);
+  m.scrollTop = m.scrollHeight;
+}
+function addUserMsg(t){
+  const m = document.getElementById('ai-messages');
+  const d = document.createElement('div');
+  d.className = 'ai-msg user';
+  d.textContent = t;
+  m.appendChild(d);
+  m.scrollTop = m.scrollHeight;
+}
+function showTyping(){document.getElementById('ai-typing').style.display='flex';document.getElementById('ai-messages').appendChild(document.getElementById('ai-typing'));document.getElementById('ai-messages').scrollTop=9999;}
+function hideTyping(){document.getElementById('ai-typing').style.display='none';}
+
+function quickAI(q){
+  document.getElementById('ai-input').value = q;
+  sendAI();
+}
+
+// ── VOICE RECOGNITION ──────────────────────────────
+let voiceListening = false;
+let recognition = null;
+let voiceLang = 'en-IN';
+
+function toggleVoice(){
+  if(!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)){
+    addBotMsg("🎤 Voice not supported in this browser.\n\nTry Chrome or Edge on mobile/PC for voice input.");
+    return;
+  }
+  if(voiceListening){
+    stopVoice();
+    return;
+  }
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SpeechRecognition();
+  recognition.lang = voiceLang;
+  recognition.interimResults = true;
+  recognition.maxAlternatives = 1;
+
+  const btn = document.getElementById('ai-voice-btn');
+  const langBtn = document.getElementById('ai-voice-lang');
+
+  recognition.onstart = function(){
+    voiceListening = true;
+    btn.classList.add('listening');
+    btn.innerHTML = '⏹️<span class="ai-voice-lang" id="ai-voice-lang">'+langBtn.textContent+'</span>';
+    document.getElementById('ai-input').placeholder = 'Listening... speak now 🎤';
+  };
+
+  recognition.onresult = function(event){
+    let final = '';
+    let interim = '';
+    for(let i = event.resultIndex; i < event.results.length; i++){
+      if(event.results[i].isFinal) final += event.results[i][0].transcript;
+      else interim += event.results[i][0].transcript;
+    }
+    document.getElementById('ai-input').value = final || interim;
+  };
+
+  recognition.onend = function(){
+    voiceListening = false;
+    btn.classList.remove('listening');
+    btn.innerHTML = '🎤<span class="ai-voice-lang" id="ai-voice-lang">'+langBtn.textContent+'</span>';
+    document.getElementById('ai-input').placeholder = 'Ask about farming...';
+    const txt = document.getElementById('ai-input').value.trim();
+    if(txt) sendAI();
+  };
+
+  recognition.onerror = function(e){
+    voiceListening = false;
+    btn.classList.remove('listening');
+    btn.innerHTML = '🎤<span class="ai-voice-lang" id="ai-voice-lang">'+langBtn.textContent+'</span>';
+    document.getElementById('ai-input').placeholder = 'Ask about farming...';
+    if(e.error === 'not-allowed'){
+      addBotMsg("🎤 Microphone access denied.\n\nPlease allow mic permission in your browser settings and try again.");
+    }
+  };
+
+  recognition.start();
+}
+
+function stopVoice(){
+  if(recognition) recognition.stop();
+}
+
+function cycleVoiceLang(){
+  const langs = [
+    {code:'en-IN', label:'EN'},
+    {code:'te-IN', label:'TE'},
+    {code:'hi-IN', label:'HI'}
+  ];
+  let idx = langs.findIndex(l => l.code === voiceLang);
+  idx = (idx + 1) % langs.length;
+  voiceLang = langs[idx].code;
+  document.getElementById('ai-voice-lang').textContent = langs[idx].label;
+  addBotMsg("🎤 Voice language: <b>" + langs[idx].label + "</b>\n\nTap 🎤 again and speak!");
+}
+
+// Tap language label to cycle languages
+document.addEventListener('click', function(e){
+  if(e.target.id === 'ai-voice-lang') cycleVoiceLang();
+});
+
+function getAIReply(input){
+  const t = input.toLowerCase().trim();
+  // --- GREETINGS ---
+  if(/^(hi|hello|hey|namaste|namaskar|నమస్తే|नमस्ते|sup|yo|howdy)/i.test(t))
+    return "Namaste! 🙏 How can I help with your farming today?";
+  if(/thank|thanks|ధన్యవాదాలు|शुक्रिया/i.test(t))
+    return "You're welcome! 😊 Happy farming!";
+  if(/bye|goodbye|good night|లై/i.test(t))
+    return "Goodbye! 🌾 May your crops flourish!";
+
+  // --- RICE ---
+  if(/rice|వరి|dhaan|धान|paddy/i.test(t))
+    return "🌾 <b>Rice (వరి)</b>\n\n• Best planting: June-July (Kharif)\n• Water needed: 5-6 inches standing water\n• Fertilizer: Urea 130kg + SSP 60kg/acre\n• Harvest: 120-150 days after planting\n• Common pests: Stem borer, leaf folder\n• Tip: Use Tricyclazole for blast disease";
+  // --- COTTON ---
+  if(/cotton|పత్తి|कपास|kapas/i.test(t))
+    return "🌿 <b>Cotton (పత్తి)</b>\n\n• Planting: May-June\n• Spacing: 90cm × 60cm\n• Fertilizer: N 120kg + P 60kg + K 60kg/ha\n• Key pest: Bollworm — use Bt cotton or neem spray\n• Harvest: 150-180 days\n• Tip: Remove square buds early for better yield";
+  // --- CHILLI ---
+  if(/chilli|chili|mirchi|మిర్चి|मिर्च|capsicum/i.test(t))
+    return "🌶️ <b>Chilli (మిర్చి)</b>\n\n• Planting: June-July (transplant in Aug)\n• Spacing: 60cm × 30cm\n• Fertilizer: N 100kg + P 50kg + K 50kg/ha\n• Common disease: Die-back — spray Copper oxychloride\n• Yield: 1.5-2 tonnes/acre\n• Tip: Use mulching to retain moisture";
+  // --- GROUNDNUT ---
+  if(/groundnut|peanut|మిఠాయి|వేరుశనగ|मूंगफली|moongphali/i.test(t))
+    return "🥜 <b>Groundnut (వేరుశనగ)</b>\n\n• Planting: June-July\n• Spacing: 30cm × 10cm\n• Seed rate: 80-100 kg/ha\n• Fertilizer: P 40kg + K 40kg/ha (no nitrogen needed)\n• Harvest: 90-120 days\n• Tip: Uproot when 70% pods turn brown";
+  // --- MAIZE ---
+  if(/maize|corn|మొక్కజొన్న|भुट्टा|makka/i.test(t))
+    return "🌽 <b>Maize (మొక్కజొన్న)</b>\n\n• Planting: June-July (Kharif) or Jan (Rabi)\n• Spacing: 60cm × 20cm\n• Fertilizer: N 120kg + P 60kg + K 60kg/ha\n• Key pest: Stem borer — use Chlorantraniliprole\n• Yield: 25-30 quintals/acre\n• Tip: Earthing up at 30 days helps root strength";
+  // --- SUGARCANE ---
+  if(/sugarcane|చెరకు|गन्ना|ganna/i.test(t))
+    return "🎋 <b>Sugarcane (చెరకు)</b>\n\n• Planting: Jan-Feb or Oct-Nov\n• Spacing: 90cm × 60cm\n• Fertilizer: N 250kg + P 60kg + K 120kg/ha\n• Water: 2000-2500mm total\n• Harvest: 12-18 months\n• Tip: Apply earthing up twice for better tillering";
+  // --- TURMERIC ---
+  if(/turmeric|పసుపు|हल्दी|haldi/i.test(t))
+    return "🟡 <b>Turmeric (పసుపు)</b>\n\n• Planting: June-July\n• Spacing: 60cm × 30cm\n• Seed: 2500 kg rhizome/ha\n• Fertilizer: N 60kg + P 30kg + K 90kg/ha\n• Harvest: 8-10 months (when leaves turn yellow)\n• Yield: 20-25 tonnes/ha\n• Tip: Boiling & drying increases color & price";
+  // --- ONION ---
+  if(/onion|ఉల్లి|प्याज|pyaz/i.test(t))
+    return "🧅 <b>Onion (ఉల్లిపాయ)</b>\n\n• Planting: Oct-Nov (Rabi)\n• Transplant: Dec-Jan\n• Spacing: 15cm × 10cm\n• Fertilizer: N 100kg + P 50kg + K 50kg/ha\n• Harvest: When 50% tops fall over\n• Tip: Stop watering 10 days before harvest for longer storage";
+  // --- TOMATO ---
+  if(/tomato|టమాట|टमाटर|tamatar/i.test(t))
+    return "🍅 <b>Tomato (టమాట)</b>\n\n• Planting: Year-round (best June-July, Jan-Feb)\n• Spacing: 60cm × 45cm\n• Fertilizer: N 100kg + P 60kg + K 60kg/ha\n• Common disease: Early blight — spray Mancozeb\n• Yield: 20-30 tonnes/ha\n• Tip: Staking plants improves airflow & reduces disease";
+
+  // --- FERTILIZER ---
+  if(/fertilizer|ఎరువు|खाद|khaad|urea|dap|ssp|npk/i.test(t))
+    return "🧪 <b>Fertilizer Guide</b>\n\n• <b>Urea</b> (46% N): ₹300/subsidy bag — for leafy growth\n• <b>DAP</b> (18-46-0): ₹1350/bag — for root & flower\n• <b>SSP</b> (0-16-0-11): ₹400/bag — for phosphorus\n• <b>NPK</b> (10-26-26): ₹900/bag — balanced nutrition\n• <b>Neem cake</b>: ₹15/kg — organic option\n\n⏰ Apply N in 3 splits — basal, 30 days, 60 days";
+  // --- PESTICIDE ---
+  if(/pest|pesticide|insect|keet|కీటక|कीट|bug|worm|bollworm|aphid/i.test(t))
+    return "🐛 <b>Pest Control Tips</b>\n\n• <b>Neem oil</b> (5ml/L): Safe, organic — spray weekly\n• <b>Chlorantraniliprole</b>: Best for bollworm\n• <b>Imidacloprid</b>: For sucking pests (aphids, jassids)\n• <b>Profenophos</b>: For whitefly & bollworm\n\n🟢 Always spray in evening\n🟢 Mix sticker (sticker glue) for better results\n🟢 Rotate chemicals to prevent resistance";
+  // --- WATER / IRRIGATION ---
+  if(/water|irrigation|నీరు|पानी|paani|drip|sprinkler/i.test(t))
+    return "💧 <b>Water Management</b>\n\n• <b>Drip irrigation</b>: Saves 40-60% water\n• <b>Sprinkler</b>: Good for sandy soil\n• <b>Flood</b>: Best for paddy, wastes water\n\n⏰ Water early morning or evening\n🌱 Mulching saves 25% water\n📊 Most crops need 4-6 acre-inches/season";
+  // --- WEATHER ---
+  if(/weather|మబ్బు|मौसम|mausam|rain|వర్షం|बारिश|barish|storm|cyclone/i.test(t))
+    return "🌤️ <b>Weather Tips for Farmers</b>\n\n• Check IMD app for daily forecast\n• Heavy rain coming? → Drain field, spray after rain\n• Drought? → Mulch heavily, reduce irrigation frequency\n• Frost expected? → Irrigate evening before (water retains heat)\n\n📱 Download: <a href='https://mausam.imd.gov.in' target='_blank' style='color:var(--blue)'>mausam.imd.gov.in</a>";
+  // --- PROFIT / EXPENSE ---
+  if(/profit|లాభం|फायदा|fayda|loss|నష్టం|नुकसान|nukasan|income|money|ఖర్చు|kharchu|expense/i.test(t))
+    return "💰 <b>Profit Tips</b>\n\nUse Khet Diary to track every expense!\n\n📊 Good profit crops:\n• Chilli: ₹1.5-3 lakh/acre\n• Turmeric: ₹2-4 lakh/acre\n• Cotton: ₹40-80K/acre\n• Rice: ₹20-40K/acre\n\n💡 Tip: Track seed, fertilizer, labour, diesel separately in the app — then check your monthly report!";
+  // --- LOAN / DEBT ---
+  if(/loan|రుణ|कर्ज|karz|debt|interest|వడ్డీ|ब्याज|byaaj|emi/i.test(t))
+    return "🏦 <b>Loan & Interest Info</b>\n\n• <b>KCC</b> (Kisan Credit Card): 4% interest (with subsidy)\n• <b>Regular loan</b>: 9-12% interest\n• Use the <b>Interest Calculator</b> in the app (P×R×T÷100)\n\n💡 Tip: Always pay KCC loan on time to get interest subvention!";
+  // --- LABOUR / WORKER ---
+  if(/labour|labor|worker|పని|నౌకరి|मजदूर|mazdoor|wage|జీతం|मजदूरी/i.test(t))
+    return "👷 <b>Labour & Worker Tips</b>\n\n• MGNREGA: 100 days guaranteed work @ ₹250-350/day\n• Farm labour rate: ₹400-700/day (varies by region)\n• Use the <b>Workers</b> section in app to track daily wages\n\n💡 Tip: Record worker names & daily payments — never lose track!";
+  // --- DIESEL ---
+  if(/diesel|డీజిల|डीजल|fuel|ఇంధన|petrol|pump/i.test(t))
+    return "⛽ <b>Diesel Tips</b>\n\n• Current rate: ₹90-105/litre (varies by state)\n• Track every fill in the <b>Diesel</b> section of app\n• Average usage: Tractor 8-12L/hr, Harvester 20-30L/hr\n\n💡 Tip: Compare avg ₹/litre across pumps — some bunk prices vary!";
+  // --- HARVEST / SELL ---
+  if(/harvest|కోత|फसल|fasal|sell|sell price|market|మార్కెట్|mandi|बाजार|bazaar/i.test(t))
+    return "🏪 <b>Harvest & Selling Tips</b>\n\n• Sell at <b>APMC mandi</b> for best price\n• Check daily prices: <a href='https://agmarknet.gov.in' target='_blank' style='color:var(--blue)'>agmarknet.gov.in</b>\n• Don't sell immediately after harvest — wait 1-2 weeks if not urgent\n• Store in gunny bags in dry place\n\n💡 Record selling price in app to calculate actual profit!";
+  // --- ORGANIC ---
+  if(/organic|సేంద్రియ|जैविक|jaivik|natural|eco/i.test(t))
+    return "🌿 <b>Organic Farming Tips</b>\n\n• <b>Jeevamrutham</b>: Cow dung 10kg + urine 10L + jaggery 2kg + gram flour 2kg → Ferment 48hrs\n• <b>Neem cake</b>: Best organic fertilizer\n• <b>Panchagavya</b>: Growth promoter\n• <b>Beejamrutham</b>: Seed treatment\n\n🔄 Takes 2-3 years to fully transition — start gradually!";
+  // --- CROP ROTATION ---
+  if(/rotation|మార్పు|fallow|ఖాళీ|cropping/i.test(t))
+    return "🔄 <b>Crop Rotation Guide</b>\n\nBest rotations:\n• Paddy → Groundnut (fixes nitrogen)\n• Cotton → Bengalgram (restores soil)\n• Chilli → Rice → Cotton\n• Sugarcane (3yr) → Pulse → Vegetable\n\n❌ Don't: Cotton → Cotton (depletes soil, more pests)";
+  // --- SOIL ---
+  if(/soil|మట్టి|मिट्टी|mitti|land|field|భూమి|bhoomi/i.test(t))
+    return "🌍 <b>Soil Health Tips</b>\n\n• Test soil every year — cost ₹200-400\n• Get <b>Soil Health Card</b> free from govt\n• Ideal pH: 6.5-7.5 for most crops\n• Add lime if acidic, gypsum if alkaline\n• Organic matter improves all soil types\n\n📱 Visit your nearest soil testing lab!";
+  // --- SEED ---
+  if(/seed|విత్తన|बीज|beej|planting|nursery/i.test(t))
+    return "🌱 <b>Seed & Nursery Tips</b>\n\n• Always use <b>certified seeds</b> from govt shops\n• Seed treatment: Thiram 3g/kg seed (prevents fungal disease)\n• Nursery readiness: 25-30 days for rice, 35-40 for cotton\n• Seed rate: Rice 20-25kg/ha, Cotton 5-8kg/ha\n\n💡 Buy from Raitha Bazaar / AP Seeds for genuine quality!";
+  // --- GOVT SCHEME ---
+  if(/scheme|yojana|పథకం|सरकारी|sarkari|subsidy|సబ్సిడీ|govt|government|pm kisan/i.test(t))
+    return "🏛️ <b>Government Schemes</b>\n\n• <b>PM-KISAN</b>: ₹6000/year (3 installments)\n• <b>PM Fasal Bima</b>: Crop insurance\n• <b>KCC</b>: Loan at 4% interest\n• <b>MGNREGA</b>: 100 days work guarantee\n• <b>PM KUSUM</b>: Solar pump subsidy\n• <b>eNAM</b>: Online mandi for better prices\n\n📱 Apply via: <a href='https://pmkisan.gov.in' target='_blank' style='color:var(--blue)'>pmkisan.gov.in</a>";
+  // --- CROP INSURANCE ---
+  if(/insurance|భీమా|बीमा|bima|claim|pmfby/i.test(t))
+    return "🛡️ <b>Crop Insurance (PMFBY)</b>\n\n• Premium: 2-5% of sum insured\n• Covers: Flood, drought, pest attack, hailstorm\n• Apply before sowing deadline\n• Claim: Report loss within 72 hours\n\n📱 Apply via: <a href='https://pmfby.gov.in' target='_blank' style='color:var(--blue)'>pmfby.gov.in</a>";
+  // --- TELUGU ---
+  if(/telugu|తెలుగు/i.test(t))
+    return "🗣️ తెలుగులో సహాయం!\n\nనేను తెలుగులో సమాధానాలు ఇవ్వగలను. మీ ప్రశ్న అడగండి!\n\nఉదా: వరి, పత్తి, మిర్చి, ఎరువులు, నీరు — ఏదైనా అడగండి.";
+  // --- HELP ---
+  if(/help|సహాయ|मदद|madad|what can you|how to use|guide/i.test(t))
+    return "❓ <b>How I Can Help</b>\n\nAsk me about:\n🌾 <b>Crops</b>: Rice, Cotton, Chilli, Groundnut, Maize, Sugarcane, Turmeric, Onion, Tomato\n🧪 <b>Fertilizers</b>: Urea, DAP, SSP, NPK\n🐛 <b>Pests</b>: Bollworm, aphids, spray tips\n💧 <b>Water</b>: Irrigation methods\n💰 <b>Money</b>: Profit, expenses, loans\n🏛️ <b>Govt schemes</b>: PM-KISAN, insurance\n🌤️ <b>Weather</b>: Farming tips\n\nJust type your question!";
+  // --- DEFAULT ---
+  const defaults = [
+    "I'm not sure about that. Try asking about specific crops (rice, cotton, chilli), fertilizers, pests, water, or govt schemes! 🌾",
+    "Hmm, I don't have info on that yet. But I know a lot about farming! Ask me about crops, fertilizer, irrigation, or profit tips. 😊",
+    "I didn't understand that. Try asking like:\n• 'How to grow rice?'\n• 'Best fertilizer for cotton?'\n• 'How to control bollworm?'",
+    "Not sure about that one. I'm best at farming advice — crops, fertilizer, pests, weather, govt schemes. Try one of those! 🌱"
+  ];
+  return defaults[Math.floor(Math.random()*defaults.length)];
+}
 </script>
+
+<!-- AI CHATBOT -->
+<button class="ai-fab" onclick="toggleAI()" id="ai-fab" title="Khet AI Assistant">🤖</button>
+<div class="ai-panel" id="ai-panel">
+  <div class="ai-header">
+    <div class="ai-header-avatar">🤖</div>
+    <div class="ai-header-info">
+      <div class="ai-header-name">Khet AI</div>
+      <div class="ai-header-status">Farming Assistant • Free</div>
+    </div>
+    <button class="ai-close" onclick="toggleAI()">✕</button>
+  </div>
+  <div class="ai-messages" id="ai-messages"></div>
+  <div class="ai-typing" id="ai-typing"><span></span><span></span><span></span></div>
+  <div class="ai-quick">
+    <button class="ai-quick-btn" onclick="quickAI('Rice tips')">🌾 Rice</button>
+    <button class="ai-quick-btn" onclick="quickAI('Cotton tips')">🌿 Cotton</button>
+    <button class="ai-quick-btn" onclick="quickAI('Chilli tips')">🌶️ Chilli</button>
+    <button class="ai-quick-btn" onclick="quickAI('Fertilizer guide')">🧪 Fertilizer</button>
+    <button class="ai-quick-btn" onclick="quickAI('Pest control')">🐛 Pests</button>
+    <button class="ai-quick-btn" onclick="quickAI('Government schemes')">🏛️ Govt</button>
+  </div>
+  <div class="ai-input-area">
+    <button class="ai-voice" id="ai-voice-btn" onclick="toggleVoice()" title="Speak your question">🎤<span class="ai-voice-lang" id="ai-voice-lang">EN</span></button>
+    <input type="text" class="ai-input" id="ai-input" placeholder="Ask about farming..." onkeydown="if(event.key==='Enter')sendAI()"/>
+    <button class="ai-send" onclick="sendAI()">➤</button>
+  </div>
+</div>
 </body>
 </html>

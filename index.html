@@ -4624,7 +4624,7 @@ let voiceLang = 'en-IN';
 
 function toggleVoice(){
   if(!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)){
-    addBotMsg("🎤 Voice not supported in this browser.\n\nTry Chrome or Edge on mobile/PC for voice input.");
+    addBotMsg("🎤 Voice not supported in this browser.\n\nPlease use <b>Chrome browser</b> on mobile or PC.");
     return;
   }
   if(voiceListening){
@@ -4636,15 +4636,15 @@ function toggleVoice(){
   recognition.lang = voiceLang;
   recognition.interimResults = true;
   recognition.maxAlternatives = 1;
+  recognition.continuous = false;
 
   const btn = document.getElementById('ai-voice-btn');
-  const langBtn = document.getElementById('ai-voice-lang');
 
   recognition.onstart = function(){
     voiceListening = true;
     btn.classList.add('listening');
-    btn.innerHTML = '⏹️<span class="ai-voice-lang" id="ai-voice-lang">'+langBtn.textContent+'</span>';
-    document.getElementById('ai-input').placeholder = 'Listening... speak now 🎤';
+    btn.textContent = '⏹️';
+    document.getElementById('ai-input').placeholder = '🎤 Listening... speak now';
   };
 
   recognition.onresult = function(event){
@@ -4660,7 +4660,7 @@ function toggleVoice(){
   recognition.onend = function(){
     voiceListening = false;
     btn.classList.remove('listening');
-    btn.innerHTML = '🎤<span class="ai-voice-lang" id="ai-voice-lang">'+langBtn.textContent+'</span>';
+    btn.textContent = '🎤';
     document.getElementById('ai-input').placeholder = 'Ask about farming...';
     const txt = document.getElementById('ai-input').value.trim();
     if(txt) sendAI();
@@ -4669,18 +4669,28 @@ function toggleVoice(){
   recognition.onerror = function(e){
     voiceListening = false;
     btn.classList.remove('listening');
-    btn.innerHTML = '🎤<span class="ai-voice-lang" id="ai-voice-lang">'+langBtn.textContent+'</span>';
+    btn.textContent = '🎤';
     document.getElementById('ai-input').placeholder = 'Ask about farming...';
     if(e.error === 'not-allowed'){
-      addBotMsg("🎤 Microphone access denied.\n\nPlease allow mic permission in your browser settings and try again.");
+      addBotMsg("🎤 <b>Microphone blocked!</b>\n\nTo fix:\n1. Tap the 🔒 lock icon in address bar\n2. Allow Microphone\n3. Refresh page & try again");
+    } else if(e.error === 'no-speech'){
+      addBotMsg("🎤 No speech detected. Try speaking louder and tap 🎤 again.");
+    } else if(e.error === 'network'){
+      addBotMsg("🎤 Network error. Check your internet connection.");
+    } else {
+      addBotMsg("🎤 Voice error: " + e.error + "\n\nTry again or type your question.");
     }
   };
 
-  recognition.start();
+  try {
+    recognition.start();
+  } catch(e) {
+    addBotMsg("🎤 Could not start voice. Tap 🎤 and allow microphone permission when browser asks.");
+  }
 }
 
 function stopVoice(){
-  if(recognition) recognition.stop();
+  if(recognition) try { recognition.stop(); } catch(e){}
 }
 
 function cycleVoiceLang(){
@@ -4692,8 +4702,7 @@ function cycleVoiceLang(){
   let idx = langs.findIndex(l => l.code === voiceLang);
   idx = (idx + 1) % langs.length;
   voiceLang = langs[idx].code;
-  document.getElementById('ai-voice-lang').textContent = langs[idx].label;
-  addBotMsg("🎤 Voice language: <b>" + langs[idx].label + "</b>\n\nTap 🎤 again and speak!");
+  addBotMsg("🎤 Voice language changed to <b>" + langs[idx].label + "</b>\n\nNow tap 🎤 and speak!");
 }
 
 // Tap language label to cycle languages
@@ -4823,7 +4832,7 @@ function getAIReply(input){
     <button class="ai-quick-btn" onclick="quickAI('Government schemes')">🏛️ Govt</button>
   </div>
   <div class="ai-input-area">
-    <button class="ai-voice" id="ai-voice-btn" onclick="toggleVoice()" title="Speak your question">🎤<span class="ai-voice-lang" id="ai-voice-lang">EN</span></button>
+    <button class="ai-voice" id="ai-voice-btn" onclick="toggleVoice()" title="Speak your question">🎤</button>
     <input type="text" class="ai-input" id="ai-input" placeholder="Ask about farming..." onkeydown="if(event.key==='Enter')sendAI()"/>
     <button class="ai-send" onclick="sendAI()">➤</button>
   </div>

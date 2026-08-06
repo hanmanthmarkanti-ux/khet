@@ -3,6 +3,10 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Khet Diary"/>
 <title>Khet Diary</title>
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"/>
 <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png"/>
@@ -163,6 +167,15 @@ header h1{font-size:1rem;font-weight:800;letter-spacing:-0.01em;flex:1;overflow:
 .biz-back-btn{display:flex;align-items:center;gap:6px;padding:12px 14px;cursor:pointer;color:var(--blue);font-size:0.88rem;font-weight:700;background:var(--cream);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:60;min-height:44px;}
 .biz-back-btn:active{opacity:0.7;background:var(--border);}
 .biz-back-btn.hidden{display:none;}
+/* Section visibility — hidden by default, only open section shows */
+.acc-section{display:none;}
+.acc-section.open-section{display:block;animation:sectionFadeIn 0.2s ease-out;}
+@keyframes sectionFadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+/* Desktop — sections take full width */
+@media(min-width:769px){
+  .business-menu{max-width:600px;margin:0 auto;}
+  .acc-section.open-section{max-width:800px;margin:0 auto;}
+}
 .business-mode .acc-header{display:none;}
 .business-mode .acc-section{margin:0;border-radius:0;box-shadow:none;}
 .business-mode .acc-body{padding:16px 14px 80px;}
@@ -533,6 +546,33 @@ body.dark .dark-toggle{background:#3A3025;color:#C8B89A;border-color:#4A4035;}
 .btn,.auth-btn,.lbtn,.expbtn,.filclear,.v-del,.delbtn,.wa-share-btn,.business-card,.home-card,.settle-btn,.reminder-switch{
   min-height:44px;
 }
+/* Prevent iOS text size adjust */
+html{-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;}
+/* Full width on mobile */
+.screen{width:100% !important;max-width:100% !important;}
+.auth-box{width:100% !important;max-width:100% !important;padding:20px !important;}
+.ai-panel{width:100% !important;max-width:100% !important;right:0 !important;bottom:0 !important;height:100% !important;max-height:100% !important;border-radius:0 !important;}
+/* Mobile first — small screens */
+@media(max-width:480px){
+  .sscroll{padding:10px 10px 0;}
+  .scard{min-width:90px;padding:10px;}
+  .business-card{padding:14px 12px;}
+  .home-card{padding:16px 14px;}
+  .field input,.field select,.field textarea{font-size:16px !important;}
+  .weather-day{min-width:58px;padding:6px 4px;}
+  .calendar-grid{gap:2px;padding:0 8px 8px;}
+  .calendar-day{font-size:0.7rem;}
+  .dash-grid{gap:6px;padding:8px;}
+  .dash-card{padding:10px;}
+  .filrow input,.filrow select{padding:9px 8px;font-size:0.85rem;}
+  .recsec{margin:8px 8px 0;}
+  .rc{padding:12px;}
+}
+/* Tablet */
+@media(min-width:481px) and (max-width:768px){
+  .sscroll{padding:14px 14px 0;}
+  .scard{min-width:110px;padding:14px;}
+}
 /* Auth screen */
 #auth-screen{padding:24px 16px;justify-content:center;}
 .auth-box{width:100%;max-width:400px;margin:0 auto;}
@@ -798,7 +838,7 @@ body.dark .bill-row.total{border-top-color:#E8DDD0;border-bottom-color:#E8DDD0;}
       </div>
       <div class="auth-hint">No account? Click Register above</div>
     </div>
-    <div id="reg-panel" style="display:none;">
+    <div id="reg-panel" >
       <div class="afield"><label>Full Name</label><input type="text" id="rn" placeholder="e.g. Hanmanth"/></div>
       <div class="afield"><label>Email</label><input type="email" id="ru" placeholder="you@example.com" autocomplete="username"/></div>
       <div class="afield"><label>Password</label><input type="password" id="rp" placeholder="Min 6 characters" autocomplete="new-password"/></div>
@@ -807,7 +847,7 @@ body.dark .bill-row.total{border-top-color:#E8DDD0;border-bottom-color:#E8DDD0;}
       <div class="auth-err" id="rerr"></div>
       <div class="auth-hint">Already registered? Click Login above</div>
     </div>
-    <div id="forgot-panel" style="display:none;">
+    <div id="forgot-panel" >
       <div style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;line-height:1.5;">
         Enter your email and we'll send you a link to reset your password.
       </div>
@@ -891,7 +931,7 @@ body.dark .bill-row.total{border-top-color:#E8DDD0;border-bottom-color:#E8DDD0;}
     </div>
     <div class="weather-body" id="weather-body">
       <div class="weather-loading" id="w-loading">Loading weather…</div>
-      <div id="w-content" style="display:none;">
+      <div id="w-content" >
         <div class="weather-grid" id="w-grid"></div>
         <div style="font-size:0.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:6px;">7-Day Forecast</div>
         <div class="weather-forecast" id="w-forecast"></div>
@@ -901,7 +941,7 @@ body.dark .bill-row.total{border-top-color:#E8DDD0;border-bottom-color:#E8DDD0;}
           <label for="rain-alert-toggle" style="font-size:0.78rem;font-weight:600;color:var(--soil);cursor:pointer;">🌧️ Alert 30 min before rain</label>
         </div>
       </div>
-      <div class="weather-error" id="w-error" style="display:none;"></div>
+      <div class="weather-error" id="w-error" ></div>
     </div>
   </div>
 
@@ -966,7 +1006,7 @@ body.dark .bill-row.total{border-top-color:#E8DDD0;border-bottom-color:#E8DDD0;}
   </div>
 
   <!-- ADD CROP SECTION -->
-  <div class="acc-section" id="sec-crop-addcrop" style="display:none;">
+  <div class="acc-section" id="sec-crop-addcrop" >
     <div class="biz-back-btn" onclick="showCropsMenu()">‹ Back to Menu</div>
     <div class="acc-body" style="padding:16px 14px 80px;">
       <div class="gr2">
@@ -1018,7 +1058,7 @@ body.dark .bill-row.total{border-top-color:#E8DDD0;border-bottom-color:#E8DDD0;}
         </select>
       </div>
       <div class="field"><label>Notes</label><textarea id="cr-notes" placeholder="Any extra details…" style="resize:none;height:65px;"></textarea></div>
-      <div class="live-box" id="crop-preview" style="display:none;">
+      <div class="live-box" id="crop-preview" >
         <h4 style="color:var(--leaf);">📊 Crop Profit Preview</h4>
         <div class="live-grid">
           <div class="live-label">Total Expenses</div><div class="live-val ar" id="crp-exp">₹0</div>
@@ -1033,7 +1073,7 @@ body.dark .bill-row.total{border-top-color:#E8DDD0;border-bottom-color:#E8DDD0;}
   </div>
 
   <!-- CROP RECORDS SECTION -->
-  <div class="acc-section" id="sec-crop-records" style="display:none;">
+  <div class="acc-section" id="sec-crop-records" >
     <div class="biz-back-btn" onclick="showCropsMenu()">‹ Back to Menu</div>
     <div class="filbox" style="margin:0;border-radius:0;box-shadow:none;">
       <h3>🔍 Filter</h3>
@@ -1057,7 +1097,7 @@ body.dark .bill-row.total{border-top-color:#E8DDD0;border-bottom-color:#E8DDD0;}
   </div>
 
   <!-- MARKET SECTION -->
-  <div class="acc-section" id="sec-crop-market" style="display:none;">
+  <div class="acc-section" id="sec-crop-market" >
     <div class="biz-back-btn" onclick="showCropsMenu()">‹ Back to Menu</div>
     <div class="acc-body" style="padding:16px 14px 80px;">
       <div class="market-card" style="margin-top:0;border-radius:0;box-shadow:none;">
@@ -1097,7 +1137,7 @@ body.dark .bill-row.total{border-top-color:#E8DDD0;border-bottom-color:#E8DDD0;}
   </div>
 
   <!-- INPUTS SECTION -->
-  <div class="acc-section" id="sec-crop-inputs" style="display:none;">
+  <div class="acc-section" id="sec-crop-inputs" >
     <div class="biz-back-btn" onclick="showCropsMenu()">‹ Back to Menu</div>
     <div class="acc-body" style="padding:16px 14px 80px;">
       <div class="sscroll"><div class="scards" id="inputs-summary">
@@ -1142,7 +1182,7 @@ body.dark .bill-row.total{border-top-color:#E8DDD0;border-bottom-color:#E8DDD0;}
   </div>
 
   <!-- RAINFALL SECTION -->
-  <div class="acc-section" id="sec-crop-rainfall" style="display:none;">
+  <div class="acc-section" id="sec-crop-rainfall" >
     <div class="biz-back-btn" onclick="showCropsMenu()">‹ Back to Menu</div>
     <div class="acc-body" style="padding:16px 14px 80px;">
       <div class="sscroll"><div class="scards" id="rainfall-summary">
@@ -1167,7 +1207,7 @@ body.dark .bill-row.total{border-top-color:#E8DDD0;border-bottom-color:#E8DDD0;}
   </div>
 
   <!-- CALENDAR SECTION -->
-  <div class="acc-section" id="sec-crop-calendar" style="display:none;">
+  <div class="acc-section" id="sec-crop-calendar" >
     <div class="biz-back-btn" onclick="showCropsMenu()">‹ Back to Menu</div>
     <div class="acc-body" style="padding:16px 14px 80px;">
       <div class="calendar-header">
@@ -1189,7 +1229,7 @@ body.dark .bill-row.total{border-top-color:#E8DDD0;border-bottom-color:#E8DDD0;}
   </div>
 
   <!-- ROTATION SECTION -->
-  <div class="acc-section" id="sec-crop-rotation" style="display:none;">
+  <div class="acc-section" id="sec-crop-rotation" >
     <div class="biz-back-btn" onclick="showCropsMenu()">‹ Back to Menu</div>
     <div class="acc-body" style="padding:16px 14px 80px;">
       <div id="rotation-content"></div>
@@ -1459,7 +1499,7 @@ body.dark .bill-row.total{border-top-color:#E8DDD0;border-bottom-color:#E8DDD0;}
         <div class="field">
           <label>📷 Photos (optional, max 3)</label>
           <div class="photo-preview-grid" id="farm-photo-previews"></div>
-          <div class="photo-upload-progress" id="farm-photo-progress" style="display:none;">🔄 Compressing photos…</div>
+          <div class="photo-upload-progress" id="farm-photo-progress" >🔄 Compressing photos…</div>
           <div class="photo-upload-area" onclick="document.getElementById('farm-photo-input').click()">
             <input type="file" id="farm-photo-input" accept="image/*" multiple onchange="previewFarmPhotos(this)"/>
             <div class="photo-upload-label">📷 Tap to add photos<br><span style="font-size:0.7rem;color:#bbb;">Receipt, field photo (max 3 · saved to cloud free)</span></div>
@@ -1759,7 +1799,7 @@ body.dark .bill-row.total{border-top-color:#E8DDD0;border-bottom-color:#E8DDD0;}
           <button class="btn bg" onclick="downloadBackup()" style="margin-bottom:12px;">⬇ Download Backup</button>
           <div style="font-size:0.75rem;color:var(--muted);margin-bottom:12px;">— OR —</div>
           <div class="photo-upload-area" onclick="document.getElementById('restore-file-input').click()" style="margin-bottom:0;">
-            <input type="file" id="restore-file-input" accept=".json" onchange="restoreBackup(this)" style="display:none;"/>
+            <input type="file" id="restore-file-input" accept=".json" onchange="restoreBackup(this)" />
             <div class="photo-upload-label">⬆ Tap to restore from backup file<br><span style="font-size:0.7rem;color:#bbb;">Select a .json backup file</span></div>
           </div>
         </div>
@@ -2189,11 +2229,15 @@ function openBizSection(sid){
   // Close all sections first
   TABS.forEach(x=>{
     try{
+      const sec=document.getElementById('sec-'+x);
+      if(sec) sec.classList.remove('open-section');
       const b=document.getElementById('pg-'+x);
       if(b) b.classList.remove('open');
     }catch(e){}
   });
   // Open the selected section
+  const sec=document.getElementById('sec-'+sid);
+  if(sec) sec.classList.add('open-section');
   const body=document.getElementById('pg-'+sid);
   if(body) body.classList.add('open');
   // Trigger data loading for sections that need it
@@ -2218,6 +2262,8 @@ function showBizMenu(){
   // Close all sections
   TABS.forEach(x=>{
     try{
+      const sec=document.getElementById('sec-'+x);
+      if(sec) sec.classList.remove('open-section');
       const b=document.getElementById('pg-'+x);
       if(b) b.classList.remove('open');
     }catch(e){}
@@ -2233,17 +2279,17 @@ const CROP_TABS = ['weather','addcrop','records','market','inputs','rainfall','c
 
 function openCropSection(section){
   // Hide the menu
-  document.getElementById('crops-menu').style.display='none';
+  document.getElementById('crops-menu').classList.add('hidden');
   // Hide summary cards
   document.getElementById('crops-summary-cards').parentElement.style.display='none';
   // Hide all sections
   CROP_TABS.forEach(x=>{
     const el=document.getElementById('sec-crop-'+x);
-    if(el) el.style.display='none';
+    if(el) el.classList.remove('open-section');
   });
   // Show selected section
   const sec=document.getElementById('sec-crop-'+section);
-  if(sec) sec.style.display='block';
+  if(sec) sec.classList.add('open-section');
   // Scroll to top
   try{ document.getElementById('crops-body').scrollTop=0; }catch(e){}
   // Render data for the section
@@ -2260,10 +2306,10 @@ function showCropsMenu(){
   // Hide all sections
   CROP_TABS.forEach(x=>{
     const el=document.getElementById('sec-crop-'+x);
-    if(el) el.style.display='none';
+    if(el) el.classList.remove('open-section');
   });
   // Show the menu
-  document.getElementById('crops-menu').style.display='block';
+  document.getElementById('crops-menu').classList.remove('hidden');
   // Show summary cards
   document.getElementById('crops-summary-cards').parentElement.style.display='block';
   // Scroll to top

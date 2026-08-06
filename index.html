@@ -1378,12 +1378,12 @@ body.dark .bill-row.total{border-top-color:#E8DDD0;border-bottom-color:#E8DDD0;}
 
   <!-- DASHBOARD -->
   <div class="acc-section" id="sec-dash">
-    <div class="acc-header open" onclick="toggleSection('dash')">
+    <div class="acc-header" onclick="toggleSection('dash')">
       <span class="acc-icon">📊</span>
       <span class="acc-title" data-key="tab_dash">Dashboard</span>
       <span class="acc-arrow">▼</span>
     </div>
-    <div class="acc-body open" id="pg-dash">
+    <div class="acc-body" id="pg-dash">
     <div class="biz-back-btn" onclick="showBizMenu()">‹ Back to Menu</div>
     <div class="dash-grid">
       <div class="dash-card" style="border-top:3px solid var(--leaf)"><h3>Total Received</h3><div class="big ag" id="d-earned">₹0</div></div>
@@ -2187,8 +2187,10 @@ function enterSection(section){
     // Close ALL sections, show the menu
     TABS.forEach(x=>{
       try{
+        const sec=document.getElementById('sec-'+x);
         const b=document.getElementById('pg-'+x);
         const h=b?b.previousElementSibling:null;
+        if(sec) sec.classList.remove('open-section');
         if(b) b.classList.remove('open');
         if(h) h.classList.remove('open');
       }catch(e){}
@@ -2217,6 +2219,12 @@ function enterSection(section){
   } else {
     show('crops-screen');
     window.scrollTo(0,0);
+    // Close all crop sections, show menu
+    CROP_TABS.forEach(x=>{
+      const el=document.getElementById('sec-crop-'+x);
+      if(el) el.classList.remove('open-section');
+    });
+    document.getElementById('crops-menu').classList.remove('hidden');
     try{ document.getElementById('cr-plant-date').valueAsDate=new Date(); }catch(e){}
     try{ renderCropsAll(); }catch(e){}
   }

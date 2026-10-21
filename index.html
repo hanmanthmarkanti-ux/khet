@@ -109,7 +109,7 @@ body{background:var(--cream);font-family:'Inter',sans-serif;color:var(--soil);mi
 #app-screen{flex-direction:column;}
 #app-body{flex:1;padding-bottom:76px;overflow-y:auto;-webkit-overflow-scrolling:touch;width:100%;max-width:100%;overflow-x:hidden;}
 #crops-body{flex:1;padding-bottom:76px;overflow-y:auto;-webkit-overflow-scrolling:touch;width:100%;max-width:100%;overflow-x:hidden;}
-header{background:var(--soil);color:var(--cream);padding:10px 14px;display:flex;align-items:center;gap:8px;position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(0,0,0,0.35);min-height:48px;width:100%;max-width:100%;overflow-x:hidden;}
+header{background:var(--soil);color:var(--cream);padding:8px 14px;display:flex;align-items:center;gap:8px;position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(0,0,0,0.35);min-height:40px;width:100%;max-width:100%;overflow-x:hidden;}
 .hlogo{font-size:1.4rem;line-height:1;}
 header h1{font-size:1rem;font-weight:800;letter-spacing:-0.01em;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .uchip{background:rgba(255,255,255,0.10);border-radius:14px;padding:3px 8px;font-size:0.68rem;font-weight:600;color:#C8B89A;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:90px;}
@@ -154,9 +154,9 @@ header h1{font-size:1rem;font-weight:800;letter-spacing:-0.01em;flex:1;overflow:
 .acc-body.open{display:block;}
 
 /* ── BUSINESS MENU (vertical cards like home screen) ── */
-.business-menu{display:flex;flex-direction:column;gap:14px;padding:8px 20px 60px;width:100%;max-width:100%;overflow-x:hidden;}
+.business-menu{display:flex;flex-direction:column;gap:12px;padding:4px 20px 60px;width:100%;max-width:100%;overflow-x:hidden;}
 .business-menu.hidden{display:none;}
-.business-card{background:var(--white);border:1.5px solid var(--border);border-radius:12px;padding:20px 18px;display:flex;align-items:center;gap:16px;cursor:pointer;transition:all 0.2s;-webkit-tap-highlight-color:transparent;box-shadow:var(--sh);width:100%;max-width:100%;box-sizing:border-box;}
+.business-card{background:var(--white);border:1.5px solid var(--border);border-radius:12px;padding:16px 16px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:all 0.2s;-webkit-tap-highlight-color:transparent;box-shadow:var(--sh);width:100%;max-width:100%;box-sizing:border-box;}
 .business-card:active{background:var(--cream);transform:scale(0.98);}
 .business-card-icon{font-size:2.4rem;line-height:1;flex-shrink:0;}
 .business-card-content{flex:1;}
@@ -585,8 +585,8 @@ header h1{font-size:1rem;}
 .bottom-bar{padding:10px 12px calc(10px + env(safe-area-inset-bottom)) 12px;gap:6px;}
 .bottom-bar button{font-size:0.7rem;padding:8px 2px;border-radius:10px;}
 /* Business cards */
-.business-menu{padding:8px 16px calc(60px + env(safe-area-inset-bottom)) 16px;gap:12px;}
-.business-card{padding:16px 14px;border-radius:16px;}
+.business-menu{padding:4px 16px calc(60px + env(safe-area-inset-bottom)) 16px;gap:10px;}
+.business-card{padding:14px 12px;border-radius:16px;}
 .business-card-icon{font-size:2rem;}
 .business-card-title{font-size:1rem;}
 .business-card-sub{font-size:0.73rem;}

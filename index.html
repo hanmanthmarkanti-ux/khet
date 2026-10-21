@@ -1321,6 +1321,14 @@ body.dark .bill-row.total{border-top-color:#E8DDD0;border-bottom-color:#E8DDD0;}
       </div>
       <div class="business-card-arrow">›</div>
     </div>
+    <div class="business-card" onclick="openBizSection('places')">
+      <div class="business-card-icon">📍</div>
+      <div class="business-card-content">
+        <div class="business-card-title">Places</div>
+        <div class="business-card-sub">Place-wise summary · Earnings · Diesel · Expenses</div>
+      </div>
+      <div class="business-card-arrow">›</div>
+    </div>
     <div class="business-card" onclick="openBizSection('market')">
       <div class="business-card-icon">📊</div>
       <div class="business-card-content">
@@ -1453,6 +1461,7 @@ body.dark .bill-row.total{border-top-color:#E8DDD0;border-bottom-color:#E8DDD0;}
         </div>
         <div class="field"><label>Work Done / Customer Name</label><input type="text" id="fw" placeholder="e.g. Ploughing for Ramesh garu…"/></div>
         <div class="field"><label>Customer Phone Number</label><input type="tel" id="fph" placeholder="e.g. 9876543210" inputmode="tel"/></div>
+        <div class="field"><label>📍 Place / Village / Location</label><input type="text" id="fplace" placeholder="e.g. Medak, Shankarampet, Hyderabad…" list="place-suggestions"/><datalist id="place-suggestions"></datalist></div>
         <div class="gr2">
           <div class="field"><label>Start Time</label><input type="time" id="fst" oninput="liveCalc()"/></div>
           <div class="field"><label>End Time</label><input type="time" id="fet" oninput="liveCalc()"/></div>
@@ -1766,6 +1775,37 @@ body.dark .bill-row.total{border-top-color:#E8DDD0;border-bottom-color:#E8DDD0;}
     </div>
   </div><!-- /sec-customers -->
 
+  <!-- PLACES -->
+  <div class="acc-section" id="sec-places">
+    <div class="acc-header" onclick="toggleSection('places')">
+      <span class="acc-icon">📍</span>
+      <span class="acc-title" data-key="tab_places">Places</span>
+      <span class="acc-arrow">▼</span>
+    </div>
+    <div class="acc-body" id="pg-places">
+    <div class="biz-back-btn" onclick="showBizMenu()">‹ Back to Menu</div>
+    <div class="sscroll"><div class="scards" id="places-summary-cards">
+      <div class="scard"><label>Total Places</label><div class="sv" id="pl-total-places">0</div></div>
+      <div class="scard g"><label>Total Earnings</label><div class="sv" id="pl-total-earnings">₹0</div></div>
+      <div class="scard r"><label>Total Diesel Cost</label><div class="sv" id="pl-total-diesel">₹0</div></div>
+      <div class="scard o"><label>Total Expenses</label><div class="sv" id="pl-total-expenses">₹0</div></div>
+    </div></div>
+    <div class="filbox">
+      <h3>🔍 Filter</h3>
+      <div class="filrow">
+        <input type="text" id="pl-filter-search" placeholder="Search place…" oninput="renderPlaces()"/>
+        <input type="month" id="pl-filter-month" onchange="renderPlaces()"/>
+        <button class="filclear" onclick="clrPlaceFilter()">✕</button>
+      </div>
+    </div>
+    <div class="recsec">
+      <div class="rechdr"><h2>📍 Place-wise Summary</h2><button class="expbtn" onclick="exportCSV('places')">⬇ CSV</button></div>
+      <div id="places-list"></div>
+      <div id="places-empty" class="empty"><div class="ei">📍</div><p>No place data yet.<br>Add place when entering farm work!</p></div>
+    </div>
+    </div>
+  </div><!-- /sec-places -->
+
   <!-- DATA BACKUP -->
   <div class="acc-section" id="sec-backup">
     <div class="acc-header" onclick="toggleSection('backup')">
@@ -1944,7 +1984,7 @@ function showAuthTab(t){
 }
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 function tog(id,hdr){const b=document.getElementById(id);const open=b.classList.toggle('open');hdr.classList.toggle('open',open);}
-const TABS=['dash','vehicles','farm','diesel','home','report','customers','debt','market','backup','loans','labour','charts','inputs','rainfall','rotation'];
+const TABS=['dash','vehicles','farm','diesel','home','report','customers','places','debt','market','backup','loans','labour','charts','inputs','rainfall','rotation'];
 
 function toggleSection(sid){
   const body=document.getElementById('pg-'+sid);
@@ -1965,6 +2005,7 @@ function toggleSection(sid){
     if(sid==='debt') calcPTR();
     if(sid==='report') renderReport();
     if(sid==='customers') renderCustomers();
+    if(sid==='places') renderPlaces();
     if(sid==='market') renderMarket();
     if(sid==='loans') renderLoans();
     if(sid==='labour'){renderWorkers();renderLabourSummary();renderAttendance();updateWorkerSelects();}
@@ -2238,6 +2279,7 @@ function openBizSection(sid){
   if(sid==='debt') calcPTR();
   if(sid==='report') renderReport();
   if(sid==='customers') renderCustomers();
+  if(sid==='places') renderPlaces();
   if(sid==='market') renderMarket();
   if(sid==='loans') renderLoans();
   if(sid==='labour'){renderWorkers();renderLabourSummary();renderAttendance();updateWorkerSelects();}
@@ -2625,6 +2667,7 @@ function editFarm(id){
   document.getElementById('fv').value=e.vid||'';
   document.getElementById('fw').value=e.work;
   document.getElementById('fph').value=e.phone||'';
+  document.getElementById('fplace').value=e.place||'';
   document.getElementById('fst').value=e.st||'';
   document.getElementById('fet').value=e.et||'';
   document.getElementById('fac').value=e.acres||'';
@@ -2651,6 +2694,7 @@ async function addFarm(){
   const work=document.getElementById('fw').value.trim();
   if(!date||!work){toast('⚠️ Fill in date and work done.');return;}
   const phone=document.getElementById('fph').value.trim();
+  const place=document.getElementById('fplace').value.trim();
   const vid=document.getElementById('fv').value;
   const vehicles=getVehicles();
   const veh=vehicles.find(v=>String(v.id)===String(vid));
@@ -2673,7 +2717,7 @@ async function addFarm(){
     if(idx!==-1){
       const newPhotos=await uploadFarmPhotos();
       const existingPhotos=arr[idx].photos||[];
-      arr[idx]={...arr[idx],date,work,phone,
+      arr[idx]={...arr[idx],date,work,phone,place,
         vid:vid||'',vname:veh?veh.name:'',vtype:veh?veh.type:'',
         st:document.getElementById('fst').value,
         et:document.getElementById('fet').value,
@@ -2685,7 +2729,7 @@ async function addFarm(){
       editingFarmId=null;
       const addBtn=document.querySelector('#farm-body button.bg');
       if(addBtn) addBtn.textContent='＋ Add Entry';
-      clrFarm();renderFarmAll();renderDash();
+      clrFarm();renderFarmAll();renderDash();renderPlaces();
       toast('✅ Entry updated!');
       return;
     }
@@ -2693,7 +2737,7 @@ async function addFarm(){
 
   const newId=Date.now();
   const photos=await uploadFarmPhotos();
-  const entry={id:newId,date,work,phone,
+  const entry={id:newId,date,work,phone,place,
     vid:vid||'',vname:veh?veh.name:'',vtype:veh?veh.type:'',
     st:document.getElementById('fst').value,
     et:document.getElementById('fet').value,
@@ -2702,7 +2746,7 @@ async function addFarm(){
     photos
   };
   arr.unshift(entry);
-  saveFarm(arr);clrFarm();renderFarmAll();renderDash();
+  saveFarm(arr);clrFarm();renderFarmAll();renderDash();renderPlaces();
   toast(pending>0?'✅ Added! Pending: '+inr(pending):'✅ Entry added! Fully paid.');
 
   // Auto-send WhatsApp to customer if phone number provided
@@ -2780,7 +2824,7 @@ async function uploadFarmPhotos(){
 }
 
 function clrFarm(){
-  ['fw','fph','fst','fet','fac','fex','frh','fra','ftot','frec','fpen','fn'].forEach(id=>document.getElementById(id).value='');
+  ['fw','fph','fplace','fst','fet','fac','fex','frh','fra','ftot','frec','fpen','fn'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('fv').value='';document.getElementById('fd').valueAsDate=new Date();
   document.getElementById('live-preview').style.display='none';
   editingFarmId=null;
@@ -2857,6 +2901,145 @@ function renderFarmAll(){
   const fp=document.getElementById('f-pr');fp.textContent=inr(profit);fp.style.color=profit>=0?'var(--leaf)':'var(--red)';
   document.getElementById('f-ac').textContent=acres.toFixed(1);
   renderFarm();
+  renderPlaces();
+}
+
+// ── PLACES ──────────────────────────────────────────────
+function clrPlaceFilter(){
+  document.getElementById('pl-filter-search').value='';
+  document.getElementById('pl-filter-month').value='';
+  renderPlaces();
+}
+
+function renderPlaces(){
+  const farm=getFarm();
+  const diesel=getDiesel();
+  const home=getHome();
+  const search=document.getElementById('pl-filter-search').value.toLowerCase();
+  const month=document.getElementById('pl-filter-month').value;
+
+  // Group farm work by place
+  const placeMap={};
+  farm.forEach(e=>{
+    const place=e.place||'Unknown';
+    if(search&&!place.toLowerCase().includes(search)) return;
+    if(month&&!e.date.startsWith(month)) return;
+    if(!placeMap[place]){
+      placeMap[place]={earnings:0,pending:0,expenses:0,diesel:0,acres:0,hours:0,entries:0,clients:{},works:[]};
+    }
+    const p=placeMap[place];
+    p.earnings+=e.received||0;
+    p.pending+=e.pending||0;
+    p.expenses+=e.otherExp||0;
+    p.acres+=e.acres||0;
+    p.hours+=e.hrs||0;
+    p.entries+=1;
+    // Track clients
+    const clientName=e.work||'Unknown';
+    if(!p.clients[clientName]){
+      p.clients[clientName]={earnings:0,pending:0,hours:0,entries:0,works:[]};
+    }
+    p.clients[clientName].earnings+=e.received||0;
+    p.clients[clientName].pending+=e.pending||0;
+    p.clients[clientName].hours+=e.hrs||0;
+    p.clients[clientName].entries+=1;
+    p.clients[clientName].works.push({date:e.date,work:e.work,total:e.total,received:e.received,pending:e.pending,hrs:e.hrs,acres:e.acres,vehicle:e.vname});
+    p.works.push({date:e.date,work:e.work,total:e.total,received:e.received,pending:e.pending,hrs:e.hrs,acres:e.acres,vehicle:e.vname,client:clientName});
+  });
+
+  // Add diesel costs by place (match by vehicle and date)
+  diesel.forEach(d=>{
+    const farmEntries=farm.filter(e=>String(e.vid)===String(d.vid)&&e.date===d.date);
+    farmEntries.forEach(e=>{
+      const place=e.place||'Unknown';
+      if(search&&!place.toLowerCase().includes(search)) return;
+      if(month&&!d.date.startsWith(month)) return;
+      if(placeMap[place]){
+        placeMap[place].diesel+=d.cost||0;
+      }
+    });
+  });
+
+  // Add home expenses by place (if any have place - for now skip as home doesn't have place)
+  // Could be extended later
+
+  // Summary cards
+  const totalPlaces=Object.keys(placeMap).length;
+  const totalEarnings=Object.values(placeMap).reduce((s,p)=>s+p.earnings,0);
+  const totalDiesel=Object.values(placeMap).reduce((s,p)=>s+p.diesel,0);
+  const totalExpenses=Object.values(placeMap).reduce((s,p)=>s+p.expenses,0);
+
+  document.getElementById('pl-total-places').textContent=totalPlaces;
+  document.getElementById('pl-total-earnings').textContent=inr(totalEarnings);
+  document.getElementById('pl-total-diesel').textContent=inr(totalDiesel);
+  document.getElementById('pl-total-expenses').textContent=inr(totalExpenses);
+
+  // Render list
+  const list=document.getElementById('places-list');
+  const empty=document.getElementById('places-empty');
+  const places=Object.entries(placeMap).sort((a,b)=>b[1].earnings-a[1].earnings);
+
+  if(!places.length){
+    list.innerHTML='';
+    empty.style.display='block';
+    return;
+  }
+  empty.style.display='none';
+
+  list.innerHTML=places.map(([place,data])=>{
+    const netProfit=data.earnings-data.expenses-data.diesel;
+    const clientsHtml=Object.entries(data.clients).map(([client,cdata])=>{
+      const cProfit=cdata.earnings;
+      const worksHtml=cdata.works.map(w=>`
+        <div style="padding:6px 0;border-bottom:1px solid #F0E8DA;font-size:0.78rem;">
+          <div style="font-weight:700;color:var(--soil);">${esc(w.work)}</div>
+          <div style="display:flex;gap:10px;font-size:0.7rem;color:var(--muted);margin-top:2px;">
+            <span>📅 ${fmtD(w.date)}</span>
+            ${w.vehicle?`<span>🚜 ${esc(w.vehicle)}</span>`:''}
+            ${w.hrs>0?`<span>⏱ ${fmtH(w.hrs)}</span>`:''}
+            ${w.acres>0?`<span>📏 ${w.acres} acres</span>`:''}
+            <span style="color:var(--leaf);font-weight:700;">${inr(w.received)}</span>
+            ${w.pending>0?`<span style="color:var(--orange);font-weight:700;">⏳ ${inr(w.pending)}</span>`:''}
+          </div>
+        </div>
+      `).join('');
+      return `
+        <div style="margin-top:8px;padding:10px;background:var(--cream);border-radius:8px;">
+          <div style="font-weight:800;font-size:0.85rem;margin-bottom:6px;display:flex;justify-content:space-between;">
+            <span>👤 ${esc(client)}</span>
+            <span style="color:var(--leaf);font-weight:800;">${inr(cdata.earnings)}</span>
+          </div>
+          <div style="font-size:0.7rem;color:var(--muted);margin-bottom:6px;">
+            Entries: ${cdata.entries} · Hours: ${fmtH(cdata.hours)} · Pending: ${inr(cdata.pending)}
+          </div>
+          <div style="max-height:200px;overflow-y:auto;">
+            ${worksHtml}
+          </div>
+        </div>
+      `).join('');
+
+    return `
+      <div class="rc" style="margin-bottom:12px;">
+        <div class="rtop" style="padding-right:0;">
+          <div class="rwrk" style="font-size:1rem;">📍 ${esc(place)}</div>
+          <div class="ramt" style="font-size:0.95rem;">${inr(data.earnings)}</div>
+        </div>
+        <div class="rmeta" style="gap:6px;margin-bottom:8px;">
+          <span class="chip ce">✅ ${inr(data.earnings)}</span>
+          <span class="chip cs">⛽ ${inr(data.diesel)}</span>
+          <span class="chip cr">💸 ${inr(data.expenses)}</span>
+          <span class="chip" style="background:${netProfit>=0?'#E5F2E5':'#FDECEA'};color:${netProfit>=0?'var(--leaf)':'var(--red)'};">
+            🏆 ${netProfit>=0?'+':''}${inr(netProfit)}
+          </span>
+          <span class="chip ca">📏 ${data.acres.toFixed(1)} acres</span>
+          <span class="chip cd">⏱ ${fmtH(data.hours)}</span>
+          <span class="chip cv">📋 ${data.entries} entries</span>
+        </div>
+        <div style="margin-top:8px;border-top:1px solid var(--border);padding-top:8px;">
+          ${clientsHtml}
+        </div>
+      </div>
+    `}).join('');
 }
 
 // ── DIESEL ────────────────────────────────────────────
@@ -3250,7 +3433,7 @@ const T = {
     app_title:'Khet Diary', logout:'🚪 Logout', lang_btn:'తెలుగు',
     tab_dash:'Dashboard', tab_vehicles:'Vehicles', tab_farm:'Farm',
     tab_diesel:'Diesel', tab_home:'Home', tab_report:'Report',
-    tab_customers:'Customers', tab_interest:'Interest', tab_market:'Market Prices',
+    tab_customers:'Customers', tab_places:'Places', tab_interest:'Interest', tab_market:'Market Prices',
     tab_backup:'Data Backup', tab_loans:'Loans & Debts', tab_labour:'Labour',
     tab_charts:'Analytics', tab_inputs:'Farm Inputs', tab_rainfall:'Rainfall',
     tab_rotation:'Crop Rotation',
@@ -3286,7 +3469,7 @@ const T = {
     app_title:'ఖేత్ డైరీ', logout:'🚪 లాగ్అవుట్', lang_btn:'English',
     tab_dash:'డాష్‌బోర్డ్', tab_vehicles:'వాహనాలు', tab_farm:'పొలం',
     tab_diesel:'డీజిల్', tab_home:'ఇల్లు', tab_report:'నివేదిక',
-    tab_customers:'కస్టమర్లు', tab_interest:'వడ్డీ', tab_market:'మార్కెట్ ధరలు',
+    tab_customers:'కస్టమర్లు', tab_places:' miejsca', tab_interest:'వడ్డీ', tab_market:'మార్కెట్ ధరలు',
     tab_backup:'డేటా బ్యాకప్', tab_loans:'రుణాలు & అప్పులు', tab_labour:'కూలీలు',
     tab_charts:'విశ్లేషణలు', tab_inputs:'పొలం ఇన్‌పుట్స్', tab_rainfall:'వర్షపాతం',
     tab_rotation:'పంట మార్పిడి',

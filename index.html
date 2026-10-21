@@ -1361,6 +1361,14 @@ body.dark .bill-row.total{border-top-color:#E8DDD0;border-bottom-color:#E8DDD0;}
       </div>
       <div class="business-card-arrow">›</div>
     </div>
+    <div class="business-card" onclick="openReview()">
+      <div class="business-card-icon">⭐</div>
+      <div class="business-card-content">
+        <div class="business-card-title">Rate Khet Diary</div>
+        <div class="business-card-sub">Share feedback · Rate on Play Store</div>
+      </div>
+      <div class="business-card-arrow">›</div>
+    </div>
     <div class="business-card" onclick="openBizSection('charts')">
       <div class="business-card-icon">📈</div>
       <div class="business-card-content">
@@ -1806,6 +1814,49 @@ body.dark .bill-row.total{border-top-color:#E8DDD0;border-bottom-color:#E8DDD0;}
     </div>
   </div><!-- /sec-places -->
 
+  <!-- REVIEW / FEEDBACK -->
+  <div class="acc-section" id="sec-review">
+    <div class="acc-header" onclick="toggleSection('review')">
+      <span class="acc-icon">⭐</span>
+      <span class="acc-title" data-key="tab_review">Rate App</span>
+      <span class="acc-arrow">▼</span>
+    </div>
+    <div class="acc-body" id="pg-review">
+    <div class="biz-back-btn" onclick="showBizMenu()">‹ Back to Menu</div>
+    <div class="box" style="margin-top:0;">
+      <div class="boxhdr open"><span>⭐</span> Rate Khet Diary</div>
+      <div class="boxbody open" style="text-align:center;padding:24px 16px;">
+        <div style="font-size:3rem;margin-bottom:12px;">⭐⭐⭐⭐⭐</div>
+        <h3 style="font-size:1.2rem;margin-bottom:8px;">Enjoying Khet Diary?</h3>
+        <p style="color:var(--muted);margin-bottom:20px;line-height:1.5;">
+          Your feedback helps us improve and helps other farmers discover the app.
+        </p>
+        <button class="btn bg" onclick="openPlayStoreReview()" style="margin-bottom:12px;width:100%;">
+          ⭐ Rate on Play Store
+        </button>
+        <button class="btn bb" onclick="openFeedback()" style="width:100%;">
+          📝 Send Feedback / Suggestion
+        </button>
+        <div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--border);">
+          <p style="font-size:0.75rem;color:var(--muted);margin-bottom:12px;">Or share the app:</p>
+          <button class="btn bo" onclick="shareApp()" style="width:100%;">
+            📤 Share with Friends
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="box" style="margin-top:12px;">
+      <div class="boxhdr"><span>💡</span> Suggest a Feature</div>
+      <div class="boxbody">
+        <div class="field"><label>Your Idea</label><textarea id="review-suggestion" placeholder="What feature would you like to see? e.g. Crop disease detection, GPS field mapping, SMS reminders…" rows="3"></textarea></div>
+        <div class="field"><label>Your Name (optional)</label><input type="text" id="review-name" placeholder="e.g. Ramesh from Medak"/></div>
+        <div class="field"><label>Phone / Email (optional)</label><input type="tel" id="review-contact" placeholder="For follow-up if needed"/></div>
+        <button class="btn bg" onclick="submitSuggestion()">📤 Send Suggestion</button>
+      </div>
+    </div>
+    </div>
+  </div><!-- /sec-review -->
+
   <!-- DATA BACKUP -->
   <div class="acc-section" id="sec-backup">
     <div class="acc-header" onclick="toggleSection('backup')">
@@ -1984,7 +2035,7 @@ function showAuthTab(t){
 }
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 function tog(id,hdr){const b=document.getElementById(id);const open=b.classList.toggle('open');hdr.classList.toggle('open',open);}
-const TABS=['dash','vehicles','farm','diesel','home','report','customers','places','debt','market','backup','loans','labour','charts','inputs','rainfall','rotation'];
+const TABS=['dash','vehicles','farm','diesel','home','report','customers','places','review','debt','market','backup','loans','labour','charts','inputs','rainfall','rotation'];
 
 function toggleSection(sid){
   const body=document.getElementById('pg-'+sid);
@@ -3100,7 +3151,51 @@ function renderDieselPage(){
       </div>`;
     }).join('');
   }
-  const dvt=document.getElementById('diesel-vtabs');
+
+// ── REVIEW / FEEDBACK ───────────────────────────────────
+function openReview(){
+  openBizSection('review');
+}
+
+function openPlayStoreReview(){
+  const url='https://play.google.com/store/apps/details?id=com.khetdiary';
+  window.open(url,'_blank');
+  toast('🌟 Thanks for rating!');
+}
+
+function openFeedback(){
+  const subject=encodeURIComponent('Khet Diary Feedback');
+  const body=encodeURIComponent('Hi Khet Diary Team,\n\nMy feedback:\n\n');
+  window.open(`mailto:support@khetdiary.com?subject=${subject}&body=${body}`,'_blank');
+}
+
+function shareApp(){
+  const text='🌾 Khet Diary - Farm & Home Tracker for Indian Farmers\n\nTrack farm work, crops, diesel, expenses & profits. Free PWA. English & Telugu.\n\nTry it: https://khet-diary-76200.web.app';
+  if(navigator.share){
+    navigator.share({title:'Khet Diary',text:text,url:'https://khet-diary-76200.web.app'}).catch(()=>copyToClipboard(text));
+  }else{
+    copyToClipboard(text);
+    toast('📋 Link copied! Share via WhatsApp/SMS.');
+  }
+}
+
+function copyToClipboard(text){
+  navigator.clipboard.writeText(text).then(()=>toast('📋 Copied!')).catch(()=>toast('⚠️ Copy failed'));
+}
+
+function submitSuggestion(){
+  const suggestion=document.getElementById('review-suggestion').value.trim();
+  const name=document.getElementById('review-name').value.trim();
+  const contact=document.getElementById('review-contact').value.trim();
+  if(!suggestion){toast('⚠️ Enter your suggestion.');return;}
+  const subject=encodeURIComponent('Khet Diary Feature Request');
+  const body=encodeURIComponent(`Feature Suggestion:\n${suggestion}\n\nFrom: ${name||'Anonymous'}\nContact: ${contact||'Not provided'}\n\n---\nSent from Khet Diary App`);
+  window.open(`mailto:support@khetdiary.com?subject=${subject}&body=${body}`,'_blank');
+  document.getElementById('review-suggestion').value='';
+  document.getElementById('review-name').value='';
+  document.getElementById('review-contact').value='';
+  toast('📤 Suggestion sent! Thanks for your input.');
+}
   if(!vehicles.length){dvt.innerHTML='';}else{
     dvt.innerHTML=`<div class="vtab vtab-all ${dieselVFilter==='all'?'active':''}" onclick="setDVFilter('all')">All</div>`+
     vehicles.map(v=>`<div class="vtab ${dieselVFilter===String(v.id)?'active':''}" onclick="setDVFilter('${v.id}')">${vIcon(v.type)} ${esc(v.name)}</div>`).join('');
@@ -3433,7 +3528,7 @@ const T = {
     app_title:'Khet Diary', logout:'🚪 Logout', lang_btn:'తెలుగు',
     tab_dash:'Dashboard', tab_vehicles:'Vehicles', tab_farm:'Farm',
     tab_diesel:'Diesel', tab_home:'Home', tab_report:'Report',
-    tab_customers:'Customers', tab_places:'Places', tab_interest:'Interest', tab_market:'Market Prices',
+    tab_customers:'Customers', tab_places:'Places', tab_review:'Rate App', tab_interest:'Interest', tab_market:'Market Prices',
     tab_backup:'Data Backup', tab_loans:'Loans & Debts', tab_labour:'Labour',
     tab_charts:'Analytics', tab_inputs:'Farm Inputs', tab_rainfall:'Rainfall',
     tab_rotation:'Crop Rotation',

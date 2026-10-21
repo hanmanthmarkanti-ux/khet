@@ -1364,17 +1364,6 @@ body.dark .bill-row.total{border-top-color:#E8DDD0;border-bottom-color:#E8DDD0;}
     </div>
   </div>
 
-  <!-- DATA BACKUP -->
-      <div class="business-card-icon">📄</div>
-      <div class="business-card-content">
-        <div class="business-card-title">PDF Bills</div>
-        <div class="business-card-sub">Generate printable bills</div>
-      </div>
-      <div class="business-card-arrow">›</div>
-    </div>
-    </div>
-  </div>
-
   <!-- DASHBOARD -->
   <div class="acc-section" id="sec-dash">
     <div class="acc-header" onclick="toggleSection('dash')">
@@ -1955,7 +1944,7 @@ function showAuthTab(t){
 }
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 function tog(id,hdr){const b=document.getElementById(id);const open=b.classList.toggle('open');hdr.classList.toggle('open',open);}
-const TABS=['dash','vehicles','farm','diesel','home','report','customers','debt','market','backup','loans','labour','charts','inputs','rainfall','pdfbills','rotation'];
+const TABS=['dash','vehicles','farm','diesel','home','report','customers','debt','market','backup','loans','labour','charts','inputs','rainfall','rotation'];
 
 function toggleSection(sid){
   const body=document.getElementById('pg-'+sid);
@@ -1982,7 +1971,6 @@ function toggleSection(sid){
     if(sid==='charts') renderCharts();
     if(sid==='inputs') renderInputs();
     if(sid==='rainfall') renderRainfall();
-    if(sid==='pdfbills') loadPdfBillSelect();
     if(sid==='rotation') renderRotation();
   }
 }
@@ -2256,7 +2244,6 @@ function openBizSection(sid){
   if(sid==='charts') renderCharts();
   if(sid==='inputs') renderInputs();
   if(sid==='rainfall') renderRainfall();
-  if(sid==='pdfbills') loadPdfBillSelect();
   if(sid==='rotation') renderRotation();
   // Scroll to top
   try{ document.getElementById('app-body').scrollTop=0; }catch(e){}
@@ -3266,7 +3253,7 @@ const T = {
     tab_customers:'Customers', tab_interest:'Interest', tab_market:'Market Prices',
     tab_backup:'Data Backup', tab_loans:'Loans & Debts', tab_labour:'Labour',
     tab_charts:'Analytics', tab_inputs:'Farm Inputs', tab_rainfall:'Rainfall',
-    tab_pdfbills:'PDF Bills', tab_rotation:'Crop Rotation',
+    tab_rotation:'Crop Rotation',
     // Dashboard
     total_received:'Total Received', pending_receive:'Pending to Receive',
     farm_costs:'Farm + Diesel Costs', net_profit:'Net Profit',
@@ -3302,7 +3289,7 @@ const T = {
     tab_customers:'కస్టమర్లు', tab_interest:'వడ్డీ', tab_market:'మార్కెట్ ధరలు',
     tab_backup:'డేటా బ్యాకప్', tab_loans:'రుణాలు & అప్పులు', tab_labour:'కూలీలు',
     tab_charts:'విశ్లేషణలు', tab_inputs:'పొలం ఇన్‌పుట్స్', tab_rainfall:'వర్షపాతం',
-    tab_pdfbills:'PDF బిల్లులు', tab_rotation:'పంట మార్పిడి',
+    tab_rotation:'పంట మార్పిడి',
     // Dashboard
     total_received:'మొత్తం వచ్చింది', pending_receive:'రావలసింది',
     farm_costs:'పొలం + డీజిల్ ఖర్చు', net_profit:'నికర లాభం',

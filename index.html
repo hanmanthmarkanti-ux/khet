@@ -2054,6 +2054,18 @@ body.dark .bill-row.total{border-top-color:#E8DDD0;border-bottom-color:#E8DDD0;}
 </div><!-- app-screen -->
 <div id="toast"></div>
 
+<!-- BILL SEND CHOOSER (WhatsApp / Normal SMS) -->
+<div id="bill-send-modal" style="display:none;position:fixed;inset:0;background:rgba(20,12,6,0.6);z-index:10000;align-items:center;justify-content:center;padding:20px;" onclick="if(event.target===this)closeBillModal()">
+  <div style="background:var(--white);border-radius:16px;padding:22px 20px;max-width:330px;width:100%;text-align:center;box-shadow:0 12px 44px rgba(0,0,0,0.4);">
+    <div style="font-size:2.2rem;margin-bottom:6px;">📤</div>
+    <div id="bill-send-title" style="font-weight:800;font-size:1.02rem;color:var(--soil);margin-bottom:4px;">Send Bill</div>
+    <div id="bill-send-sub" style="font-size:0.78rem;color:var(--muted);margin-bottom:18px;">Choose how to send</div>
+    <button id="bs-btn-wa" onclick="doBillWhatsApp()" style="width:100%;background:#25D366;color:#fff;border:none;border-radius:10px;padding:13px;font-size:0.95rem;font-weight:800;cursor:pointer;margin-bottom:9px;display:flex;align-items:center;justify-content:center;gap:8px;">📲 WhatsApp</button>
+    <button id="bs-btn-sms" onclick="doBillSMS()" style="width:100%;background:var(--blue);color:#fff;border:none;border-radius:10px;padding:13px;font-size:0.95rem;font-weight:800;cursor:pointer;margin-bottom:9px;display:flex;align-items:center;justify-content:center;gap:8px;">✉️ Normal SMS</button>
+    <button id="bs-btn-no" onclick="closeBillModal()" style="width:100%;background:transparent;color:var(--muted);border:none;border-radius:10px;padding:10px;font-size:0.85rem;font-weight:700;cursor:pointer;">Not now</button>
+  </div>
+</div>
+
 <script>
 // ── SCREENS ──────────────────────────────────────────
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('show'));document.getElementById(id).classList.add('show');}
@@ -2830,9 +2842,9 @@ async function addFarm(){
   saveFarm(arr);clrFarm();renderFarmAll();renderDash();renderPlaces();
   toast(pending>0?'✅ Added! Pending: '+inr(pending):'✅ Entry added! Fully paid.');
 
-  // Auto-send WhatsApp to customer if phone number provided
+  // Ask the user how to send the bill (WhatsApp or normal SMS)
   if(phone){
-    sendBillSMS(entry);
+    askSendBill(newId);
   }
 }
 // pending photo files (before upload)
@@ -2962,7 +2974,7 @@ function renderFarm(){
       ${photosHtml}
       ${e.notes?`<div class="rnotes">📝 ${esc(e.notes)}</div>`:''}
       <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
-        ${e.phone?`<button class="wa-share-btn" onclick="sendBillSMS(getFarm().find(x=>x.id===${e.id}))">📲 Send Bill</button>`:''}
+        ${e.phone?`<button class="wa-share-btn" style="background:#25D366;" onclick="askSendBill(${e.id})">📤 ${currentLang==='te'?'బిల్లు పంపండి':'Send Bill'}</button>`:''}
         <button class="wa-share-btn" onclick="shareFarmEntryWA(${e.id})">📤 Share</button>
       </div>
     </div>`;
@@ -3495,17 +3507,17 @@ function shareFarmEntryWA(id){
   window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
 }
 
-// ── SEND BILL TO CUSTOMER VIA WHATSAPP ────────────────
-function sendBillSMS(e){
-  if(!e.phone) return;
-  let phone=e.phone.replace(/[\s\-\(\)]/g,'');
+// ── SEND BILL TO CUSTOMER : WHATSAPP or NORMAL SMS ─────
+function normalizePhone(p){
+  let phone=String(p||'').replace(/[\s\-\(\)]/g,'');
   if(phone.startsWith('+91')) phone=phone.slice(3);
   else if(phone.startsWith('91')&&phone.length>10) phone=phone.slice(2);
-  if(phone.length!==10){toast('⚠️ Invalid phone number.');return;}
+  return phone;
+}
 
-  const customerName=e.work||'Customer';
-  const msg=`🌾 *Khet Diary — Bill*\n\n`+
-    `👨‍🌾 Customer: ${customerName}\n`+
+function billMsg(e,plain){
+  let msg=`🌾 *Khet Diary — Bill*\n\n`+
+    `👨‍🌾 Customer: ${e.work||'Customer'}\n`+
     `📅 Date: ${fmtD(e.date)}\n`+
     `${e.vname?`🚛 Vehicle: ${e.vname}\n`:''}`+
     `${e.hrs>0?`⏱ Time: ${fmtH(e.hrs)}\n`:''}`+
@@ -3514,10 +3526,59 @@ function sendBillSMS(e){
     `✅ Paid: ${inr(e.received||0)}\n`+
     `${e.pending>0?`⏳ Pending: ${inr(e.pending)}\n`:''}`+
     `\n_via Khet Diary_`;
-
-  window.open('https://wa.me/91'+phone+'?text='+encodeURIComponent(msg),'_blank');
-  toast('📱 Opening WhatsApp...');
+  if(plain) msg=msg.replace(/\*/g,''); // plain SMS renders asterisks literally
+  return msg;
 }
+
+function sendBillWhatsApp(e){
+  if(!e.phone) return;
+  const phone=normalizePhone(e.phone);
+  if(phone.length!==10){toast('⚠️ Invalid phone number.');return;}
+  window.open('https://wa.me/91'+phone+'?text='+encodeURIComponent(billMsg(e,false)),'_blank');
+  toast('📲 Opening WhatsApp...');
+}
+
+function sendBillSMS(e){
+  if(!e.phone) return;
+  const phone=normalizePhone(e.phone);
+  if(phone.length!==10){toast('⚠️ Invalid phone number.');return;}
+  const msg=billMsg(e,true);
+  const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Mac/.test(navigator.platform)&&'ontouchend' in document);
+  // Android/others: sms:number?body=   |   iOS: sms:number&body=
+  const uri=isIOS?('sms:+91'+phone+'&body='):('sms:+91'+phone+'?body=');
+  window.location.href=uri+encodeURIComponent(msg);
+  // Desktop browsers have no SMS app: pre-fill falls back to copy-paste
+  setTimeout(()=>{
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(msg).then(
+        ()=>toast('📋 Message copied! Paste it in any SMS app.'),
+        ()=>toast('📱 Open the SMS app to send.')
+      );
+    }
+  },1200);
+  toast('✉️ Opening Messages...');
+}
+
+// ── SEND BILL CHOOSER (WhatsApp / SMS) ────────────────
+let billEntry=null;
+function askSendBill(id){
+  const e=getFarm().find(x=>x.id===id);
+  if(!e){toast('⚠️ Entry not found.');return;}
+  if(!e.phone){toast('⚠️ No phone number saved — add it in the entry.');return;}
+  billEntry=e;
+  const te=currentLang==='te';
+  document.getElementById('bill-send-title').textContent=te?'బిల్లు పంపండి':'Send Bill';
+  document.getElementById('bill-send-sub').textContent=(e.work||'Customer')+(te?' కు ఎలా పంపాలి?':' — how to send?');
+  document.getElementById('bs-btn-sms').textContent=te?'✉️ సాధారణ SMS':'✉️ Normal SMS';
+  document.getElementById('bs-btn-no').textContent=te?'ఇప్పుడు వద్దు':'Not now';
+  document.getElementById('bill-send-modal').style.display='flex';
+}
+function closeBillModal(){
+  const m=document.getElementById('bill-send-modal');
+  if(m) m.style.display='none';
+}
+function doBillWhatsApp(){ const e=billEntry; closeBillModal(); if(e) sendBillWhatsApp(e); }
+function doBillSMS(){ const e=billEntry; closeBillModal(); if(e) sendBillSMS(e); }
 
 // ── EXPORT ────────────────────────────────────────────
 function exportCSV(type){

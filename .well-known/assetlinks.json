@@ -1,0 +1,10 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls", "delegate_permission/common.get_login_creds"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.khetdiary.app",
+    "sha256_cert_fingerprints": [
+      "60:91:C6:36:C8:D7:9F:E8:83:41:60:D8:9C:9D:3F:14:80:4E:66:2A:9E:0C:4E:1D:24:A4:47:09:EE:A1:57:BE"
+    ]
+  }
+}]

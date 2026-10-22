@@ -70,6 +70,9 @@
   firebase.initializeApp(firebaseConfig);
   window.fbAuth = firebase.auth();
   window.fbDb   = firebase.firestore();
+  // Offline persistence: reads & writes keep working without internet,
+  // queued writes sync automatically when back online.
+  try{ window.fbDb.enablePersistence({synchronizeTabs:true}).catch(function(){}); }catch(e){}
 </script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
@@ -838,6 +841,16 @@ body.dark .bill-row.total{border-top-color:#E8DDD0;border-bottom-color:#E8DDD0;}
   window.addEventListener('error', function(){ setTimeout(unstick, 300); });
   window.addEventListener('unhandledrejection', function(){ setTimeout(unstick, 300); });
 })();
+</script>
+<script>
+/* PWA: offline support via service worker (registration failure is harmless) */
+if('serviceWorker' in navigator){
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('./sw.js', {scope: './'}).catch(function(e){
+      console.warn('Service worker not registered:', e && e.message);
+    });
+  });
+}
 </script>
 
 <!-- IN-APP LOADING (shown briefly after login while syncing cloud data) -->
@@ -2642,6 +2655,7 @@ function switchCropTab(t){
 
 // ── HELPERS ───────────────────────────────────────────
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function escAttr(s){return esc(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 function fmtD(d){if(!d)return'';const[y,m,dy]=d.split('-');return`${dy}/${m}/${y}`;}
 function fmtT(t){if(!t)return null;const[h,m]=t.split(':');return`${+h%12||12}:${m} ${+h>=12?'PM':'AM'}`;}
 function calcHN(s,e){if(!s||!e)return 0;const[sh,sm]=s.split(':').map(Number),[eh,em]=e.split(':').map(Number);const d=(eh*60+em)-(sh*60+sm);return d>0?d/60:0;}
@@ -2975,6 +2989,7 @@ function renderFarm(){
       ${e.notes?`<div class="rnotes">📝 ${esc(e.notes)}</div>`:''}
       <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
         ${e.phone?`<button class="wa-share-btn" style="background:#25D366;" onclick="askSendBill(${e.id})">📤 ${currentLang==='te'?'బిల్లు పంపండి':'Send Bill'}</button>`:''}
+        ${(e.phone&&e.pending>0)?`<button class="wa-share-btn" style="background:var(--orange);" onclick="askReminder(${e.id})">🔔 ${currentLang==='te'?'గుర్తు చేయండి':'Remind'}</button>`:''}
         <button class="wa-share-btn" onclick="shareFarmEntryWA(${e.id})">📤 Share</button>
       </div>
     </div>`;
@@ -3427,8 +3442,9 @@ function renderDash(){
   document.getElementById('d-home').textContent=inr(homeCost);
 
   const dvl=document.getElementById('d-veh-list');
-  if(!vehicles.length){dvl.innerHTML='<p style="color:var(--muted);font-size:0.82rem;">No vehicles added yet.</p>';return;}
-  dvl.innerHTML=vehicles.map(v=>{
+  dvl.innerHTML = !vehicles.length
+    ? '<p style="color:var(--muted);font-size:0.82rem;">No vehicles added yet.</p>'
+    : vehicles.map(v=>{
     const vf=farm.filter(e=>String(e.vid)===String(v.id));
     const vd=diesel.filter(e=>String(e.vid)===String(v.id));
     const ve=vf.reduce((s,e)=>s+(e.received||0),0);
@@ -3472,7 +3488,10 @@ function renderPendingReminders(farm){
         </div>
         <div style="text-align:right;">
           <div class="pending-alert-amt">${inr(e.pending)}</div>
-          <button onclick="quickPay(${e.id})" style="margin-top:4px;background:var(--leaf);color:#fff;border:none;border-radius:6px;padding:3px 9px;font-size:0.68rem;font-weight:700;cursor:pointer;">💰 ${currentLang==='te'?'వచ్చింది':'Mark Paid'}</button>
+          <div style="display:flex;gap:5px;justify-content:flex-end;margin-top:4px;">
+            ${e.phone?`<button onclick="askReminder(${e.id})" style="background:var(--orange);color:#fff;border:none;border-radius:6px;padding:3px 9px;font-size:0.68rem;font-weight:700;cursor:pointer;">🔔 ${currentLang==='te'?'గుర్తు చేయండి':'Remind'}</button>`:''}
+            <button onclick="quickPay(${e.id})" style="background:var(--leaf);color:#fff;border:none;border-radius:6px;padding:3px 9px;font-size:0.68rem;font-weight:700;cursor:pointer;">💰 ${currentLang==='te'?'వచ్చింది':'Mark Paid'}</button>
+          </div>
         </div>
       </div>`;
     }).join('')}
@@ -3507,12 +3526,33 @@ function shareFarmEntryWA(id){
   window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
 }
 
-// ── SEND BILL TO CUSTOMER : WHATSAPP or NORMAL SMS ─────
+// ── SEND BILL / STATEMENT / REMINDER : WHATSAPP or SMS ─
 function normalizePhone(p){
   let phone=String(p||'').replace(/[\s\-\(\)]/g,'');
   if(phone.startsWith('+91')) phone=phone.slice(3);
   else if(phone.startsWith('91')&&phone.length>10) phone=phone.slice(2);
   return phone;
+}
+
+function waOpen(phoneIntl,msg){
+  window.open('https://wa.me/'+phoneIntl+'?text='+encodeURIComponent(msg),'_blank');
+  toast('📲 Opening WhatsApp...');
+}
+
+function smsOpen(phone,msg){
+  const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Mac/.test(navigator.platform)&&'ontouchend' in document);
+  // Android/others: sms:number?body=   |   iOS: sms:number&body=
+  window.location.href=(isIOS?('sms:'+phone+'&body='):('sms:'+phone+'?body='))+encodeURIComponent(msg);
+  // Desktop browsers have no SMS app: pre-fill falls back to copy-paste
+  setTimeout(()=>{
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(msg).then(
+        ()=>toast('📋 Message copied! Paste it in any SMS app.'),
+        ()=>toast('📱 Open the SMS app to send.')
+      );
+    }
+  },1200);
+  toast('✉️ Opening Messages...');
 }
 
 function billMsg(e,plain){
@@ -3534,51 +3574,223 @@ function sendBillWhatsApp(e){
   if(!e.phone) return;
   const phone=normalizePhone(e.phone);
   if(phone.length!==10){toast('⚠️ Invalid phone number.');return;}
-  window.open('https://wa.me/91'+phone+'?text='+encodeURIComponent(billMsg(e,false)),'_blank');
-  toast('📲 Opening WhatsApp...');
+  waOpen('91'+phone,billMsg(e,false));
 }
 
 function sendBillSMS(e){
   if(!e.phone) return;
   const phone=normalizePhone(e.phone);
   if(phone.length!==10){toast('⚠️ Invalid phone number.');return;}
-  const msg=billMsg(e,true);
-  const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Mac/.test(navigator.platform)&&'ontouchend' in document);
-  // Android/others: sms:number?body=   |   iOS: sms:number&body=
-  const uri=isIOS?('sms:+91'+phone+'&body='):('sms:+91'+phone+'?body=');
-  window.location.href=uri+encodeURIComponent(msg);
-  // Desktop browsers have no SMS app: pre-fill falls back to copy-paste
-  setTimeout(()=>{
-    if(navigator.clipboard&&navigator.clipboard.writeText){
-      navigator.clipboard.writeText(msg).then(
-        ()=>toast('📋 Message copied! Paste it in any SMS app.'),
-        ()=>toast('📱 Open the SMS app to send.')
-      );
-    }
-  },1200);
-  toast('✉️ Opening Messages...');
+  smsOpen('+91'+phone,billMsg(e,true));
 }
 
-// ── SEND BILL CHOOSER (WhatsApp / SMS) ────────────────
-let billEntry=null;
+// ── CUSTOMER STATEMENT (full ledger of one customer) ──
+function customerEntries(name){
+  const n=String(name||'').trim().toLowerCase();
+  return getFarm().filter(e=>String(e.work||'').trim().toLowerCase()===n)
+    .slice().sort((a,b)=>new Date(a.date)-new Date(b.date));
+}
+
+function statementMsg(name,plain){
+  const es=customerEntries(name);
+  const total=es.reduce((s,e)=>s+(e.total||0),0);
+  const paid=es.reduce((s,e)=>s+(e.received||0),0);
+  const pending=es.reduce((s,e)=>s+(e.pending||0),0);
+  const hrs=es.reduce((s,e)=>s+(e.hrs||0),0);
+  const acres=es.reduce((s,e)=>s+(e.acres||0),0);
+  let lines='';
+  const shown=es.slice(0,15);
+  shown.forEach((e,i)=>{
+    lines+=`${i+1}. 📅 ${fmtD(e.date)}${e.vname?' 🚛 '+e.vname:''}${e.acres>0?' · 📏 '+e.acres+'ac':''}${e.hrs>0?' · 🕒 '+fmtH(e.hrs):''} — ${inr(e.total||0)} (✅ ${inr(e.received||0)}${e.pending>0?' · ⏳ '+inr(e.pending):''})\n`;
+  });
+  if(es.length>shown.length) lines+=`… +${es.length-shown.length} more works\n`;
+  let msg=`🌾 *Khet Diary — Statement*\n\n`+
+    `👨‍🌾 ${name||'Customer'} — ${es.length} works`+
+    `${acres>0?(plain?' · ':' · ')+acres.toFixed(1)+' acres':''}${hrs>0?` · ${fmtH(hrs)}`:''}\n\n`+
+    lines+
+    `\n💰 *Total: ${inr(total)}*\n`+
+    `✅ *Received: ${inr(paid)}*\n`+
+    `${pending>0?`⏳ *Pending: ${inr(pending)}*\n`:''}`+
+    `\n_via Khet Diary_`;
+  if(plain) msg=msg.replace(/\*/g,'');
+  return msg;
+}
+
+function sendStatementWhatsApp(name){
+  const p=(customerEntries(name).slice().reverse().find(e=>e.phone)||{}).phone||'';
+  const phone=normalizePhone(p);
+  if(phone.length!==10){toast('⚠️ No valid phone number for this customer.');return;}
+  waOpen('91'+phone,statementMsg(name,false));
+}
+
+function sendStatementSMS(name){
+  const p=(customerEntries(name).slice().reverse().find(e=>e.phone)||{}).phone||'';
+  const phone=normalizePhone(p);
+  if(phone.length!==10){toast('⚠️ No valid phone number for this customer.');return;}
+  smsOpen('+91'+phone,statementMsg(name,true));
+}
+
+function printStatement(name){
+  const es=customerEntries(name);
+  if(!es.length){toast('⚠️ No entries for this customer.');return;}
+  const printWindow=window.open('','_blank');
+  if(!printWindow){toast('⚠️ Allow pop-ups to print the statement.');return;}
+  const total=es.reduce((s,e)=>s+(e.total||0),0);
+  const paid=es.reduce((s,e)=>s+(e.received||0),0);
+  const pending=es.reduce((s,e)=>s+(e.pending||0),0);
+  printWindow.document.write(`<!DOCTYPE html><html><head><title>Khet Diary Statement</title>
+    <style>
+      body{font-family:Arial,sans-serif;padding:20px;max-width:420px;margin:0 auto;}
+      .header{text-align:center;border-bottom:2px solid #000;padding-bottom:10px;margin-bottom:14px;}
+      .header h1{font-size:1.3rem;margin:0;}
+      .header p{font-size:0.8rem;color:#555;margin:4px 0 0;}
+      .row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed #ddd;font-size:0.85rem;}
+      .row small{color:#777;display:block;font-size:0.7rem;}
+      .total{border-bottom:2px solid #000;border-top:2px solid #000;margin-top:8px;padding-top:8px;font-weight:bold;font-size:0.95rem;}
+      .pending{color:orange;font-weight:bold;}
+      .footer{text-align:center;margin-top:20px;font-size:0.7rem;color:#999;}
+      @media print{ .noprint{display:none;} }
+    </style>
+  </head><body>
+    <div class="header">
+      <h1>🌾 Khet Diary</h1>
+      <p>Customer Statement — ${esc(name)}</p>
+    </div>
+    ${es.map(e=>`<div class="row"><span>📅 ${fmtD(e.date)}${e.vname?' · '+esc(e.vname):''}${e.acres>0?' · '+e.acres+' ac':''}${e.hrs>0?' · '+fmtH(e.hrs):''}<small>Work: ${esc(e.work)}</small></span><span><b>${inr(e.total||0)}</b><small>✅ ${inr(e.received||0)}${e.pending>0?' · ⏳ '+inr(e.pending):''}</small></span></div>`).join('')}
+    <div class="total row"><span>Total (${es.length} works):</span><span>${inr(total)}</span></div>
+    <div class="row"><span>Paid:</span><span style="color:green;font-weight:bold;">${inr(paid)}</span></div>
+    ${pending>0?`<div class="row pending"><span>Pending:</span><span>${inr(pending)}</span></div>`:''}
+    <div class="footer">Generated by Khet Diary App</div>
+  </body></html>`);
+  printWindow.document.close();
+  printWindow.print();
+}
+
+// ── PAYMENT REMINDER (polite nudge) ───────────────────
+function entryReminderMsg(e,plain){
+  let msg=`🌾 *Khet Diary — Payment Reminder*\n\n`+
+    `🙏 Hello ${e.work||'Customer'},\n`+
+    `A friendly reminder about pending payment:\n\n`+
+    `📅 Work date: ${fmtD(e.date)}\n`+
+    `💰 Total: ${inr(e.total||0)}\n`+
+    `✅ Paid: ${inr(e.received||0)}\n`+
+    `⏳ *Pending: ${inr(e.pending||0)}*\n\n`+
+    `Kindly pay when convenient. Thank you!\n\n_via Khet Diary_`;
+  if(plain) msg=msg.replace(/\*/g,'');
+  return msg;
+}
+
+function customerReminderMsg(name,plain){
+  const es=customerEntries(name).filter(e=>(e.pending||0)>0);
+  const pending=es.reduce((s,e)=>s+(e.pending||0),0);
+  let items='';
+  es.slice(0,10).forEach(e=>{items+=`• 📅 ${fmtD(e.date)} — ⏳ ${inr(e.pending)}\n`;});
+  if(es.length>10) items+=`• … +${es.length-10} more\n`;
+  let msg=`🌾 *Khet Diary — Payment Reminder*\n\n`+
+    `🙏 Hello ${name||'Customer'},\n\n`+
+    `Pending payments:\n${items}\n`+
+    `⏳ *Total Pending: ${inr(pending)}*\n\n`+
+    `Kindly settle when convenient. Thank you!\n\n_via Khet Diary_`;
+  if(plain) msg=msg.replace(/\*/g,'');
+  return msg;
+}
+
+function sendReminderEntry(id){
+  const e=getFarm().find(x=>x.id===id);
+  if(!e||!e.phone) return;
+  const p=normalizePhone(e.phone);
+  if(p.length!==10){toast('⚠️ Invalid phone number.');return;}
+  waOpen('91'+p,entryReminderMsg(e,false));
+}
+
+function sendReminderCustomer(name){
+  const es=customerEntries(name);
+  const p=(es.slice().reverse().find(e=>e.phone)||{}).phone||'';
+  const phone=normalizePhone(p);
+  if(phone.length!==10){toast('⚠️ No valid phone number for this customer.');return;}
+  waOpen('91'+phone,customerReminderMsg(name,false));
+}
+
+// ── SEND CHOOSER MODAL (WhatsApp / SMS / Not now) ─────
+function openSendModal(kind,payload){
+  sendCtx={kind:kind,payload:payload};
+  const te=currentLang==='te';
+  const tEl=document.getElementById('bill-send-title');
+  const sEl=document.getElementById('bill-send-sub');
+  if(kind==='bill'){
+    tEl.textContent=te?'బిల్లు పంపండి':'Send Bill';
+    const be=getFarm().find(x=>x.id===payload);
+    sEl.textContent=((be&&be.work)||'Customer')+(te?' కు ఎలా పంపాలి?':' — how to send?');
+  }else if(kind==='statement'){
+    tEl.textContent=te?'స్టేట్‌మెంట్ పంపండి':'Send Statement';
+    sEl.textContent=(te?'పూర్తి లెక్క: ':'Full account: ')+(payload||'Customer');
+  }else{
+    tEl.textContent=te?'రిమైండర్ పంపండి':'Send Reminder';
+    const rn=typeof payload==='number'?((getFarm().find(x=>x.id===payload)||{}).work||'Customer'):String(payload||'Customer');
+    sEl.textContent=(te?(rn+' — రావలసిన డబ్బు గుర్తు చేయండి'):(rn+' — polite payment nudge'));
+  }
+  document.getElementById('bs-btn-sms').textContent=te?'✉️ సాధారణ SMS':'✉️ Normal SMS';
+  document.getElementById('bs-btn-no').textContent=te?'ఇప్పుడు వద్దు':'Not now';
+  document.getElementById('bill-send-modal').style.display='flex';
+}
+
+let sendCtx=null;
 function askSendBill(id){
   const e=getFarm().find(x=>x.id===id);
   if(!e){toast('⚠️ Entry not found.');return;}
   if(!e.phone){toast('⚠️ No phone number saved — add it in the entry.');return;}
-  billEntry=e;
-  const te=currentLang==='te';
-  document.getElementById('bill-send-title').textContent=te?'బిల్లు పంపండి':'Send Bill';
-  document.getElementById('bill-send-sub').textContent=(e.work||'Customer')+(te?' కు ఎలా పంపాలి?':' — how to send?');
-  document.getElementById('bs-btn-sms').textContent=te?'✉️ సాధారణ SMS':'✉️ Normal SMS';
-  document.getElementById('bs-btn-no').textContent=te?'ఇప్పుడు వద్దు':'Not now';
-  document.getElementById('bill-send-modal').style.display='flex';
+  openSendModal('bill',e.id);
+}
+function askStatement(name){
+  const es=customerEntries(name);
+  if(!es.length){toast('⚠️ No entries for this customer.');return;}
+  if(!es.some(e=>e.phone)){toast('⚠️ No phone number saved for this customer.');return;}
+  openSendModal('statement',String(name));
+}
+function askReminder(target){
+  if(typeof target==='number'){
+    const e=getFarm().find(x=>x.id===target);
+    if(!e){toast('⚠️ Entry not found.');return;}
+    if(!e.phone){toast('⚠️ No phone number saved — add it in the entry.');return;}
+    if(!(e.pending>0)){toast('ℹ️ Nothing pending here.');return;}
+    openSendModal('reminder',e.id);
+  }else{
+    const es=customerEntries(target).filter(e=>(e.pending||0)>0);
+    if(!es.length){toast('ℹ️ Nothing pending for this customer.');return;}
+    const anyPhone=customerEntries(target).some(e=>e.phone);
+    if(!anyPhone){toast('⚠️ No phone number saved for this customer.');return;}
+    openSendModal('reminder',String(target));
+  }
 }
 function closeBillModal(){
   const m=document.getElementById('bill-send-modal');
   if(m) m.style.display='none';
 }
-function doBillWhatsApp(){ const e=billEntry; closeBillModal(); if(e) sendBillWhatsApp(e); }
-function doBillSMS(){ const e=billEntry; closeBillModal(); if(e) sendBillSMS(e); }
+function doBillWhatsApp(){
+  const k=sendCtx&&sendCtx.kind;
+  closeBillModal();
+  if(!k) return;
+  if(k==='bill'){const e=getFarm().find(x=>x.id===sendCtx.payload); if(e) sendBillWhatsApp(e);}
+  else if(k==='statement'){sendStatementWhatsApp(sendCtx.payload);}
+  else{typeof sendCtx.payload==='number'?sendReminderEntry(sendCtx.payload):sendReminderCustomer(sendCtx.payload);}
+}
+function doBillSMS(){
+  const k=sendCtx&&sendCtx.kind;
+  closeBillModal();
+  if(!k) return;
+  if(k==='bill'){const e=getFarm().find(x=>x.id===sendCtx.payload); if(e) sendBillSMS(e);}
+  else if(k==='statement'){sendStatementSMS(sendCtx.payload);}
+  else{
+    if(typeof sendCtx.payload==='number'){
+      const e=getFarm().find(x=>x.id===sendCtx.payload);
+      if(e&&e.phone){const p=normalizePhone(e.phone); if(p.length===10) smsOpen('+91'+p,entryReminderMsg(e,true));}
+    }else{
+      const p=(customerEntries(sendCtx.payload).slice().reverse().find(e=>e.phone)||{}).phone||'';
+      const n=normalizePhone(p);
+      if(n.length===10) smsOpen('+91'+n,customerReminderMsg(sendCtx.payload,true));
+    }
+  }
+}
 
 // ── EXPORT ────────────────────────────────────────────
 function exportCSV(type){
@@ -3873,7 +4085,7 @@ function renderCustomers(){
     const totalAcres = c.entries.reduce((s,e)=>s+(e.acres||0),0);
     const hasPending = totalPend > 0;
 
-    return `<div class="customer-card" style="border-left:4px solid ${hasPending?'var(--orange)':'var(--leaf)'};">
+    return `<div class="customer-card" data-cust="${escAttr(c.name)}" style="border-left:4px solid ${hasPending?'var(--orange)':'var(--leaf)'};">
       <div class="customer-card-header">
         <div>
           <div class="customer-name">👨‍🌾 ${esc(c.name)}</div>
@@ -3889,6 +4101,11 @@ function renderCustomers(){
         <div class="cstat"><div class="cstat-val ag">${inr(totalPaid)}</div><div class="cstat-label">${t('total_paid')}</div></div>
         <div class="cstat"><div class="cstat-val" style="color:${hasPending?'var(--orange)':'var(--leaf)'};">${inr(totalPend)}</div><div class="cstat-label">${t('balance_due')}</div></div>
       </div>
+      <div class="cust-actions" style="display:flex;gap:6px;margin:10px 0 0;flex-wrap:wrap;">
+        <button class="wa-share-btn" style="background:#25D366;flex:1;min-width:88px;" onclick="askStatement(this.closest('.customer-card').dataset.cust)">📤 ${currentLang==='te'?'స్టేట్‌మెంట్':'Statement'}</button>
+        ${hasPending?`<button class="wa-share-btn" style="background:var(--orange);flex:1;min-width:72px;" onclick="askReminder(this.closest('.customer-card').dataset.cust)">🔔 ${currentLang==='te'?'రిమైండర్':'Remind'}</button>`:''}
+        <button class="wa-share-btn" style="flex:1;min-width:64px;" onclick="printStatement(this.closest('.customer-card').dataset.cust)">🖨 ${currentLang==='te'?'ప్రింట్':'Print'}</button>
+      </div>
       <div class="customer-entries">
         ${c.entries.sort((a,b)=>new Date(b.date)-new Date(a.date)).map(e=>`
           <div class="customer-entry">
@@ -3897,7 +4114,7 @@ function renderCustomers(){
               <div style="font-size:0.82rem;font-weight:700;">${e.total>0?inr(e.total):''}</div>
             </div>
             ${e.pending>0
-              ?'<div style="font-size:0.75rem;color:var(--orange);font-weight:600;margin-top:3px;">⏳ '+(currentLang==='te'?'రావలసింది':'Pending')+': '+inr(e.pending)+'<button onclick="quickPay('+e.id+')" style="margin-left:8px;background:var(--leaf);color:#fff;border:none;border-radius:6px;padding:2px 8px;font-size:0.68rem;font-weight:700;cursor:pointer;">💰 '+(currentLang==='te'?'వచ్చింది':'Received')+'</button></div>'
+              ?'<div style="font-size:0.75rem;color:var(--orange);font-weight:600;margin-top:3px;">⏳ '+(currentLang==='te'?'రావలసింది':'Pending')+': '+inr(e.pending)+'<button onclick="quickPay('+e.id+')" style="margin-left:8px;background:var(--leaf);color:#fff;border:none;border-radius:6px;padding:2px 8px;font-size:0.68rem;font-weight:700;cursor:pointer;">💰 '+(currentLang==='te'?'వచ్చింది':'Received')+'</button>'+(e.phone?'<button onclick="askReminder('+e.id+')" style="margin-left:4px;background:var(--orange);color:#fff;border:none;border-radius:6px;padding:2px 8px;font-size:0.68rem;font-weight:700;cursor:pointer;">🔔 '+(currentLang==='te'?'గుర్తు చేయండి':'Remind')+'</button>':'')+'</div>'
               :'<div style="font-size:0.75rem;color:var(--leaf);font-weight:600;margin-top:3px;">✅ '+(currentLang==='te'?'చెల్లించారు':'Fully Paid')+'</div>'
             }
           </div>`).join('')}

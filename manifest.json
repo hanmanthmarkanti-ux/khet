@@ -2,6 +2,8 @@
   "name": "Khet Diary",
   "short_name": "Khet Diary",
   "description": "Farm work and home expense tracker",
+  "id": "/",
+  "scope": "./",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#FAF6EE",

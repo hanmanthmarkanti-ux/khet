@@ -1924,6 +1924,10 @@ if('serviceWorker' in navigator){
             <input type="file" id="restore-file-input" accept=".json" onchange="restoreBackup(this)" />
             <div class="photo-upload-label">⬆ Tap to restore from backup file<br><span style="font-size:0.7rem;color:#bbb;">Select a .json backup file</span></div>
           </div>
+          <label style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:18px;background:var(--cream);border:1px solid #E8DFCC;border-radius:10px;padding:9px;font-size:0.8rem;font-weight:700;color:var(--soil);cursor:pointer;">
+            <input type="checkbox" id="msg-te-toggle" onchange="toggleMsgLang(this.checked)" style="width:17px;height:17px;accent-color:#D4552A;cursor:pointer;">
+            <span>🌐 Send bill / statement / reminder messages in Telugu</span>
+          </label>
         </div>
       </div>
     </div>
@@ -2075,6 +2079,10 @@ if('serviceWorker' in navigator){
     <div id="bill-send-sub" style="font-size:0.78rem;color:var(--muted);margin-bottom:18px;">Choose how to send</div>
     <button id="bs-btn-wa" onclick="doBillWhatsApp()" style="width:100%;background:#25D366;color:#fff;border:none;border-radius:10px;padding:13px;font-size:0.95rem;font-weight:800;cursor:pointer;margin-bottom:9px;display:flex;align-items:center;justify-content:center;gap:8px;">📲 WhatsApp</button>
     <button id="bs-btn-sms" onclick="doBillSMS()" style="width:100%;background:var(--blue);color:#fff;border:none;border-radius:10px;padding:13px;font-size:0.95rem;font-weight:800;cursor:pointer;margin-bottom:9px;display:flex;align-items:center;justify-content:center;gap:8px;">✉️ Normal SMS</button>
+    <label style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:9px;background:#F7F1E3;border:1px solid #E8DFCC;border-radius:10px;padding:9px;font-size:0.82rem;font-weight:700;color:var(--soil);cursor:pointer;">
+      <input type="checkbox" id="bs-btn-te" onchange="toggleMsgLang(this.checked)" style="width:17px;height:17px;accent-color:#D4552A;cursor:pointer;">
+      <span id="bs-btn-te-label">🌐 తెలుగులో పంపండి (Send in Telugu)</span>
+    </label>
     <button id="bs-btn-no" onclick="closeBillModal()" style="width:100%;background:transparent;color:var(--muted);border:none;border-radius:10px;padding:10px;font-size:0.85rem;font-weight:700;cursor:pointer;">Not now</button>
   </div>
 </div>
@@ -3555,17 +3563,42 @@ function smsOpen(phone,msg){
   toast('✉️ Opening Messages...');
 }
 
+// ── MESSAGE LANGUAGE (Telugu templates) ───────────────
+let msgLang = localStorage.getItem('KD_msg_lang') || 'en';
+function msgIsTe(){ return msgLang==='te'; }
+function toggleMsgLang(on){
+  msgLang = on ? 'te' : 'en';
+  localStorage.setItem('KD_msg_lang', msgLang);
+  const s=document.getElementById('msg-te-toggle'); if(s) s.checked=msgIsTe();
+  const m=document.getElementById('bs-btn-te'); if(m) m.checked=msgIsTe();
+  toast(on ? '🌐 బిల్లు / రిమైండర్ సందేశాలు తెలుగులో పంపుతాను' : '🌐 Messages will be sent in English');
+}
+
 function billMsg(e,plain){
-  let msg=`🌾 *Khet Diary — Bill*\n\n`+
-    `👨‍🌾 Customer: ${e.work||'Customer'}\n`+
-    `📅 Date: ${fmtD(e.date)}\n`+
-    `${e.vname?`🚛 Vehicle: ${e.vname}\n`:''}`+
-    `${e.hrs>0?`⏱ Time: ${fmtH(e.hrs)}\n`:''}`+
-    `${e.acres>0?`📏 Land: ${e.acres} acres\n`:''}`+
-    `\n💰 *Total: ${inr(e.total||0)}*\n`+
-    `✅ Paid: ${inr(e.received||0)}\n`+
-    `${e.pending>0?`⏳ Pending: ${inr(e.pending)}\n`:''}`+
-    `\n_via Khet Diary_`;
+  let msg;
+  if(msgIsTe()){
+    msg=`🌾 *ఖేత్ డైరీ — బిల్లు*\n\n`+
+      `👨‍🌾 కస్టమర్: ${e.work||'కస్టమర్'}\n`+
+      `📅 తేదీ: ${fmtD(e.date)}\n`+
+      `${e.vname?`🚛 వాహనం: ${e.vname}\n`:''}`+
+      `${e.hrs>0?`⏱ సమయం: ${fmtH(e.hrs)}\n`:''}`+
+      `${e.acres>0?`📏 భూమి: ${e.acres} ఎకరాలు\n`:''}`+
+      `\n💰 *మొత్తం: ${inr(e.total||0)}*\n`+
+      `✅ చెల్లించారు: ${inr(e.received||0)}\n`+
+      `${e.pending>0?`⏳ మిగిలింది: ${inr(e.pending)}\n`:''}`+
+      `\n_ఖేత్ డైరీ యాప్ ద్వారా_`;
+  }else{
+    msg=`🌾 *Khet Diary — Bill*\n\n`+
+      `👨‍🌾 Customer: ${e.work||'Customer'}\n`+
+      `📅 Date: ${fmtD(e.date)}\n`+
+      `${e.vname?`🚛 Vehicle: ${e.vname}\n`:''}`+
+      `${e.hrs>0?`⏱ Time: ${fmtH(e.hrs)}\n`:''}`+
+      `${e.acres>0?`📏 Land: ${e.acres} acres\n`:''}`+
+      `\n💰 *Total: ${inr(e.total||0)}*\n`+
+      `✅ Paid: ${inr(e.received||0)}\n`+
+      `${e.pending>0?`⏳ Pending: ${inr(e.pending)}\n`:''}`+
+      `\n_via Khet Diary_`;
+  }
   if(plain) msg=msg.replace(/\*/g,''); // plain SMS renders asterisks literally
   return msg;
 }
@@ -3598,20 +3631,30 @@ function statementMsg(name,plain){
   const pending=es.reduce((s,e)=>s+(e.pending||0),0);
   const hrs=es.reduce((s,e)=>s+(e.hrs||0),0);
   const acres=es.reduce((s,e)=>s+(e.acres||0),0);
+  const te=msgIsTe();
   let lines='';
   const shown=es.slice(0,15);
   shown.forEach((e,i)=>{
     lines+=`${i+1}. 📅 ${fmtD(e.date)}${e.vname?' 🚛 '+e.vname:''}${e.acres>0?' · 📏 '+e.acres+'ac':''}${e.hrs>0?' · 🕒 '+fmtH(e.hrs):''} — ${inr(e.total||0)} (✅ ${inr(e.received||0)}${e.pending>0?' · ⏳ '+inr(e.pending):''})\n`;
   });
-  if(es.length>shown.length) lines+=`… +${es.length-shown.length} more works\n`;
-  let msg=`🌾 *Khet Diary — Statement*\n\n`+
-    `👨‍🌾 ${name||'Customer'} — ${es.length} works`+
-    `${acres>0?(plain?' · ':' · ')+acres.toFixed(1)+' acres':''}${hrs>0?` · ${fmtH(hrs)}`:''}\n\n`+
-    lines+
-    `\n💰 *Total: ${inr(total)}*\n`+
-    `✅ *Received: ${inr(paid)}*\n`+
-    `${pending>0?`⏳ *Pending: ${inr(pending)}*\n`:''}`+
-    `\n_via Khet Diary_`;
+  if(es.length>shown.length) lines+=(te?`… ఇంకా +${es.length-shown.length} పనులు`:`… +${es.length-shown.length} more works`)+`\n`;
+  let msg=te
+    ?`🌾 *ఖేత్ డైరీ — లెక్క*\n\n`+
+     `👨‍🌾 ${name||'కస్టమర్'} — ${es.length} పనులు`+
+     `${acres>0?' · 📏 '+acres.toFixed(1)+' ఎకరాలు':''}${hrs>0?` · ${fmtH(hrs)}`:''}\n\n`+
+     lines+
+     `\n💰 *మొత్తం: ${inr(total)}*\n`+
+     `✅ *అందింది: ${inr(paid)}*\n`+
+     `${pending>0?`⏳ *మిగిలింది: ${inr(pending)}*\n`:''}`+
+     `\n_ఖేత్ డైరీ యాప్ ద్వారా_`
+    :`🌾 *Khet Diary — Statement*\n\n`+
+     `👨‍🌾 ${name||'Customer'} — ${es.length} works`+
+     `${acres>0?(plain?' · ':' · ')+acres.toFixed(1)+' acres':''}${hrs>0?` · ${fmtH(hrs)}`:''}\n\n`+
+     lines+
+     `\n💰 *Total: ${inr(total)}*\n`+
+     `✅ *Received: ${inr(paid)}*\n`+
+     `${pending>0?`⏳ *Pending: ${inr(pending)}*\n`:''}`+
+     `\n_via Khet Diary_`;
   if(plain) msg=msg.replace(/\*/g,'');
   return msg;
 }
@@ -3668,14 +3711,26 @@ function printStatement(name){
 
 // ── PAYMENT REMINDER (polite nudge) ───────────────────
 function entryReminderMsg(e,plain){
-  let msg=`🌾 *Khet Diary — Payment Reminder*\n\n`+
-    `🙏 Hello ${e.work||'Customer'},\n`+
-    `A friendly reminder about pending payment:\n\n`+
-    `📅 Work date: ${fmtD(e.date)}\n`+
-    `💰 Total: ${inr(e.total||0)}\n`+
-    `✅ Paid: ${inr(e.received||0)}\n`+
-    `⏳ *Pending: ${inr(e.pending||0)}*\n\n`+
-    `Kindly pay when convenient. Thank you!\n\n_via Khet Diary_`;
+  let msg;
+  if(msgIsTe()){
+    msg=`🌾 *ఖేత్ డైరీ — డబ్బు గుర్తు*\n\n`+
+      `🙏 నమస్కారం ${e.work||'కస్టమర్'} గారూ,\n`+
+      `మీరు ఇవ్వాల్సిన డబ్బు గుర్తు చేస్తున్నాను:\n\n`+
+      `📅 పని తేదీ: ${fmtD(e.date)}\n`+
+      `💰 మొత్తం: ${inr(e.total||0)}\n`+
+      `✅ చెల్లించారు: ${inr(e.received||0)}\n`+
+      `⏳ *మిగిలింది: ${inr(e.pending||0)}*\n\n`+
+      `సాధ్యమైనప్పుడు చెల్లించండి. ధన్యవాదాలు! 🙏\n\n_ఖేత్ డైరీ యాప్ ద్వారా_`;
+  }else{
+    msg=`🌾 *Khet Diary — Payment Reminder*\n\n`+
+      `🙏 Hello ${e.work||'Customer'},\n`+
+      `A friendly reminder about pending payment:\n\n`+
+      `📅 Work date: ${fmtD(e.date)}\n`+
+      `💰 Total: ${inr(e.total||0)}\n`+
+      `✅ Paid: ${inr(e.received||0)}\n`+
+      `⏳ *Pending: ${inr(e.pending||0)}*\n\n`+
+      `Kindly pay when convenient. Thank you!\n\n_via Khet Diary_`;
+  }
   if(plain) msg=msg.replace(/\*/g,'');
   return msg;
 }
@@ -3686,11 +3741,20 @@ function customerReminderMsg(name,plain){
   let items='';
   es.slice(0,10).forEach(e=>{items+=`• 📅 ${fmtD(e.date)} — ⏳ ${inr(e.pending)}\n`;});
   if(es.length>10) items+=`• … +${es.length-10} more\n`;
-  let msg=`🌾 *Khet Diary — Payment Reminder*\n\n`+
-    `🙏 Hello ${name||'Customer'},\n\n`+
-    `Pending payments:\n${items}\n`+
-    `⏳ *Total Pending: ${inr(pending)}*\n\n`+
-    `Kindly settle when convenient. Thank you!\n\n_via Khet Diary_`;
+  let msg;
+  if(msgIsTe()){
+    msg=`🌾 *ఖేత్ డైరీ — డబ్బు గుర్తు*\n\n`+
+      `🙏 నమస్కారం ${name||'కస్టమర్'} గారూ,\n\n`+
+      `మిగిలిన చెల్లింపులు:\n${items}\n`+
+      `⏳ *మొత్తం మిగిలింది: ${inr(pending)}*\n\n`+
+      `సాధ్యమైనప్పుడు లెక్క సెటిల్ చేయండి. ధన్యవాదాలు! 🙏\n\n_ఖేత్ డైరీ యాప్ ద్వారా_`;
+  }else{
+    msg=`🌾 *Khet Diary — Payment Reminder*\n\n`+
+      `🙏 Hello ${name||'Customer'},\n\n`+
+      `Pending payments:\n${items}\n`+
+      `⏳ *Total Pending: ${inr(pending)}*\n\n`+
+      `Kindly settle when convenient. Thank you!\n\n_via Khet Diary_`;
+  }
   if(plain) msg=msg.replace(/\*/g,'');
   return msg;
 }
@@ -3731,6 +3795,10 @@ function openSendModal(kind,payload){
   }
   document.getElementById('bs-btn-sms').textContent=te?'✉️ సాధారణ SMS':'✉️ Normal SMS';
   document.getElementById('bs-btn-no').textContent=te?'ఇప్పుడు వద్దు':'Not now';
+  const teLbl=document.getElementById('bs-btn-te-label');
+  if(teLbl) teLbl.textContent=te?'🌐 తెలుగులో పంపండి (Send in Telugu)':'🌐 Send in Telugu (తెలుగులో పంపండి)';
+  const bste=document.getElementById('bs-btn-te');
+  if(bste) bste.checked=msgIsTe();
   document.getElementById('bill-send-modal').style.display='flex';
 }
 
@@ -3928,6 +3996,15 @@ function applyLang(){
   // Search placeholders
   const cs = document.getElementById('cust-search');
   if(cs) cs.placeholder = t('search_customer');
+  // Message-language toggle (Data Backup panel)
+  const mte=document.getElementById('msg-te-toggle');
+  if(mte){
+    mte.checked=msgIsTe();
+    const msp=mte.closest('label')?mte.closest('label').querySelector('span'):null;
+    if(msp) msp.textContent=currentLang==='te'
+      ?'🌐 బిల్లు / స్టేట్‌మెంట్ / రిమైండర్ సందేశాలు తెలుగులో పంపండి'
+      :'🌐 Send bill / statement / reminder messages in Telugu';
+  }
   // Re-render active pages
   renderDash();
   renderReport();
@@ -3959,6 +4036,16 @@ function renderReport(){
   const totalHrs    = farm.reduce((s,e)=>s+(e.hrs||0),0);
   const totalAcres  = farm.reduce((s,e)=>s+(e.acres||0),0);
   const netBalance  = farmEarned - farmCost - dieselCost - homeSpent;
+
+  // Per-place breakdown of this month's farm work
+  const byPlace={};
+  farm.forEach(e=>{
+    const p=(e.place&&String(e.place).trim())||'—';
+    const b=byPlace[p]||(byPlace[p]={n:0,hrs:0,ac:0,earn:0,pend:0});
+    b.n++; b.hrs+=e.hrs||0; b.ac+=e.acres||0; b.earn+=e.received||0; b.pend+=e.pending||0;
+  });
+  const placeKeys=Object.keys(byPlace).filter(p=>p!=='—').sort((a,b)=>byPlace[b].earn-byPlace[a].earn);
+  const hasPlaceNames=placeKeys.length>0;
 
   // Format month display
   const [y,m] = month.split('-');
@@ -3994,12 +4081,19 @@ function renderReport(){
       <div class="report-row"><span class="report-row-label">${currentLang==='te'?'నమోదులు':'Entries'}</span><span class="report-row-val">${home.length}</span></div>
     </div>
 
+    ${hasPlaceNames?`<div class="report-section">
+      <div class="report-section-title">🗺 ${currentLang==='te'?'ప్రాంతం వారీగా పొలం పని':'Farm Work — Per Place'}</div>
+      ${placeKeys.map(p=>{const b=byPlace[p];return `<div class="report-row"><span class="report-row-label">📍 ${esc(p)} <small style="color:var(--muted);font-size:0.7rem;">(${b.n}${b.ac>0?' · '+b.ac.toFixed(1)+' ac':''})</small></span><span class="report-row-val ag">${inr(b.earn)}${b.pend>0?` <small style="color:#E8833A;font-size:0.7rem;">⏳ ${inr(b.pend)}</small>`:''}</span></div>`;}).join('')}
+    </div>`:''}
+
     <div class="report-total-row">
       <span class="report-total-label">🏆 ${t('net_balance')}</span>
       <span class="report-total-val" style="color:${netBalance>=0?'#7FD992':'#FF9B8A'}">${netBalance>=0?'+':'-'}${inr(Math.abs(netBalance))}</span>
     </div>
 
     <button class="share-btn" onclick="shareReport()">📤 ${currentLang==='te'?'వాట్సాప్‌లో పంపు':'Share on WhatsApp'}</button>
+    <button class="share-btn" style="background:#5B7DB1;" onclick="printMonthlyReport()">🖨 ${currentLang==='te'?'ప్రింట్ / PDF':'Print / Save as PDF'}</button>
+    <button class="share-btn" style="background:#7A5CB0;" onclick="downloadMonthCSV()">📥 ${currentLang==='te'?'ఎక్సెల్ (CSV) డౌన్‌లోడ్':'Download Excel (CSV)'}</button>
     <div style="height:14px;"></div>
   `;
 }
@@ -4040,6 +4134,278 @@ function shareReport(){
 
   const url = 'https://wa.me/?text='+encodeURIComponent(msg);
   window.open(url,'_blank');
+}
+
+// ── MONTHLY REPORT: data, print, CSV ──────────────────
+function reportMonthData(){
+  const month=document.getElementById('report-month').value;
+  if(!month) return null;
+  const farm    = getFarm().filter(e=>e.date.startsWith(month));
+  const diesel  = getDiesel().filter(e=>e.date.startsWith(month));
+  const home    = getHome().filter(e=>e.date.startsWith(month));
+  const income  = getIncome().filter(e=>e.date.startsWith(month));
+  const byPlace={};
+  farm.forEach(e=>{
+    const p=(e.place&&String(e.place).trim())||'—';
+    const b=byPlace[p]||(byPlace[p]={n:0,hrs:0,ac:0,earn:0,pend:0});
+    b.n++; b.hrs+=e.hrs||0; b.ac+=e.acres||0; b.earn+=e.received||0; b.pend+=e.pending||0;
+  });
+  return {
+    month, farm, diesel, home, income,
+    farmEarned: farm.reduce((s,e)=>s+(e.received||0),0),
+    farmPending: farm.reduce((s,e)=>s+(e.pending||0),0),
+    farmTotal: farm.reduce((s,e)=>s+(e.total||0),0),
+    farmCost: farm.reduce((s,e)=>s+(e.otherExp||0),0),
+    dieselCost: diesel.reduce((s,e)=>s+(e.cost||0),0),
+    dieselLtrs: diesel.reduce((s,e)=>s+(e.litres||0),0),
+    homeSpent: home.reduce((s,e)=>s+(e.amt||0),0),
+    incomeTotal: income.reduce((s,e)=>s+(e.amt||0),0),
+    totalHrs: farm.reduce((s,e)=>s+(e.hrs||0),0),
+    totalAcres: farm.reduce((s,e)=>s+(e.acres||0),0),
+    byPlace
+  };
+}
+
+function monthLabelOf(month){
+  const [y,m]=month.split('-');
+  const names=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return names[+m-1]+' '+y;
+}
+
+function printMonthlyReport(){
+  const R=reportMonthData();
+  if(!R){ toast(currentLang==='te'?'⚠️ ముందు నెల ఎంచుకోండి':'⚠️ Select a month first'); return; }
+  const net=R.farmEarned-R.farmCost-R.dieselCost-R.homeSpent;
+  const printWindow=window.open('','_blank');
+  if(!printWindow){ toast('⚠️ Allow pop-ups to print.'); return; }
+  const placeKeys=Object.keys(R.byPlace).filter(p=>p!=='—');
+  if(placeKeys.length) placeKeys.sort((a,b)=>R.byPlace[b].earn-R.byPlace[a].earn);
+  printWindow.document.write(`<!DOCTYPE html><html><head><title>Khet Diary — ${monthLabelOf(R.month)}</title>
+    <style>
+      body{font-family:Arial,sans-serif;padding:20px;max-width:440px;margin:0 auto;}
+      .header{text-align:center;border-bottom:2px solid #000;padding-bottom:10px;margin-bottom:14px;}
+      .header h1{font-size:1.3rem;margin:0;}
+      .header p{font-size:0.85rem;color:#555;margin:4px 0 0;font-weight:bold;}
+      h2{font-size:0.9rem;margin:16px 0 6px;border-bottom:1px solid #999;padding-bottom:3px;}
+      .row{display:flex;justify-content:space-between;padding:4px 0;font-size:0.84rem;}
+      .row .neg{color:#c0392b;font-weight:bold;}
+      .row .pos{color:#1e7d3c;font-weight:bold;}
+      table{width:100%;border-collapse:collapse;font-size:0.78rem;margin-top:4px;}
+      th,td{border:1px solid #bbb;padding:4px 6px;text-align:left;}
+      th{background:#f2efe8;}
+      td.r,th.r{text-align:right;}
+      .total{border-top:2px solid #000;border-bottom:2px solid #000;margin-top:14px;padding:8px 0;font-weight:bold;font-size:0.95rem;display:flex;justify-content:space-between;}
+      .footer{text-align:center;margin-top:20px;font-size:0.7rem;color:#999;}
+      small{color:#777;}
+      @media print{ body{padding:0;} }
+    </style>
+  </head><body>
+    <div class="header">
+      <h1>🌾 Khet Diary</h1>
+      <p>Monthly Report — ${monthLabelOf(R.month)}</p>
+    </div>
+    <h2>🚜 Farm Work</h2>
+    <div class="row"><span>Work entries</span><span>${R.farm.length}</span></div>
+    <div class="row"><span>Total work value</span><span>${inr(R.farmTotal)}</span></div>
+    <div class="row"><span>Money received ✅</span><span class="pos">${inr(R.farmEarned)}</span></div>
+    <div class="row"><span>Still pending ⏳</span><span class="neg">${inr(R.farmPending)}</span></div>
+    <div class="row"><span>Hours worked</span><span>${fmtH(R.totalHrs)}</span></div>
+    <div class="row"><span>Acres covered</span><span>${R.totalAcres.toFixed(1)}</span></div>
+    <div class="row"><span>Other farm costs</span><span class="neg">${inr(R.farmCost)}</span></div>
+    ${placeKeys.length?`
+    <h2>🗺 Farm Work — Per Place</h2>
+    <table><tr><th>Place</th><th class="r">Works</th><th class="r">Acres</th><th class="r">Received</th><th class="r">Pending</th></tr>
+    ${placeKeys.map(p=>{const b=R.byPlace[p];return `<tr><td>${esc(p)}</td><td class="r">${b.n}</td><td class="r">${b.ac>0?b.ac.toFixed(1):'—'}</td><td class="r">${inr(b.earn)}</td><td class="r">${b.pend>0?inr(b.pend):'—'}</td></tr>`;}).join('')}
+    </table>`:''}
+    <h2>⛽ Diesel</h2>
+    <div class="row"><span>Litres used</span><span>${R.dieselLtrs.toFixed(1)} L</span></div>
+    <div class="row"><span>Diesel cost</span><span class="neg">${inr(R.dieselCost)}</span></div>
+    <h2>🏠 Home & Money In</h2>
+    <div class="row"><span>Home expenses</span><span class="neg">${inr(R.homeSpent)}</span></div>
+    ${R.incomeTotal>0?`<div class="row"><span>Other income (money came in ✅)</span><span class="pos">${inr(R.incomeTotal)}</span></div>`:''}
+    <div class="total"><span>🏆 Net for the month:</span><span style="color:${net>=0?'#1e7d3c':'#c0392b'};">${net>=0?'+':'-'}${inr(Math.abs(net))}</span></div>
+    <div class="footer">Generated by Khet Diary App · ${new Date().toLocaleDateString()}</div>
+  </body></html>`);
+  printWindow.document.close();
+  printWindow.print();
+}
+
+function csvQ(v){
+  const s=String(v===undefined||v===null?'':v);
+  return '"'+s.replace(/"/g,'""')+'"';
+}
+
+function downloadMonthCSV(){
+  const R=reportMonthData();
+  if(!R){ toast(currentLang==='te'?'⚠️ ముందు నెల ఎంచుకోండి':'⚠️ Select a month first'); return; }
+  const L=[];
+  L.push('KHET DIARY — '+monthLabelOf(R.month));
+  L.push('');
+  L.push('FARM WORK');
+  L.push('Date,Work,Phone,Place,Vehicle,Hours,Acres,Total,Received,Pending,Other Cost,Notes');
+  R.farm.forEach(e=>{
+    L.push([e.date,e.work,e.phone,(e.place||''),e.vname,e.hrs||0,e.acres||0,e.total||0,e.received||0,e.pending||0,e.otherExp||0,e.notes||''].map(csvQ).join(','));
+  });
+  L.push('');
+  L.push('DIESEL');
+  L.push('Date,Vehicle,Vehicle Type,Litres,Price/L,Cost,Pump,Notes');
+  R.diesel.forEach(e=>{
+    L.push([e.date,e.vname,e.vtype||'',e.litres||0,e.pricePerL||0,e.cost||0,e.pump||'',e.notes||''].map(csvQ).join(','));
+  });
+  L.push('');
+  L.push('HOME EXPENSES');
+  L.push('Date,Item,Category,Amount,Paid Via,Notes');
+  R.home.forEach(e=>{
+    L.push([e.date,e.item,e.cat||'',e.amt||0,e.paid||'',e.notes||''].map(csvQ).join(','));
+  });
+  L.push('');
+  L.push('MONEY CAME IN');
+  L.push('Date,From,Source,Amount,Notes');
+  R.income.forEach(e=>{
+    L.push([e.date,e.from,e.src||'',e.amt||0,e.notes||''].map(csvQ).join(','));
+  });
+  L.push('');
+  L.push('SUMMARY');
+  L.push('Work Value'+','+csvQ(R.farmTotal));
+  L.push('Received'+','+csvQ(R.farmEarned));
+  L.push('Pending'+','+csvQ(R.farmPending));
+  L.push('Diesel Cost'+','+csvQ(R.dieselCost));
+  L.push('Home Expenses'+','+csvQ(R.homeSpent));
+  L.push('Money In'+','+csvQ(R.incomeTotal));
+  const net=R.farmEarned-R.farmCost-R.dieselCost-R.homeSpent;
+  L.push('Net'+','+csvQ(net));
+  L.push('');
+  const blob=new Blob(['\ufeff'+L.join('\n')],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='khet-report-'+R.month+'.csv';
+  document.body.appendChild(a); a.click(); a.remove();
+  toast('📥 Excel file downloaded — '+('khet-report-'+R.month+'.csv'));
+}
+
+// ── DATA BACKUP & RESTORE ─────────────────────────────
+function backupSettings(){
+  return {
+    lang: currentLang,
+    msgLang: msgLang,
+    dark: String(darkMode),
+    rainAlert: String(rainAlertEnabled),
+    reminders: String(remindersEnabled)
+  };
+}
+
+function makeBackupData(){
+  return {
+    app:'khet-diary', backupVersion:1, ts:new Date().toISOString(),
+    data:{
+      vehicles:getVehicles()||[],
+      farm:getFarm()||[],
+      diesel:getDiesel()||[],
+      home:getHome()||[],
+      income:getIncome()||[],
+      crops:getCrops()||[],
+      market:getMarket()||[],
+      loans:getLoans()||[],
+      labour:getLabour()||[],
+      attendance:getAttendance()||[],
+      inputs:getInputs()||[],
+      rainfall:getRainfall()||[]
+    },
+    settings: backupSettings()
+  };
+}
+
+function downloadBackup(){
+  if(!confirm('Download a backup file of ALL your data now?')) return;
+  try{
+    const j=makeBackupData();
+    const blob=new Blob([JSON.stringify(j,null,1)],{type:'application/json'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='khet-diary-backup-'+new Date().toISOString().slice(0,10)+'.json';
+    document.body.appendChild(a); a.click(); a.remove();
+    toast('💾 Backup downloaded! '+(j.data.farm.length+' works, saved to Downloads.'));
+  }catch(e){
+    toast('⚠️ Backup failed: '+e.message);
+  }
+}
+
+function refreshAfterRestore(){
+  const jobs=[
+    'renderDash','renderFarm','renderVehicles','renderDieselPage',
+    'renderHomeAll','renderIncomeAll','renderReport','renderCustomers',
+    'renderPlaces','renderCrops','renderLoans','renderLabourSummary',
+    'renderInputs','renderRainfall'
+  ];
+  jobs.forEach(n=>{ try{ if(typeof window[n]==='function') window[n](); }catch(x){} });
+}
+
+function applyBackupSettings(s){
+  if(!s) return;
+  try{
+    if(s.lang==='te'||s.lang==='en'){
+      currentLang=s.lang; localStorage.setItem('KD_lang',currentLang);
+      if(typeof applyLang==='function') applyLang();
+    }
+    if(s.msgLang==='te'||s.msgLang==='en'){
+      msgLang=s.msgLang; localStorage.setItem('KD_msg_lang',msgLang);
+      const sw=document.getElementById('msg-te-toggle'); if(sw) sw.checked=msgIsTe();
+    }
+    if(typeof s.dark==='string'){
+      const wantDark=s.dark==='true';
+      if(wantDark!==darkMode) toggleDark();
+    }
+    if(typeof s.rainAlert==='string'){ localStorage.setItem('rainAlertEnabled',s.rainAlert); rainAlertEnabled=s.rainAlert!=='false'; }
+    if(typeof s.reminders==='string'){ localStorage.setItem('KD_reminders',s.reminders); remindersEnabled=s.reminders==='true'; }
+  }catch(x){}
+}
+
+function restoreBackup(input){
+  const f=input.files&&input.files[0];
+  if(!f) return;
+  const rd=new FileReader();
+  rd.onload=function(){
+    try{
+      let j=JSON.parse(rd.result);
+      // New-format backups: {app:'khet-diary', data:{...}, settings:{...}}
+      // Old-format backups: flat {veh,farm,diesel,home,income,crops,...}
+      if(!j||!j.data){
+        if(j&&Array.isArray(j.farm)){
+          j={app:'khet-diary',ts:'',data:{
+            vehicles:j.vehicles||j.veh||[],farm:j.farm||[],diesel:j.diesel||[],home:j.home||[],
+            income:j.income||[],crops:j.crops||[],market:j.market||[],loans:j.loans||[],
+            labour:j.labour||[],attendance:j.labour_attendance||[],inputs:j.inputs||[],rainfall:j.rainfall||[]
+          },settings:null};
+        }else{
+          toast('⚠️ Not a Khet Diary backup file.'); input.value=''; return;
+        }
+      }
+      const when=(j.ts||'').slice(0,10);
+      if(!confirm('Restore everything from backup file'+(when?' dated '+when:'')+'?\n\nThis REPLACES all data currently in the app.')){
+        input.value=''; return;
+      }
+      const d=j.data;
+      if(Array.isArray(d.vehicles)) saveVehicles(d.vehicles);
+      if(Array.isArray(d.farm)) saveFarm(d.farm);
+      if(Array.isArray(d.diesel)) saveDiesel(d.diesel);
+      if(Array.isArray(d.home)) saveHome(d.home);
+      if(Array.isArray(d.income)) saveIncome(d.income);
+      if(Array.isArray(d.crops)) saveCrops(d.crops);
+      if(Array.isArray(d.market)) saveMarket(d.market);
+      if(Array.isArray(d.loans)) saveLoans(d.loans);
+      if(Array.isArray(d.labour)) saveLabour(d.labour);
+      if(Array.isArray(d.attendance)) saveAttendance(d.attendance);
+      if(Array.isArray(d.inputs)) saveInputs(d.inputs);
+      if(Array.isArray(d.rainfall)) saveRainfall(d.rainfall);
+      applyBackupSettings(j.settings);
+      refreshAfterRestore();
+      toast('✅ Data restored'+(d.farm&&d.farm.length?' — '+d.farm.length+' works back!':'!'));
+    }catch(e){
+      toast('⚠️ Restore failed — file may be corrupted.');
+    }
+    input.value='';
+  };
+  rd.readAsText(f);
 }
 
 // ── CUSTOMER VIEW ─────────────────────────────────────
@@ -4718,43 +5084,8 @@ function getRainfall(){ return cloudData.rainfall||[]; }
 function saveRainfall(d){ cloudData.rainfall=d; pushCloudData(); }
 
 // ── DATA BACKUP / RESTORE ──────────────────────────────
-function downloadBackup(){
-  const data=JSON.stringify(cloudData,null,2);
-  const blob=new Blob([data],{type:'application/json'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');
-  const d=new Date();
-  a.href=url;
-  a.download='khet-diary-backup-'+d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+'.json';
-  a.click();
-  URL.revokeObjectURL(url);
-  toast('✅ Backup downloaded!');
-}
-
-function restoreBackup(input){
-  const file=input.files[0];
-  if(!file){return;}
-  if(!confirm('This will replace ALL your current data with the backup. Continue?')){input.value='';return;}
-  const reader=new FileReader();
-  reader.onload=function(e){
-    try{
-      const data=JSON.parse(e.target.result);
-      cloudData={
-        veh:data.veh||[],farm:data.farm||[],diesel:data.diesel||[],
-        home:data.home||[],income:data.income||[],crops:data.crops||[],market:data.market||[],
-        loans:data.loans||[],labour:data.labour||[],labour_attendance:data.labour_attendance||[],
-        inputs:data.inputs||[],rainfall:data.rainfall||[]
-      };
-      pushCloudData();
-      toast('✅ Data restored successfully!');
-      setTimeout(()=>location.reload(),500);
-    }catch(err){
-      toast('❌ Invalid backup file.');
-    }
-  };
-  reader.readAsText(file);
-  input.value='';
-}
+// downloadBackup() and restoreBackup() live with the monthly-report tools
+// (they back up all 12 stores + settings, validate the file, and refresh in place).
 
 // ── LOANS / DEBTS ──────────────────────────────────────
 function addLoan(){

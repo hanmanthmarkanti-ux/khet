@@ -220,6 +220,13 @@ header h1{font-size:1rem;font-weight:800;letter-spacing:-0.01em;flex:1;overflow:
 .field{margin-bottom:14px;}
 .field label{display:block;font-size:0.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:5px;}
 .field input,.field select,.field textarea{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:11px 12px;font-size:0.95rem;font-family:'Inter',sans-serif;color:var(--soil);background:var(--cream);outline:none;appearance:none;-webkit-appearance:none;}
+.microw{display:flex;gap:6px;align-items:center;}
+.microw input,.microw textarea,.microw select{flex:1;min-width:0;}
+.micbtn{flex:0 0 42px;width:42px;height:42px;border:1.5px solid var(--border);background:#F7F1E3;border-radius:8px;font-size:1.05rem;line-height:1;cursor:pointer;padding:0;color:var(--soil);}
+.micbtn.listening{background:var(--orange);border-color:var(--orange);color:#fff;animation:micpulse 1.1s ease-in-out infinite;}
+.dark .micbtn{background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.18);color:var(--cream);}
+.dark .micbtn.listening{background:var(--orange);border-color:var(--orange);color:#fff;}
+@keyframes micpulse{0%,100%{transform:scale(1);}50%{transform:scale(1.12);}}
 .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--wheat);background:#fff;}
 .field textarea{resize:none;height:65px;}
 .gr2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
@@ -1508,26 +1515,27 @@ if('serviceWorker' in navigator){
           <div class="field"><label>Date</label><input type="date" id="fd"/></div>
           <div class="field"><label>Vehicle</label><select id="fv"><option value="">-- Select --</option></select></div>
         </div>
-        <div class="field"><label>Work Done / Customer Name</label><input type="text" id="fw" placeholder="e.g. Ploughing for Ramesh garu…"/></div>
+        <div class="field"><label>Work Done / Customer Name</label><div class="microw"><input type="text" id="fw" placeholder="e.g. Ploughing for Ramesh garu…"/><button type="button" class="micbtn" data-mic="fw" title="Speak" onclick="voiceListen('fw','text')">🎤</button></div></div>
         <div class="field"><label>Customer Phone Number</label><input type="tel" id="fph" placeholder="e.g. 9876543210" inputmode="tel"/></div>
-        <div class="field"><label>📍 Place / Village / Location</label><input type="text" id="fplace" placeholder="e.g. Medak, Shankarampet, Hyderabad…" list="place-suggestions"/><datalist id="place-suggestions"></datalist></div>
+        <div class="field"><label>📍 Place / Village / Location</label><div class="microw"><input type="text" id="fplace" placeholder="e.g. Medak, Shankarampet, Hyderabad…" list="place-suggestions"/><button type="button" class="micbtn" data-mic="fplace" title="Speak" onclick="voiceListen('fplace','text')">🎤</button></div><datalist id="place-suggestions"></datalist></div>
         <div class="gr2">
           <div class="field"><label>Start Time</label><input type="time" id="fst" oninput="liveCalc()"/></div>
           <div class="field"><label>End Time</label><input type="time" id="fet" oninput="liveCalc()"/></div>
         </div>
         <div class="gr2">
-          <div class="field"><label>Acres Worked</label><input type="number" id="fac" placeholder="0" min="0" step="0.5" inputmode="decimal" oninput="liveCalc()"/></div>
-          <div class="field"><label>Other Expenses ₹</label><input type="number" id="fex" placeholder="0" min="0" inputmode="numeric" oninput="liveCalc()"/></div>
+          <div class="field"><label>Acres Worked</label><div class="microw"><input type="number" id="fac" placeholder="0" min="0" step="0.5" inputmode="decimal" oninput="liveCalc()"/><button type="button" class="micbtn" data-mic="fac" title="Speak" onclick="voiceListen('fac','num')">🎤</button></div></div>
+          <div class="field"><label>Other Expenses ₹</label><div class="microw"><input type="number" id="fex" placeholder="0" min="0" inputmode="numeric" oninput="liveCalc()"/><button type="button" class="micbtn" data-mic="fex" title="Speak" onclick="voiceListen('fex','num')">🎤</button></div></div>
         </div>
         <div class="gr2">
           <div class="field"><label>₹ / Hour</label><input type="number" id="frh" placeholder="e.g. 200" min="0" inputmode="numeric" oninput="liveCalc()"/></div>
           <div class="field"><label>₹ / Acre</label><input type="number" id="fra" placeholder="e.g. 500" min="0" inputmode="numeric" oninput="liveCalc()"/></div>
         </div>
         <div class="field"><label>Total Amount ₹ <span style="font-size:0.65rem;color:var(--leaf);font-weight:700;">(auto calculated)</span></label>
-          <input type="number" id="ftot" placeholder="Auto fills from ₹/Hr or ₹/Acre" min="0" inputmode="numeric" oninput="liveCalc()"/>
+          <div class="microw"><input type="number" id="ftot" placeholder="Auto fills from ₹/Hr or ₹/Acre" min="0" inputmode="numeric" oninput="liveCalc()"/>
+          <button type="button" class="micbtn" data-mic="ftot" title="Speak" onclick="voiceListen('ftot','num')">🎤</button></div>
         </div>
         <div class="gr2">
-          <div class="field"><label>💰 Amount Received ₹</label><input type="number" id="frec" placeholder="0" min="0" inputmode="numeric" oninput="liveCalc()"/></div>
+          <div class="field"><label>💰 Amount Received ₹</label><div class="microw"><input type="number" id="frec" placeholder="0" min="0" inputmode="numeric" oninput="liveCalc()"/><button type="button" class="micbtn" data-mic="frec" title="Speak" onclick="voiceListen('frec','num')">🎤</button></div></div>
           <div class="field"><label>⏳ Amount Pending ₹ <span style="font-size:0.6rem;color:var(--orange);">(auto)</span></label><input type="number" id="fpen" placeholder="0" min="0" inputmode="numeric" readonly style="background:#FEF3E2;"/></div>
         </div>
         <div class="live-box" id="live-preview">
@@ -1541,7 +1549,7 @@ if('serviceWorker' in navigator){
             <div class="live-profit-val" id="pv-profit">₹0</div>
           </div>
         </div>
-        <div class="field"><label>Notes</label><textarea id="fn" placeholder="Optional details…"></textarea></div>
+        <div class="field"><label>Notes</label><div class="microw"><textarea id="fn" placeholder="Optional details…"></textarea><button type="button" class="micbtn" data-mic="fn" title="Speak" onclick="voiceListen('fn','text')">🎤</button></div></div>
         <div class="field">
           <label>📷 Photos (optional, max 3)</label>
           <div class="photo-preview-grid" id="farm-photo-previews"></div>
@@ -1604,8 +1612,8 @@ if('serviceWorker' in navigator){
         <div class="field"><label>Total Cost ₹ <span style="font-size:0.65rem;color:var(--orange);font-weight:700;">(auto calculated)</span></label>
           <input type="number" id="dsc" placeholder="Auto fills" min="0" inputmode="numeric"/>
         </div>
-        <div class="field"><label>Filled At (Pump Name)</label><input type="text" id="dsp" placeholder="e.g. HP Petrol Bunk…"/></div>
-        <div class="field"><label>Notes</label><textarea id="dsn" placeholder="Optional details…"></textarea></div>
+        <div class="field"><label>Filled At (Pump Name)</label><div class="microw"><input type="text" id="dsp" placeholder="e.g. HP Petrol Bunk…"/><button type="button" class="micbtn" data-mic="dsp" title="Speak" onclick="voiceListen('dsp','text')">🎤</button></div></div>
+        <div class="field"><label>Notes</label><div class="microw"><textarea id="dsn" placeholder="Optional details…"></textarea><button type="button" class="micbtn" data-mic="dsn" title="Speak" onclick="voiceListen('dsn','text')">🎤</button></div></div>
         <button class="btn bo" onclick="addDiesel()">＋ Add Diesel Entry</button>
         <button class="btn bgr" onclick="clrDiesel()">Clear</button>
       </div>
@@ -1660,12 +1668,12 @@ if('serviceWorker' in navigator){
             <option value="Other">📦 Other</option>
           </select></div>
         </div>
-        <div class="field"><label>Item / Description</label><input type="text" id="hi" placeholder="e.g. Rice, School fees…"/></div>
+        <div class="field"><label>Item / Description</label><div class="microw"><input type="text" id="hi" placeholder="e.g. Rice, School fees…"/><button type="button" class="micbtn" data-mic="hi" title="Speak" onclick="voiceListen('hi','text')">🎤</button></div></div>
         <div class="gr2">
-          <div class="field"><label>Amount ₹</label><input type="number" id="ha" placeholder="0" min="0" inputmode="numeric"/></div>
-          <div class="field"><label>Paid By</label><input type="text" id="hp" placeholder="Cash / UPI…"/></div>
+          <div class="field"><label>Amount ₹</label><div class="microw"><input type="number" id="ha" placeholder="0" min="0" inputmode="numeric"/><button type="button" class="micbtn" data-mic="ha" title="Speak" onclick="voiceListen('ha','num')">🎤</button></div></div>
+          <div class="field"><label>Paid By</label><div class="microw"><input type="text" id="hp" placeholder="Cash / UPI…"/><button type="button" class="micbtn" data-mic="hp" title="Speak" onclick="voiceListen('hp','text')">🎤</button></div></div>
         </div>
-        <div class="field"><label>Notes</label><textarea id="hn" placeholder="Optional details…"></textarea></div>
+        <div class="field"><label>Notes</label><div class="microw"><textarea id="hn" placeholder="Optional details…"></textarea><button type="button" class="micbtn" data-mic="hn" title="Speak" onclick="voiceListen('hn','text')">🎤</button></div></div>
         <button class="btn bb" onclick="addHome()">＋ Add Expense</button>
         <button class="btn bgr" onclick="clrHome()">Clear</button>
       </div>
@@ -1684,9 +1692,9 @@ if('serviceWorker' in navigator){
             <option value="Other">📦 Other</option>
           </select></div>
         </div>
-        <div class="field"><label>From / Description</label><input type="text" id="infrom" placeholder="e.g. Brother, Neighbor Suresh, Daily wage…"/></div>
-        <div class="field"><label>Amount ₹</label><input type="number" id="inamt" placeholder="0" min="0" inputmode="numeric"/></div>
-        <div class="field"><label>Notes</label><textarea id="inn" placeholder="Optional details…"></textarea></div>
+        <div class="field"><label>From / Description</label><div class="microw"><input type="text" id="infrom" placeholder="e.g. Brother, Neighbor Suresh, Daily wage…"/><button type="button" class="micbtn" data-mic="infrom" title="Speak" onclick="voiceListen('infrom','text')">🎤</button></div></div>
+        <div class="field"><label>Amount ₹</label><div class="microw"><input type="number" id="inamt" placeholder="0" min="0" inputmode="numeric"/><button type="button" class="micbtn" data-mic="inamt" title="Speak" onclick="voiceListen('inamt','num')">🎤</button></div></div>
+        <div class="field"><label>Notes</label><div class="microw"><textarea id="inn" placeholder="Optional details…"></textarea><button type="button" class="micbtn" data-mic="inn" title="Speak" onclick="voiceListen('inn','text')">🎤</button></div></div>
         <button class="btn bg" onclick="addIncome()">＋ Add Money In</button>
         <button class="btn bgr" onclick="clrIncome()">Clear</button>
       </div>
@@ -4406,6 +4414,111 @@ function restoreBackup(input){
     input.value='';
   };
   rd.readAsText(f);
+}
+
+// ── VOICE INPUT (Web Speech API, Telugu-aware) ────────
+function speechOK(){
+  const R=window.SpeechRecognition||window.webkitSpeechRecognition;
+  return !!R;
+}
+function speechLang(){ return currentLang==='te' ? 'te-IN' : 'en-IN'; }
+let micRec=null;
+
+function voiceListen(id,mode){
+  const el=document.getElementById(id);
+  if(!el) return;
+  if(typeof micRec==='object'&&micRec){ try{micRec.stop();}catch(x){} micRec=null; return; } // tap again = stop
+  if(!speechOK()){ toast('🎤 Voice not supported here — use the keyboard mic (Gboard 🎙).'); return; }
+  if(!navigator.onLine){ toast('📶 Voice needs internet. Type it now, or try later.'); return; }
+  const R=window.SpeechRecognition||window.webkitSpeechRecognition;
+  try{
+    const rec=new R();
+    micRec=rec;
+    const btn=document.querySelector('button[data-mic="'+id+'"]');
+    if(btn) btn.classList.add('listening');
+    toast(currentLang==='te'?'🎤 మాట్లాడండి…':'🎤 Listening… speak now');
+    rec.lang=speechLang();
+    rec.interimResults=false;
+    rec.maxAlternatives=1;
+    rec.onresult=function(ev){
+      const txt=(ev.results&&ev.results[0]&&ev.results[0][0]&&ev.results[0][0].transcript||'').trim();
+      if(!txt){ toast('🎤 '+'Nothing heard — try again.'); return; }
+      if(mode==='num'){
+        const n=voiceNum(txt);
+        if(n===null||isNaN(n)){ toast('🎤 Could not read a number from "'+txt+'" — type it.'); return; }
+        el.value=String(n);
+      }else{
+        el.value=el.value?el.value+' '+txt:txt;         // append when field already has text
+      }
+      try{ el.dispatchEvent(new Event('input',{bubbles:true})); }catch(x){}
+      try{ el.dispatchEvent(new Event('change',{bubbles:true})); }catch(x){}
+      if(typeof liveCalc==='function'){ try{ liveCalc(); }catch(x){} }
+      toast('🎤 '+(currentLang==='te'?'అయింది — చూసి సేవ్ చేయండి':'Filled — review and save'));
+    };
+    rec.onerror=function(ev){
+      const e=ev&&ev.error;
+      if(e==='not-allowed'||e==='service-not-allowed') toast('🎤 Microphone blocked — allow mic in browser settings.');
+      else if(e==='no-speech') toast('🎤 Nothing heard — tap 🎤 again.');
+      else if(e==='network') toast('📶 Voice needs internet to work.');
+      else toast('🎤 Voice error — try again or type it.');
+    };
+    rec.onend=function(){
+      if(typeof micRec==='object'&&micRec===rec) micRec=null;
+      const b=document.querySelector('button[data-mic="'+id+'"]');
+      if(b) b.classList.remove('listening');
+    };
+    rec.start();
+  }catch(e){
+    micRec=null;
+    toast('🎤 Voice error — type it instead.');
+  }
+}
+
+// Spoken-number parser: digits, Telugu + English number words
+const TE_NUMS=
+ {oka:1,okati:1,rendu:2,rendi:2,moodu:3,mudhu:3,nalugu:4,aidu:5,ayidu:5,aaru:6,aru:6,edu:7,ethu:7,enimidi:8,enimidhi:8,tommidi:9,padi:10,padhi:10,
+  iruvai:20,muvai:30,nalabhai:40,nalavai:40,yabhai:50,yavai:50,arabhai:60,enabhai:70,embhai:70,tommidibhai:90,
+  vanda:100,veyi:1000,veyyi:1000,veddhu:1000,velu:1000,vela:1000,laksha:100000,lakh:100000,lakkha:100000,crore:10000000,koti:10000000,
+  'ఒకటి':1,'రెండు':2,'రెండి':2,'మూడు':3,'ముద్దు':3,'నాలుగు':4,'అయిదు':5,'ఐదు':5,'ఆరు':6,'ఏడు':7,'ఏడుడు':7,'ఎనిమిది':8,'తొమ్మిది':9,'పది':10,
+  'ఇరవై':20,'ఇరువై':20,'ముప్పై':30,'మువ్వై':30,'నలభై':40,'యాభై':50,'అరవై':60,'డెబ్భై':70,'ఎనభై':80,'తొంభై':90,'తొంభి':90,
+  'వంద':100,'వందల':100,'నూరు':100,'నూఱు':100,'వెయ్యి':1000,'వేయి':1000,'వేల':1000,'లక్ష':100000,'లక్షల':100000,'కోటి':10000000,'కోట్ల':10000000,
+  one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10,eleven:11,twelve:12,
+  twenty:20,thirty:30,forty:40,fourty:40,fifty:50,sixty:60,seventy:70,eighty:80,ninety:90,
+  hundred:100,thousand:1000,million:1000000,billion:1000000000};
+
+function voiceNum(t0){
+  let s=String(t0||'').toLowerCase()
+    .replace(/[\u20B9]/g,' ')
+    .replace(/,/g,'')
+    .replace(/రూపాయలు|రూపాయి|రూ/g,' ')
+    .replace(/\bthe\b|\band\b/g,' ')
+    .replace(/\s+/g,' ')
+    .trim();
+  if(!s) return NaN;
+  // "two point five" / "రెండు పాయింట్ అయిదు" / "2 point 5" → decimal
+  const pt=s.match(/([\w\u0C00-\u0C7F]+)\s*(?:point|deemu|పాయింట్)\s*([\w\u0C00-\u0C7F]+)/);
+  if(pt){
+    const a=voiceNum(pt[1]), b=voiceNum(pt[2]);
+    if(!isNaN(a)&&!isNaN(b)){
+      return parseFloat(a+'.'+String(Math.round(b)));
+    }
+  }
+  s=s.replace(/point|deemu|పాయింట్/g,' ');
+  const words=s.split(/[\s-]+/).filter(Boolean);
+  let total=0,pending=0,found=false;
+  for(let i=0;i<words.length;i++){
+    const w=words[i];
+    let v=null,isFloat=false;
+    if(/^\d+(\.\d+)?$/.test(w)){ v=parseFloat(w); isFloat=w.indexOf('.')>=0; }
+    else if(TE_NUMS[w]!==undefined){ v=TE_NUMS[w]; }
+    else continue;
+    found=true;
+    if(v===100){ total+=(pending>0?pending:1)*100; pending=0; }
+    else if(v>=1000){ total+=(pending>0?pending:1)*v; pending=0; }
+    else if(isFloat){ pending=v; }
+    else{ pending=(pending===0)?v:((pending+v)<=99?pending+v:v); }
+  }
+  return found?(total+pending):NaN;
 }
 
 // ── CUSTOMER VIEW ─────────────────────────────────────

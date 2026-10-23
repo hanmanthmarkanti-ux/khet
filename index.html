@@ -1825,6 +1825,7 @@ if('serviceWorker' in navigator){
     <div class="customer-search-bar">
       <input type="text" id="cust-search" placeholder="Search customer name…" oninput="renderCustomers()"/>
     </div>
+    <div id="remind-all-bar"></div>
     <div id="customers-list">
       <div class="empty" style="padding:40px 16px;">
         <div class="ei">👨‍🌾</div>
@@ -3004,6 +3005,7 @@ function renderFarm(){
       ${photosHtml}
       ${e.notes?`<div class="rnotes">📝 ${esc(e.notes)}</div>`:''}
       <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
+        <button class="wa-share-btn" onclick="genBill(${e.id})">🧾 ${currentLang==='te'?'బిల్లు PDF':'Bill PDF'}</button>
         ${e.phone?`<button class="wa-share-btn" style="background:#25D366;" onclick="askSendBill(${e.id})">📤 ${currentLang==='te'?'బిల్లు పంపండి':'Send Bill'}</button>`:''}
         ${(e.phone&&e.pending>0)?`<button class="wa-share-btn" style="background:var(--orange);" onclick="askReminder(${e.id})">🔔 ${currentLang==='te'?'గుర్తు చేయండి':'Remind'}</button>`:''}
         <button class="wa-share-btn" onclick="shareFarmEntryWA(${e.id})">📤 Share</button>
@@ -4523,6 +4525,7 @@ function voiceNum(t0){
 
 // ── CUSTOMER VIEW ─────────────────────────────────────
 function renderCustomers(){
+  renderRemindAllBar();
   const search = (document.getElementById('cust-search')?.value||'').toLowerCase();
   const farm = getFarm();
   if(!farm.length){
@@ -4600,6 +4603,218 @@ function renderCustomers(){
       </div>
     </div>`;
   }).join('');
+}
+
+// ── REMIND ALL DUES (Step 10) ─────────────────────────
+function pendingCustomers(){
+  const custMap={};
+  getFarm().forEach(e=>{
+    const n=e.work||'Unknown';
+    if(!custMap[n]) custMap[n]={name:n,entries:[]};
+    custMap[n].entries.push(e);
+  });
+  return Object.values(custMap)
+    .map(c=>{
+      c.totalPend=c.entries.reduce((s,e)=>s+(e.pending||0),0);
+      c.phone=(c.entries.slice().reverse().find(e=>e.phone)||{}).phone||'';
+      return c;
+    })
+    .filter(c=>c.totalPend>0)
+    .sort((a,b)=>b.totalPend-a.totalPend);
+}
+function renderRemindAllBar(){
+  const bar=document.getElementById('remind-all-bar');
+  if(!bar) return;
+  const n=pendingCustomers().length;
+  bar.innerHTML=n?`<button onclick="openRemindAll()" style="width:100%;margin:8px 0 0;padding:11px;border:1.5px solid var(--orange);background:#FEF3E2;color:var(--soil);border-radius:10px;font-weight:800;font-size:0.85rem;cursor:pointer;">📢 ${currentLang==='te'?'బాకీ ఉన్నవారికి గుర్తు చేయండి':'Remind All Dues'} (${n})</button>`:'';
+}
+function remindDueMsg(c){
+  const te=msgIsTe();
+  const owner=billOwnerName();
+  const last=c.entries.slice().sort((a,b)=>new Date(b.date)-new Date(a.date))[0];
+  const wd=last?(last.work||c.name):c.name;
+  const dt=last?fmtD(last.date):'';
+  return te
+   ?`నమస్కారం ${c.name}గారూ,\n${wd} (${dt}) పని బిల్లులో ${inr(c.totalPend)} బాకీ ఉంది.\nదయచేసి త్వరలో చెల్లించగలరు 🙏\n\n_${owner}_ (Khet Diary యాప్ ద్వారా)`
+   :`Hello ${c.name},\n${inr(c.totalPend)} is still pending against ${wd} work (${dt}).\nKindly pay at the earliest 🙏\n\n_${owner}_ (via Khet Diary)`;
+}
+function remindSendWA(name){
+  const c=pendingCustomers().find(x=>x.name===name);
+  if(!c){toast('⚠️ Customer not found.');return;}
+  const ph=normalizePhone(c.phone);
+  if(ph.length!==10){toast('⚠️ No phone saved for this customer.');return;}
+  waOpen('91'+ph,remindDueMsg(c));
+}
+function fallbackCopy(msg,cb){
+  const ta=document.createElement('textarea');
+  ta.value=msg; ta.style.position='fixed'; ta.style.opacity='0';
+  document.body.appendChild(ta);
+  try{ ta.select(); }catch(e){}
+  try{ document.execCommand('copy'); }catch(e){}
+  document.body.removeChild(ta);
+  if(cb) cb();
+}
+function remindCopy(name){
+  const c=pendingCustomers().find(x=>x.name===name);
+  if(!c){toast('⚠️ Customer not found.');return;}
+  const msg=remindDueMsg(c);
+  const done=()=>toast('📋 Copied — paste it in WhatsApp.');
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(msg).then(done).catch(()=>fallbackCopy(msg,done));
+  }else fallbackCopy(msg,done);
+}
+function closeRemindAll(){ const ov=document.getElementById('remindall-overlay'); if(ov) ov.remove(); }
+function openRemindAll(){
+  const list=pendingCustomers();
+  if(!list.length){toast('ℹ️ No pending dues.');return;}
+  closeRemindAll();
+  const te=currentLang==='te';
+  const ov=document.createElement('div');
+  ov.id='remindall-overlay';
+  ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:999;display:flex;align-items:flex-end;justify-content:center;';
+  ov.addEventListener('click',ev=>{ if(ev.target===ov) closeRemindAll(); });
+  ov.innerHTML=`<div style="background:#FAF6EC;width:100%;max-width:520px;max-height:82vh;overflow:auto;border-radius:16px 16px 0 0;padding:16px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+      <b style="font-size:0.95rem;">📢 ${te?'బాకీ వసూళ్ళ రిమైండర్':'Dues Reminders'} (${list.length})</b>
+      <button onclick="closeRemindAll()" style="border:1px solid #E8DFCC;background:#fff;border-radius:8px;padding:5px 12px;font-weight:700;cursor:pointer;">✕</button>
+    </div>
+    ${list.map(c=>{
+      const ph=normalizePhone(c.phone);
+      const ok=ph.length===10;
+      const last=c.entries.slice().sort((a,b)=>new Date(b.date)-new Date(a.date))[0];
+      return `<div style="border:1px solid #E8DFCC;border-radius:10px;padding:10px;margin-bottom:8px;background:#fff;">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+          <div style="min-width:0;">
+            <b style="font-size:0.88rem;">${esc(c.name)}</b>
+            <div style="font-size:0.7rem;color:#8a8272;">${last?fmtD(last.date)+' · ':''}${c.entries.length} ${t('entries')}${ok?' · 📱 '+ph:' · ⚠️ '+(te?'ఫోన్ లేదు':'no phone saved')}</div>
+          </div>
+          <b style="color:var(--orange);white-space:nowrap;">${inr(c.totalPend)}</b>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:8px;">
+          <button data-name="${escAttr(c.name)}" ${ok?'':'disabled'} onclick="remindSendWA(this.dataset.name)" style="flex:1;background:#25D366;color:#fff;border:none;border-radius:8px;padding:8px;font-weight:700;cursor:pointer;${ok?'':'opacity:0.45;'}">💬 WhatsApp</button>
+          <button data-name="${escAttr(c.name)}" onclick="remindCopy(this.dataset.name)" style="background:#fff;border:1px solid #E8DFCC;border-radius:8px;padding:8px 12px;font-weight:700;cursor:pointer;">📋 ${te?'కాపీ':'Copy'}</button>
+        </div>
+      </div>`;}).join('')}
+    <div style="font-size:0.7rem;color:#8a8272;text-align:center;margin-top:6px;">${te?'మెసేజ్ WhatsApp లో ఎడిట్ చేసి కూడా పంపవచ్చు':'You can edit the message inside WhatsApp before sending'}</div>
+  </div>`;
+  document.body.appendChild(ov);
+}
+
+// ── PDF BILL / INVOICE (Step 11) ──────────────────────
+function billOwnerName(){
+  const el=document.getElementById('uname');
+  return (el&&el.textContent.trim())||'Khet Diary';
+}
+function loadJsPdf(){
+  if(window.jspdf&&window.jspdf.jsPDF) return Promise.resolve();
+  return new Promise((res,rej)=>{
+    const s=document.createElement('script');
+    s.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    s.onload=res;
+    s.onerror=()=>rej(new Error('cdn'));
+    document.head.appendChild(s);
+  });
+}
+function genBill(id){
+  const e=getFarm().find(x=>String(x.id)===String(id));
+  if(!e){toast('⚠️ Entry not found.');return;}
+  const owner=billOwnerName();
+  // Telugu script needs system fonts — the print route renders it perfectly.
+  const hasTelugu=/[\u0C00-\u0C7F]/.test(owner+' '+(e.work||'')+' '+(e.vname||'')+' '+(e.place||''));
+  if(hasTelugu){ billPrintPopup(e,owner); return; }
+  loadJsPdf().then(()=>{
+    const blob=buildBillPdf(e,owner);
+    shareOrDownloadPdf(blob,'KhetBill-'+String(e.work||'customer').replace(/[^\w-]+/g,'_').slice(0,24)+'-'+(e.date||'')+'.pdf');
+  }).catch(()=>{
+    toast('📶 PDF needs internet first time — using print instead.');
+    billPrintPopup(e,owner);
+  });
+}
+function buildBillPdf(e,owner){
+  const J=window.jspdf.jsPDF;
+  const doc=new J({unit:'mm',format:'a4'});
+  const L=18,R=192;
+  let y=22;
+  doc.setFont('helvetica','bold'); doc.setFontSize(18);
+  doc.text('Khet Diary',L,y); y+=8;
+  doc.setFont('helvetica','normal'); doc.setFontSize(10);
+  doc.text('Work Bill / Invoice',L,y); y+=6;
+  doc.text(String(owner),L,y); y+=3;
+  doc.setDrawColor(60); doc.setLineWidth(0.6); doc.line(L,y,R,y); y+=9;
+  const row=(k,v,bold)=>{
+    doc.setFont('helvetica',bold?'bold':'normal');
+    doc.setFontSize(bold?12:10.5);
+    doc.text(String(k),L,y);
+    doc.text(String(v),R,y,{align:'right'});
+    y+=7;
+  };
+  row('Customer',e.work||'-');
+  row('Date',fmtD(e.date));
+  if(e.vname) row('Vehicle',e.vname);
+  if(e.place) row('Place',e.place);
+  if(e.acres>0) row('Acres',e.acres);
+  if(e.hrs>0) row('Hours',fmtH(e.hrs));
+  if(e.rph>0) row('Rate / Hour','Rs '+e.rph);
+  if(e.rpa>0) row('Rate / Acre','Rs '+e.rpa);
+  if(e.otherExp>0) row('Other Expenses','Rs '+e.otherExp);
+  y+=1; doc.line(L,y,R,y); y+=8;
+  row('Total','Rs '+(e.total||0),true);
+  row('Received','Rs '+(e.received||0));
+  row('Balance','Rs '+(e.pending||0),true);
+  y+=6; doc.line(L,y,R,y); y+=12;
+  doc.setFont('helvetica','normal'); doc.setFontSize(8.5);
+  doc.text('Generated by Khet Diary on '+fmtD(new Date().toISOString().slice(0,10)),L,y);
+  return doc.output('blob');
+}
+function shareOrDownloadPdf(blob,fname){
+  try{
+    const file=new File([blob],fname,{type:'application/pdf'});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){
+      navigator.share({files:[file],title:'Khet Diary Bill'})
+        .then(()=>toast('✅ Bill shared!'))
+        .catch(()=>{});
+      return;
+    }
+  }catch(err){}
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download=fname;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>{ try{ URL.revokeObjectURL(url); }catch(x){} },4000);
+  toast('📄 Bill saved — share it on WhatsApp.');
+}
+function billPrintPopup(e,owner){
+  const w2=window.open('','_blank');
+  if(!w2){toast('⚠️ Allow pop-ups to print the bill.');return;}
+  const te=msgIsTe();
+  w2.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"/><title>Khet Diary Bill</title>
+  <style>body{font-family:Arial,'Noto Sans Telugu',sans-serif;padding:18px;max-width:420px;margin:0 auto;color:#111;}
+  .hd{text-align:center;border-bottom:2px solid #333;padding-bottom:8px;margin-bottom:12px;}
+  .hd h1{font-size:1.25rem;margin:0;} .hd p{font-size:0.75rem;color:#555;margin:3px 0 0;}
+  .r{display:flex;justify-content:space-between;padding:6px 2px;border-bottom:1px dashed #ccc;font-size:0.88rem;}
+  .tot{border-top:2px solid #333;border-bottom:2px solid #333;margin-top:8px;padding-top:8px;font-weight:bold;}
+  .ft{text-align:center;margin-top:16px;font-size:0.68rem;color:#999;}
+  .hint{background:#fff7e6;border:1px dashed #e0a800;padding:8px;border-radius:8px;font-size:0.75rem;text-align:center;margin-bottom:12px;}
+  @media print{.hint{display:none;}}</style></head><body>
+  <div class="hint">📱 ${te?'ప్రింట్ స్క్రీన్‌లో "Save as PDF" ఎంచుకోండి — తర్వాత WhatsApp లో పంపవచ్చు':'Choose "Save as PDF" on the print screen — then share on WhatsApp'}</div>
+  <div class="hd"><h1>${esc(owner)}</h1><p>${te?'పని బిల్లు':'Work Bill / Invoice'} · Khet Diary</p></div>
+  <div class="r"><span>${te?'కస్టమర్':'Customer'}</span><b>${esc(e.work||'-')}</b></div>
+  <div class="r"><span>${te?'తేదీ':'Date'}</span><span>${fmtD(e.date)}</span></div>
+  ${e.vname?`<div class="r"><span>${te?'వాహనం':'Vehicle'}</span><span>${esc(e.vname)}</span></div>`:''}
+  ${e.place?`<div class="r"><span>📍 ${te?'చోటు':'Place'}</span><span>${esc(e.place)}</span></div>`:''}
+  ${e.acres>0?`<div class="r"><span>${te?'ఎకరాలు':'Acres'}</span><span>${e.acres}</span></div>`:''}
+  ${e.hrs>0?`<div class="r"><span>${te?'గంటలు':'Hours'}</span><span>${fmtH(e.hrs)}</span></div>`:''}
+  ${e.rph>0?`<div class="r"><span>${te?'గంటకు':'Per hour'}</span><span>${inr(e.rph)}</span></div>`:''}
+  ${e.rpa>0?`<div class="r"><span>${te?'ఎకరాకు':'Per acre'}</span><span>${inr(e.rpa)}</span></div>`:''}
+  ${e.otherExp>0?`<div class="r"><span>${te?'ఇతర ఖర్చు':'Other expenses'}</span><span>${inr(e.otherExp)}</span></div>`:''}
+  <div class="r tot"><span>${te?'మొత్తం':'Total'}</span><span>${inr(e.total||0)}</span></div>
+  <div class="r"><span>${te?'అందింది':'Received'}</span><span>${inr(e.received||0)}</span></div>
+  <div class="r"><span>${te?'బాకీ':'Balance'}</span><b>${inr(e.pending||0)}</b></div>
+  <div class="ft">${te?'Khet Diary యాప్ ద్వారా సృష్టించబడింది':'Created with Khet Diary'}</div>
+  <script>setTimeout(function(){try{window.print();}catch(e){}}<\/script></body></html>`);
+  w2.document.close();
 }
 
 // ── INIT LANGUAGE ─────────────────────────────────────

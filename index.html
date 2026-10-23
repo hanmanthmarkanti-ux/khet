@@ -1516,28 +1516,30 @@ if('serviceWorker' in navigator){
           <div class="field"><label>Vehicle</label><select id="fv"><option value="">-- Select --</option></select></div>
         </div>
         <div class="field"><label>Work Done / Customer Name</label><div class="microw"><input type="text" id="fw" placeholder="e.g. Ploughing for Ramesh garu…"/><button type="button" class="micbtn" data-mic="fw" title="Speak" onclick="voiceListen('fw','text')">🎤</button></div></div>
+        <div class="gr2">
+          <div class="field"><label>Acres Worked</label><div class="microw"><input type="number" id="fac" placeholder="0" min="0" step="0.5" inputmode="decimal" oninput="liveCalc()"/><button type="button" class="micbtn" data-mic="fac" title="Speak" onclick="voiceListen('fac','num')">🎤</button></div></div>
+          <div class="field"><label>₹ / Hour</label><input type="number" id="frh" placeholder="e.g. 200" min="0" inputmode="numeric" oninput="liveCalc()"/></div>
+        </div>
+        <div class="gr2">
+          <div class="field"><label>₹ / Acre</label><input type="number" id="fra" placeholder="e.g. 500" min="0" inputmode="numeric" oninput="liveCalc()"/></div>
+          <div class="field"><label>Total Amount ₹ <span style="font-size:0.65rem;color:var(--leaf);font-weight:700;">(auto)</span></label>
+            <div class="microw"><input type="number" id="ftot" placeholder="Auto from rates" min="0" inputmode="numeric" oninput="liveCalc()"/>
+            <button type="button" class="micbtn" data-mic="ftot" title="Speak" onclick="voiceListen('ftot','num')">🎤</button></div>
+          </div>
+        </div>
+        <div class="gr2">
+          <div class="field"><label>💰 Amount Received ₹</label><div class="microw"><input type="number" id="frec" placeholder="0" min="0" inputmode="numeric" oninput="liveCalc()"/><button type="button" class="micbtn" data-mic="frec" title="Speak" onclick="voiceListen('frec','num')">🎤</button></div></div>
+          <div class="field"><label>⏳ Pending ₹ <span style="font-size:0.6rem;color:var(--orange);">(auto)</span></label><input type="number" id="fpen" placeholder="0" min="0" inputmode="numeric" readonly style="background:#FEF3E2;"/></div>
+        </div>
+        <button type="button" id="farm-more-toggle" onclick="togFarmMore()" style="width:100%;margin:2px 0 10px;padding:9px;border:1.5px dashed var(--border);background:transparent;border-radius:10px;font-weight:700;font-size:0.8rem;color:var(--muted);cursor:pointer;">📝 <span id="farm-more-label">More details</span> <span id="farm-more-arr">▾</span></button>
+        <div id="farm-more" style="display:none;">
         <div class="field"><label>Customer Phone Number</label><input type="tel" id="fph" placeholder="e.g. 9876543210" inputmode="tel"/></div>
         <div class="field"><label>📍 Place / Village / Location</label><div class="microw"><input type="text" id="fplace" placeholder="e.g. Medak, Shankarampet, Hyderabad…" list="place-suggestions"/><button type="button" class="micbtn" data-mic="fplace" title="Speak" onclick="voiceListen('fplace','text')">🎤</button></div><datalist id="place-suggestions"></datalist></div>
         <div class="gr2">
           <div class="field"><label>Start Time</label><input type="time" id="fst" oninput="liveCalc()"/></div>
           <div class="field"><label>End Time</label><input type="time" id="fet" oninput="liveCalc()"/></div>
         </div>
-        <div class="gr2">
-          <div class="field"><label>Acres Worked</label><div class="microw"><input type="number" id="fac" placeholder="0" min="0" step="0.5" inputmode="decimal" oninput="liveCalc()"/><button type="button" class="micbtn" data-mic="fac" title="Speak" onclick="voiceListen('fac','num')">🎤</button></div></div>
-          <div class="field"><label>Other Expenses ₹</label><div class="microw"><input type="number" id="fex" placeholder="0" min="0" inputmode="numeric" oninput="liveCalc()"/><button type="button" class="micbtn" data-mic="fex" title="Speak" onclick="voiceListen('fex','num')">🎤</button></div></div>
-        </div>
-        <div class="gr2">
-          <div class="field"><label>₹ / Hour</label><input type="number" id="frh" placeholder="e.g. 200" min="0" inputmode="numeric" oninput="liveCalc()"/></div>
-          <div class="field"><label>₹ / Acre</label><input type="number" id="fra" placeholder="e.g. 500" min="0" inputmode="numeric" oninput="liveCalc()"/></div>
-        </div>
-        <div class="field"><label>Total Amount ₹ <span style="font-size:0.65rem;color:var(--leaf);font-weight:700;">(auto calculated)</span></label>
-          <div class="microw"><input type="number" id="ftot" placeholder="Auto fills from ₹/Hr or ₹/Acre" min="0" inputmode="numeric" oninput="liveCalc()"/>
-          <button type="button" class="micbtn" data-mic="ftot" title="Speak" onclick="voiceListen('ftot','num')">🎤</button></div>
-        </div>
-        <div class="gr2">
-          <div class="field"><label>💰 Amount Received ₹</label><div class="microw"><input type="number" id="frec" placeholder="0" min="0" inputmode="numeric" oninput="liveCalc()"/><button type="button" class="micbtn" data-mic="frec" title="Speak" onclick="voiceListen('frec','num')">🎤</button></div></div>
-          <div class="field"><label>⏳ Amount Pending ₹ <span style="font-size:0.6rem;color:var(--orange);">(auto)</span></label><input type="number" id="fpen" placeholder="0" min="0" inputmode="numeric" readonly style="background:#FEF3E2;"/></div>
-        </div>
+        <div class="field"><label>Other Expenses ₹</label><div class="microw"><input type="number" id="fex" placeholder="0" min="0" inputmode="numeric" oninput="liveCalc()"/><button type="button" class="micbtn" data-mic="fex" title="Speak" onclick="voiceListen('fex','num')">🎤</button></div></div>
         <div class="live-box" id="live-preview">
           <h4>📊 Live Calculation Preview</h4>
           <div class="live-grid">
@@ -1559,6 +1561,7 @@ if('serviceWorker' in navigator){
             <div class="photo-upload-label">📷 Tap to add photos<br><span style="font-size:0.7rem;color:#bbb;">Receipt, field photo (max 3 · saved to cloud free)</span></div>
           </div>
         </div>
+        </div><!-- /farm-more (quick add collapsible) -->
         <button class="btn bg" onclick="addFarm()">＋ Add Entry</button>
         <button class="btn bgr" onclick="clrFarm()">Clear</button>
       </div>
@@ -2320,6 +2323,7 @@ function openApp(name){
   const el=document.getElementById('report-month');
   if(el) el.value=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
   show('home-screen');
+  try{ maybeShowIntro(); }catch(e){}
 }
 
 function goHome(){
@@ -2720,6 +2724,7 @@ function updateVehicleSelects(){
   document.getElementById('ffv').innerHTML=allOpts;
   document.getElementById('dsv').innerHTML=opts;
   document.getElementById('dsfv').innerHTML=allOpts;
+  try{ prefillLastUsed(); }catch(e){}
 }
 
 // ── LIVE CALC (Farm) ──────────────────────────────────
@@ -2870,7 +2875,7 @@ async function addFarm(){
     photos
   };
   arr.unshift(entry);
-  saveFarm(arr);clrFarm();renderFarmAll();renderDash();renderPlaces();
+  saveFarm(arr);saveLastUsed(vid,rph,rpa);clrFarm();renderFarmAll();renderDash();renderPlaces();
   toast(pending>0?'✅ Added! Pending: '+inr(pending):'✅ Entry added! Fully paid.');
 
   // Ask the user how to send the bill (WhatsApp or normal SMS)
@@ -2956,6 +2961,7 @@ function clrFarm(){
   document.getElementById('farm-photo-previews').innerHTML='';
   const addBtn=document.querySelector('#farm-body button.bg');
   if(addBtn) addBtn.textContent='＋ Add Entry';
+  prefillLastUsed();
 }
 function delFarm(id){if(!confirm('Delete?'))return;saveFarm(getFarm().filter(e=>e.id!==id));renderFarmAll();renderDash();toast('🗑 Deleted.');}
 function clrFFil(){document.getElementById('ffs').value='';document.getElementById('ffv').value='all';document.getElementById('ffm').value='';renderFarm();}
@@ -2995,6 +3001,7 @@ function renderFarm(){
         ${et?`<span class="chip cd">⏹ ${et}</span>`:''}
         ${e.hrs>0?`<span class="chip cd">⏱ ${fmtH(e.hrs)}</span>`:''}
         ${e.acres>0?`<span class="chip ca">📏 ${e.acres} ac</span>`:''}
+        ${e.sample?`<span class="chip" style="background:var(--wheat);color:#fff;border-radius:6px;padding:2px 8px;font-size:0.65rem;font-weight:800;">✨ ${currentLang==='te'?'నమూనా':'SAMPLE'}</span>`:''}
         ${e.total>0?`<span class="chip ce">Total: ${inr(e.total)}</span>`:''}
         ${e.otherExp>0?`<span class="chip cs">Exp: ${inr(e.otherExp)}</span>`:''}
       </div>
@@ -4604,6 +4611,109 @@ function renderCustomers(){
     </div>`;
   }).join('');
 }
+
+// ── QUICK ADD (Step 8) ────────────────────────────────
+function togFarmMore(force){
+  const m=document.getElementById('farm-more');
+  if(!m) return;
+  const open=(force!==undefined)?force:(m.style.display==='none');
+  m.style.display=open?'block':'none';
+  const arr=document.getElementById('farm-more-arr');
+  if(arr) arr.textContent=open?'▴':'▾';
+  const lbl=document.getElementById('farm-more-label');
+  if(lbl) lbl.textContent=open
+    ?(currentLang==='te'?'వివరాలు దాచు':'Hide details')
+    :(currentLang==='te'?'మరిన్ని వివరాలు':'More details');
+  try{ localStorage.setItem('KD_farmMore',open?'1':'0'); }catch(e){}
+}
+function saveLastUsed(vid,rph,rpa){
+  try{
+    if(vid) localStorage.setItem('KD_lastVeh',vid);
+    if(rph) localStorage.setItem('KD_lastRph',rph);
+    if(rpa) localStorage.setItem('KD_lastRpa',rpa);
+  }catch(e){}
+}
+function prefillLastUsed(){
+  try{
+    const fv=document.getElementById('fv');
+    const lv=localStorage.getItem('KD_lastVeh');
+    if(fv&&lv&&!fv.value&&Array.prototype.some.call(fv.options,o=>o.value===lv)) fv.value=lv;
+    const frh=document.getElementById('frh'),fra=document.getElementById('fra');
+    if(frh&&!frh.value) frh.value=localStorage.getItem('KD_lastRph')||'';
+    if(fra&&!fra.value) fra.value=localStorage.getItem('KD_lastRpa')||'';
+  }catch(e){}
+}
+
+// ── FIRST-RUN INTRO + SAMPLE ENTRY (Step 9) ──────────
+function maybeShowIntro(){
+  let done=false;
+  try{ done=localStorage.getItem('KD_introDone')==='1'; }catch(e){ done=true; }
+  if(done) return;
+  showIntro();
+}
+let introStep=0;
+function introScreens(){
+  const te=currentLang==='te';
+  return te
+   ?[ {i:'🌾',t:'ఖేత్ డైరీకి స్వాగతం',s:'మీ ట్రాక్టర్ పనుల లెక్క ఇక్కడ — టైప్ చేయండి లేదా 🎤 మాట్లాడి నమోదు చేయండి'},
+     {i:'💰',t:'డబ్బులు తానే లెక్కిస్తుంది',s:'ఎకరాలు + రేటు పెట్టండి — మొత్తం, అందింది, బాకీ తానే చూపిస్తుంది'},
+     {i:'📤',t:'బిల్లులు, రిపోర్టులు',s:'WhatsApp లో బిల్లు PDF, రిమైండర్లు, నెలవారీ రిపోర్టు — అన్నీ ఒకే యాప్‌లో'}]
+   :[ {i:'🌾',t:'Welcome to Khet Diary',s:'Your tractor work diary — type it, or just speak it 🎤'},
+     {i:'💰',t:'Money calculates itself',s:'Enter acres + rate — total, received and pending show automatically'},
+     {i:'📤',t:'Bills & reports, done',s:'WhatsApp PDF bills, payment reminders, monthly reports — all in one app'}];
+}
+function showIntro(){
+  introStep=0;
+  let ov=document.getElementById('intro-overlay');
+  if(ov) ov.remove();
+  ov=document.createElement('div');
+  ov.id='intro-overlay';
+  ov.style.cssText='position:fixed;inset:0;background:rgba(20,16,12,0.92);z-index:1000;display:flex;align-items:center;justify-content:center;padding:24px;';
+  document.body.appendChild(ov);
+  renderIntro();
+}
+function renderIntro(){
+  const ov=document.getElementById('intro-overlay');
+  if(!ov) return;
+  const te=currentLang==='te';
+  const scr=introScreens();
+  const s=scr[introStep];
+  ov.innerHTML=`<div style="max-width:380px;width:100%;background:#FAF6EC;border-radius:18px;padding:28px 22px;text-align:center;">
+    <div style="font-size:2.6rem;margin-bottom:8px;">${s.i}</div>
+    <h2 style="margin:0 0 8px;font-size:1.15rem;">${s.t}</h2>
+    <p style="color:#7A7266;font-size:0.88rem;line-height:1.55;margin:0 0 18px;">${s.s}</p>
+    <div style="display:flex;gap:6px;justify-content:center;margin-bottom:18px;">
+      ${scr.map((_,i)=>`<span style="width:${i===introStep?'18px':'7px'};height:7px;border-radius:4px;background:${i===introStep?'#4A7C42':'#DDD3BF'};transition:all .2s;"></span>`).join('')}
+    </div>
+    <button onclick="introDone()" style="width:100%;padding:13px;border:none;border-radius:10px;background:#4A7C42;color:#fff;font-weight:800;font-size:0.95rem;cursor:pointer;">${introStep<scr.length-1?(te?'తరువాత':'Next')+' →':(te?'ప్రారంభించండి':'Get Started')} ✓</button>
+    <button onclick="introSkip()" style="margin-top:10px;border:none;background:none;color:#9a9080;font-size:0.8rem;cursor:pointer;">${te?'దాటవేయి':'Skip'}</button>
+  </div>`;
+}
+function introDone(){
+  if(introStep<introScreens().length-1){ introStep++; renderIntro(); return; }
+  finishIntro();
+}
+function introSkip(){ finishIntro(); }
+function finishIntro(){
+  const ov=document.getElementById('intro-overlay');
+  if(ov) ov.remove();
+  try{ localStorage.setItem('KD_introDone','1'); }catch(e){}
+  // First-run sample entry so screens are not all zeros (user can delete it)
+  try{
+    if(!getFarm().length){
+      const d=new Date().toISOString().slice(0,10);
+      saveFarm([{id:Date.now(),date:d,
+        work:(currentLang==='te'?'రమేష్ (నమూనా)':'Ramesh (sample)'),
+        phone:'',place:(currentLang==='te'?'నమూనా గ్రామం':'Sample village'),
+        vid:'',vname:'',vtype:'',st:'',et:'',hrs:3,acres:2,otherExp:100,
+        total:3000,received:2000,pending:1000,rph:1000,rpa:0,profit:1900,
+        notes:(currentLang==='te'?'ఇది నమూనా — వదిలించుకోవడానికి 🗑 తొక్కండి.':'This is a sample entry — delete it with 🗑.'),
+        photos:[],sample:true}]);
+      try{ renderFarmAll(); renderDash(); }catch(e){}
+    }
+  }catch(e){}
+}
+try{ togFarmMore(localStorage.getItem('KD_farmMore')==='1'); }catch(e){}
 
 // ── REMIND ALL DUES (Step 10) ─────────────────────────
 function pendingCustomers(){

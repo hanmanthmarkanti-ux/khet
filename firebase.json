@@ -23,6 +23,7 @@
       "firebase.json",
       "**/.*",
       "**/node_modules/**",
+      "**/*.apk",
       "functions/**"
     ],
     "rewrites": [

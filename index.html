@@ -1477,6 +1477,7 @@ if('serviceWorker' in navigator){
             </select>
           </div>
           <div class="field"><label>Vehicle Name / No.</label><input type="text" id="vn" placeholder="e.g. TS09 AB 1234"/></div>
+          <div class="field"><label>🔧 Service Every (hours, optional)</label><input type="number" id="vs" placeholder="e.g. 250" min="0" inputmode="numeric"/></div>
         </div>
         <button class="btn bo" onclick="addVehicle()">＋ Add Vehicle</button>
       </div>
@@ -2695,8 +2696,11 @@ function addVehicle(){
   if(!name){toast('⚠️ Enter vehicle name/number.');return;}
   const arr=getVehicles();
   if(arr.find(v=>v.name.toLowerCase()===name.toLowerCase())){toast('⚠️ Vehicle already exists.');return;}
-  arr.push({id:Date.now(),type,name});saveVehicles(arr);
+  const vs=parseFloat(document.getElementById('vs').value)||0;
+  arr.push({id:Date.now(),type,name,...(vs>0?{serviceEvery:vs}:{})});
+  saveVehicles(arr);
   document.getElementById('vn').value='';
+  document.getElementById('vs').value='';
   renderVehicles();updateVehicleSelects();toast('✅ Vehicle added!');
 }
 function delVehicle(id){
@@ -2704,16 +2708,74 @@ function delVehicle(id){
   saveVehicles(getVehicles().filter(v=>v.id!==id));
   renderVehicles();updateVehicleSelects();toast('🗑 Vehicle deleted.');
 }
+// ── SERVICE REMINDERS (Step 16) ───────────────────────
+function vehicleHours(vid){
+  return getFarm().filter(e=>String(e.vid)===String(vid)).reduce((s,e)=>s+(e.hrs||0),0);
+}
+function serviceStatus(v){
+  if(!v||!v.serviceEvery) return null;
+  const hrs=vehicleHours(v.id);
+  const base=v.serviceBase||0;
+  const used=Math.max(0,hrs-base);
+  const left=v.serviceEvery-used;
+  const pct=Math.min(100,Math.round(used/v.serviceEvery*100));
+  return {hrs,used,left,pct,over:left<=0,soon:left<=v.serviceEvery*0.2&&left>0};
+}
+function setServiceInterval(id){
+  const arr=getVehicles();
+  const v=arr.find(x=>x.id===id);
+  if(!v) return;
+  const te=currentLang==='te';
+  const cur=v.serviceEvery?String(v.serviceEvery):'250';
+  const ans=prompt(te?'సర్వీస్ ప్రతి ఎన్ని గంటలకు? (0 = తొలగించు)':'Service every how many hours? (0 = remove reminder)',cur);
+  if(ans===null) return;
+  const n=parseFloat(ans);
+  if(isNaN(n)||n<0){toast('⚠️ Enter a number of hours.');return;}
+  if(n===0){ delete v.serviceEvery; delete v.serviceBase; toast('🔧 Service reminder removed.'); }
+  else { v.serviceEvery=n; toast('🔧 Reminder set: service every '+n+' hrs.'); }
+  saveVehicles(arr); renderVehicles(); renderDash();
+}
+function serviceDone(id){
+  const arr=getVehicles();
+  const v=arr.find(x=>x.id===id);
+  if(!v||!v.serviceEvery) return;
+  v.serviceBase=vehicleHours(id);
+  saveVehicles(arr); renderVehicles(); renderDash();
+  toast('🛠 Service marked done — next one in '+v.serviceEvery+' hrs.');
+}
+function serviceBlockHtml(v){
+  const te=currentLang==='te';
+  const st=serviceStatus(v);
+  if(!st){
+    return `<button type="button" onclick="setServiceInterval(${v.id})" style="width:100%;margin-top:8px;padding:6px;border:1.5px dashed var(--border);background:transparent;border-radius:8px;font-size:0.7rem;font-weight:700;color:var(--muted);cursor:pointer;">🔧 ${te?'సర్వీస్ రిమైండర్ సెట్ చేయండి':'Set service reminder'}</button>`;
+  }
+  const color=st.over?'#D4442A':(st.soon?'var(--orange)':'var(--leaf)');
+  const label=st.over?(te?'సర్వీస్ అవసరం — ఇప్పుడే!':'OVERDUE — service now!')
+    :(st.soon?(te?'త్వరలో సర్వీస్':'Due soon'):(te?'సర్వీస్ లెక్క':'Service'));
+  return `<div style="width:100%;margin-top:8px;">
+    <div style="display:flex;justify-content:space-between;font-size:0.68rem;font-weight:800;color:${color};">
+      <span>🔧 ${label}</span><span>${st.used}/${v.serviceEvery} hrs${st.left>0?' · '+st.left+' left':''}</span>
+    </div>
+    <div style="height:6px;background:#EDE4D3;border-radius:3px;margin-top:4px;overflow:hidden;">
+      <div style="height:6px;width:${st.pct}%;background:${color};border-radius:3px;"></div>
+    </div>
+    <div style="display:flex;gap:6px;margin-top:6px;">
+      <button type="button" onclick="serviceDone(${v.id})" style="flex:1;padding:5px;border:none;border-radius:6px;background:var(--leaf);color:#fff;font-size:0.66rem;font-weight:700;cursor:pointer;">🛠 ${te?'సర్వీస్ అయింది':'Service Done'}</button>
+      <button type="button" onclick="setServiceInterval(${v.id})" style="padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:#fff;font-size:0.66rem;font-weight:700;cursor:pointer;">⚙️</button>
+    </div>
+  </div>`;
+}
 function renderVehicles(){
   const arr=getVehicles();
   const el=document.getElementById('veh-list');
   if(!arr.length){el.innerHTML='<p style="color:var(--muted);font-size:0.85rem;text-align:center;padding:16px 0;">No vehicles yet.</p>';return;}
   el.innerHTML='<div class="v-list">'+arr.map(v=>`
-    <div class="v-item">
+    <div class="v-item" style="flex-wrap:wrap;">
       <div class="v-info"><div class="v-icon">${vIcon(v.type)}</div>
-        <div><div class="v-name">${esc(v.name)}</div><div class="v-type">${esc(v.type)}</div></div>
+        <div><div class="v-name">${esc(v.name)}</div><div class="v-type">${esc(v.type)}${v.serviceEvery?' · 🔧 '+v.serviceEvery+'h':''}</div></div>
       </div>
       <button class="v-del" onclick="delVehicle(${v.id})">🗑</button>
+      ${serviceBlockHtml(v)}
     </div>`).join('')+'</div>';
 }
 function updateVehicleSelects(){
@@ -3482,6 +3544,7 @@ function renderDash(){
       <div style="text-align:right">
         <div style="font-size:0.85rem;font-weight:700;color:${vp>=0?'var(--leaf)':'var(--red)'};">${inr(vp)} profit</div>
         <div style="font-size:0.7rem;color:var(--muted)">${vacres.toFixed(1)} ac · ⛽${vdiesel.toFixed(1)}L</div>
+        ${(()=>{const st=serviceStatus(v);return (st&&(st.over||st.soon))?`<div style="font-size:0.7rem;font-weight:800;color:${st.over?'var(--red)':'var(--orange)'};">🔧 ${st.over?(currentLang==='te'?'సర్వీస్ అవసరం':'SERVICE DUE'):(st.left+' hrs to service')}</div>`:'';})()}
       </div>
     </div>`;
   }).join('');
